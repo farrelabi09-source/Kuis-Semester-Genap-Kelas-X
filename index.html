@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title> ✏️📗📘Kuis Semester Genap Kelas X</title>
+    <title>✏️📗📘 Kuis Semester Genap Kelas X</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
@@ -82,18 +82,14 @@
         .grid-number { transition: all 0.2s; }
         .grid-number.active { transform: scale(1.15); box-shadow: 0 0 0 2px var(--bg-main), 0 0 10px #2dd4bf; z-index: 10; }
 
-        @keyframes spin-record { 100% { transform: rotate(360deg); } }
-        .spin-record { animation: spin-record 4s linear infinite; }
-
         input[type=range] { -webkit-appearance: none; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 10px; width: 10px; border-radius: 50%; background: #2dd4bf; cursor: pointer; margin-top: -3.5px; box-shadow: 0 0 5px rgba(45, 212, 191, 0.5); }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: #2dd4bf; cursor: pointer; margin-top: -4.5px; box-shadow: 0 0 5px rgba(45, 212, 191, 0.5); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 3px; cursor: pointer; background: rgba(148, 163, 184, 0.4); border-radius: 2px; }
         .dark input[type=range]::-webkit-slider-runnable-track { background: rgba(255, 255, 255, 0.2); }
 
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.6); }
 
         .fade-in { animation: fadeIn 0.3s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -122,11 +118,18 @@
         body[data-text-size="lg"] .o-text-dynamic { font-size: 1.125rem; }
         
         #quiz-content-area { transition: opacity 0.2s ease-in-out; }
+
+        /* CONFETTI STYLES */
+        .confetti {
+            position: absolute; width: 10px; height: 10px; background-color: #f00; animation: fall linear forwards;
+        }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
     </style>
 </head>
 <body class="p-2 md:p-8 flex flex-col items-center justify-center relative overflow-x-hidden pt-20 md:pt-10" data-text-size="md">
 
-    <!-- DYNAMIC ISLAND MUSIC PLAYER WIDGET -->
+    <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[100] overflow-hidden hidden"></div>
+
     <div id="dynamic-island" class="fixed top-3 left-3 md:top-6 md:left-8 z-[70] bg-white/80 dark:bg-slate-800/90 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dynamic-island di-collapsed" onclick="togglePlayerState(event)">
         <div id="music-icon-container" class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300">
             <i id="music-state-icon" class="ph-fill ph-speaker-slash text-xl"></i>
@@ -145,7 +148,6 @@
                 </div>
             </div>
 
-            <!-- Kontrol Player: Prev, Play, Next -->
             <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0 ml-1.5 md:ml-3" onclick="event.stopPropagation()">
                 <button onclick="prevTrack()" class="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
                     <i class="ph-fill ph-skip-back text-[14px] md:text-[16px]"></i>
@@ -160,7 +162,6 @@
         </div>
     </div>
 
-    <!-- TOP RIGHT CONTROLS -->
     <div class="fixed top-3 right-3 md:top-6 md:right-8 z-50 flex gap-2 md:gap-3">
         <button onclick="openSettings()" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
             <i class="ph-fill ph-gear text-xl md:text-2xl text-slate-600 dark:text-slate-300 hover:rotate-90 transition-transform duration-500"></i>
@@ -176,12 +177,12 @@
         <!-- SCREEN 1: HOME -->
         <div id="screen-home" class="w-full max-w-5xl fade-in block px-2 md:px-0">
             <div class="text-center mb-8 md:mb-10 mt-12 md:mt-4">
-                <h1 class="text-3xl md:text-5xl mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-teal-400 to-emerald-400 dark:from-blue-400 dark:via-teal-300 dark:to-emerald-300 cinematic-title" style="line-height: 1.2;">
-                    Kuis Semester Genap Kelas X
+                <h1 class="text-3xl md:text-5xl mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-teal-400 to-emerald-400 dark:from-blue-400 dark:via-teal-300 dark:to-emerald-300 cinematic-title" style="line-height: 1.3;">
+                    Kuis Semester Genap<br>Kelas X
                 </h1>
                 <p class="text-slate-600 dark:text-slate-400 text-sm md:text-lg mt-2">Pilih mata pelajaran untuk memulai ujian.</p>
             </div>
-            <!-- Grid Hanya 1 Mapel Sesuai Permintaan -->
+            <!-- Hanya Mapel PJOK -->
             <div class="flex justify-center w-full" id="subject-grid"></div>
         </div>
 
@@ -209,22 +210,20 @@
                                 <span class="font-bold text-xs md:text-sm uppercase tracking-wider">Keluar</span>
                             </button>
                             
-                            <!-- Wadah Bawah (Timer / Review Badge & Icon Navigasi) -->
                             <div class="flex items-center gap-2 mt-auto relative">
-                                
-                                <!-- Timer: Aktif saat Kuis -->
+                                <!-- Timer -->
                                 <div id="timer-container" class="flex glass-panel px-3 h-10 md:h-12 md:px-4 rounded-lg md:rounded-xl items-center gap-1.5 border-teal-500/30 text-teal-500 dark:text-teal-400 font-mono font-bold text-sm md:text-lg shadow-sm">
                                     <i class="ph ph-timer"></i>
                                     <span id="timer-display">90:00</span>
                                 </div>
 
-                                <!-- Badge Pembahasan: Aktif saat Review Mode (Tumpuk) -->
+                                <!-- Badge Pembahasan -->
                                 <div id="review-badge" class="hidden glass-panel h-10 md:h-12 bg-yellow-400/90 dark:bg-yellow-500/90 border-yellow-300 dark:border-yellow-400/50 text-yellow-950 px-3 md:px-4 rounded-lg md:rounded-xl font-bold shadow-sm cinematic-title flex-col justify-center leading-none text-center flex-shrink-0">
                                     <span class="text-[9px] md:text-[10px]">Sesi</span>
                                     <span class="text-[10px] md:text-xs">Pembahasan</span>
                                 </div>
 
-                                <!-- Tombol Navigasi Grid Mobile (Selalu Muncul) -->
+                                <!-- Navigasi Mobile -->
                                 <button onclick="openMobileNav()" class="md:hidden glass-panel w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center text-slate-700 dark:text-slate-200 border-slate-300 dark:border-white/10 active:scale-95 transition-transform">
                                     <i class="ph ph-squares-four text-xl"></i>
                                 </button>
@@ -234,17 +233,21 @@
 
                     <!-- AREA KONTEN SOAL -->
                     <div id="quiz-content-area" class="flex-1 overflow-y-auto px-4 md:px-8 pb-6 pt-2">
-                        <div id="question-text" class="q-text-dynamic font-semibold mb-6 text-slate-800 dark:text-slate-100">Memuat pertanyaan...</div>
+                        <div class="flex items-start justify-between gap-4 mb-6">
+                            <div id="question-text" class="q-text-dynamic font-semibold text-slate-800 dark:text-slate-100 flex-1">Memuat pertanyaan...</div>
+                            <button onclick="readQuestionText()" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-teal-500 flex items-center justify-center flex-shrink-0 transition-colors shadow-sm" title="Bacakan Soal">
+                                <i class="ph-fill ph-speaker-high"></i>
+                            </button>
+                        </div>
+
                         <div id="options-container" class="flex flex-col gap-3 pb-2"></div>
                         
-                        <!-- KOTAK PENJELASAN (Hanya muncul di Mode Review) -->
                         <div id="explanation-box" class="hidden mt-6 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-5 fade-in shadow-inner">
                             <h4 class="text-teal-600 dark:text-teal-400 font-bold mb-2 flex items-center gap-2 uppercase tracking-wide text-sm"><i class="ph-fill ph-lightbulb"></i> Penjelasan Materi:</h4>
                             <p id="explanation-text" class="text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-medium"></p>
                         </div>
                     </div>
 
-                    <!-- KONTROL BAWAH -->
                     <div class="flex justify-between items-center p-3 md:p-6 border-t border-slate-200 dark:border-white/10 flex-shrink-0 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md z-10">
                         <button onclick="prevQuestion()" id="btn-prev" class="px-3 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold text-slate-600 dark:text-slate-300 bg-slate-200 hover:bg-slate-300 dark:bg-white/5 dark:hover:bg-white/10 transition-colors flex items-center gap-1 md:gap-2 text-sm md:text-base">
                             <i class="ph ph-caret-left text-lg"></i> <span class="hidden sm:inline">Sebelumnya</span>
@@ -269,39 +272,42 @@
                         <div class="grid grid-cols-5 gap-3 content-start" id="question-grid-desktop"></div>
                     </div>
                     <div class="p-5 pt-4 border-t border-slate-200 dark:border-white/10 flex-shrink-0 bg-slate-50/50 dark:bg-slate-900/50" id="legend-desktop">
-                        <!-- Legend diisi dinamis oleh JS -->
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- SCREEN 3: RESULT -->
-        <div id="screen-result" class="w-full max-w-2xl fade-in hidden text-center px-4 mt-8">
+        <div id="screen-result" class="w-full max-w-2xl fade-in hidden text-center px-4 mt-8 relative z-10">
             <div class="glass-panel p-8 md:p-12 rounded-3xl relative overflow-hidden">
                 <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-teal-500/20 rounded-full blur-3xl -z-10"></div>
                 <i class="ph-fill ph-check-circle text-6xl md:text-7xl text-emerald-500 dark:text-emerald-400 mb-4 md:mb-6 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]"></i>
                 <h2 class="text-3xl md:text-4xl mb-2 text-slate-800 dark:text-white cinematic-title">Kuis Selesai!</h2>
                 <p class="text-slate-600 dark:text-slate-400 mb-6 text-sm md:text-base font-medium" id="result-subject-name">Mata Pelajaran</p>
                 
-                <div class="bg-slate-100 dark:bg-slate-900/50 rounded-2xl p-6 md:p-8 mb-6 inline-block border border-slate-200 dark:border-white/10 w-full max-w-xs">
+                <div class="bg-slate-100 dark:bg-slate-900/50 rounded-2xl p-6 md:p-8 mb-4 inline-block border border-slate-200 dark:border-white/10 w-full max-w-xs">
                     <p class="text-slate-500 dark:text-slate-400 text-xs md:text-sm font-semibold uppercase tracking-widest mb-2">Skor Akhir Anda</p>
                     <div class="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-600 via-teal-500 to-emerald-400 dark:from-blue-400 dark:via-teal-300 dark:to-emerald-300 cinematic-title" id="final-score">0</div>
                 </div>
 
-                <!-- Tombol Aksi Hasil -->
+                <!-- Analisis Waktu -->
+                <div class="mb-6 text-sm text-slate-500 dark:text-slate-400 font-medium bg-white/50 dark:bg-black/20 py-2 px-4 rounded-lg inline-block border border-slate-200 dark:border-white/5">
+                    <i class="ph-fill ph-clock text-teal-500"></i> Rata-rata waktu: <span id="time-analysis" class="font-bold text-slate-700 dark:text-white">0 detik/soal</span>
+                </div>
+
                 <div class="flex flex-col sm:flex-row justify-center gap-3 w-full">
-                    <button onclick="startReview()" class="flex-1 py-3.5 md:py-4 rounded-xl font-bold text-teal-900 bg-teal-300 hover:bg-teal-400 transition-colors shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2">
-                        <i class="ph-bold ph-book-open"></i> Lihat Pembahasan
+                    <button onclick="startReview()" class="flex-1 py-3.5 md:py-4 rounded-xl font-bold text-teal-950 bg-teal-400 hover:bg-teal-500 transition-colors shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-book-open text-lg"></i> Lihat Pembahasan
                     </button>
                     <button onclick="backToMenu()" class="flex-1 py-3.5 md:py-4 rounded-xl font-bold text-white bg-slate-700 hover:bg-slate-600 transition-colors flex items-center justify-center gap-2 shadow-lg">
-                        <i class="ph-bold ph-house"></i> Menu Utama
+                        <i class="ph-bold ph-house text-lg"></i> Menu Utama
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL MOBILE NAVIGASI SOAL -->
+    <!-- MODAL MOBILE NAVIGASI -->
     <div id="mobile-nav-modal" class="fixed inset-0 z-[60] flex items-end justify-center opacity-0 pointer-events-none transition-opacity duration-300 md:hidden">
         <div class="absolute inset-0 modal-overlay" onclick="closeMobileNav()"></div>
         <div class="glass-panel w-full h-[75vh] max-h-[85vh] rounded-t-3xl relative z-10 transform translate-y-full transition-transform duration-300 flex flex-col shadow-[0_-10px_40px_rgba(0,0,0,0.3)]" id="mobile-nav-content">
@@ -315,7 +321,6 @@
                 <div class="grid grid-cols-5 sm:grid-cols-7 gap-3 content-start" id="question-grid-mobile"></div>
             </div>
             <div class="p-5 border-t border-slate-200 dark:border-white/10 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md rounded-t-none flex justify-around flex-shrink-0" id="legend-mobile">
-                <!-- Legend dinamis -->
             </div>
         </div>
     </div>
@@ -341,6 +346,23 @@
                 <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title"><i class="ph-fill ph-gear text-teal-500"></i> Pengaturan</h3>
                 <button onclick="closeSettings()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white"><i class="ph ph-x text-2xl"></i></button>
             </div>
+            
+            <div class="mb-4">
+                <label class="block text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">Volume Musik</label>
+                <div class="flex items-center gap-3">
+                    <i class="ph-fill ph-music-notes text-slate-400 text-lg"></i>
+                    <input type="range" id="music-volume" min="0" max="1" step="0.05" value="0.5" class="flex-1 h-1" oninput="updateMusicVolume(this.value)">
+                </div>
+            </div>
+            
+            <div class="mb-6 pb-6 border-b border-slate-200 dark:border-white/10">
+                <label class="block text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">Volume Efek Suara (SFX)</label>
+                <div class="flex items-center gap-3">
+                    <i class="ph-fill ph-speaker-high text-slate-400 text-lg"></i>
+                    <input type="range" id="sfx-volume" min="0" max="1" step="0.05" value="0.5" class="flex-1 h-1" oninput="updateSfxVolume(this.value)">
+                </div>
+            </div>
+
             <div class="mb-2">
                 <label class="block text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 mb-3">Ukuran Teks Soal</label>
                 <div class="flex gap-2 bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-xl border border-slate-200 dark:border-white/5">
@@ -352,87 +374,151 @@
         </div>
     </div>
 
+    <!-- TAG AUDIO NATIVE -->
     <audio id="audio-player"></audio>
 
     <script>
-        // --- 🔊 SISTEM SOUND EFFECTS ---
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        let audioCtx;
+        // --- SAFE STORAGE UTILITY (Anti Error di Browser Ketat) ---
+        function getStorage(key, defaultVal) {
+            try { return localStorage.getItem(key) || defaultVal; } 
+            catch(e) { return defaultVal; }
+        }
+        function setStorage(key, val) {
+            try { localStorage.setItem(key, val); } 
+            catch(e) {}
+        }
 
-        function initAudioCtx() {
-            if (!audioCtx) audioCtx = new AudioContext();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
+        // --- SAFE TTS UTILITY (Mencegah Crash pada Mobile Webview) ---
+        function stopTTS() {
+            try { if ('speechSynthesis' in window && window.speechSynthesis) window.speechSynthesis.cancel(); } 
+            catch(e) { console.warn("TTS Error", e); }
+        }
+
+        // --- VARIABEL GLOBAL ---
+        let globalSfxVolume = 0.5;
+        let timeStart = 0;
+        let timeEnd = 0;
+
+        // --- 🔊 SISTEM SOUND EFFECTS SAFE GUARD (Anti Error Web Audio API) ---
+        let audioCtx;
+        function getAudioCtx() {
+            try {
+                if(typeof window === 'undefined') return null;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if(!AudioContext) return null;
+                if(!audioCtx) audioCtx = new AudioContext();
+                if(audioCtx.state === 'suspended') audioCtx.resume();
+                return audioCtx;
+            } catch(e) { return null; }
         }
 
         function playTingSound() {
-            initAudioCtx();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(1200, audioCtx.currentTime); 
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-            osc.start(audioCtx.currentTime);
-            osc.stop(audioCtx.currentTime + 0.3);
+            if(globalSfxVolume <= 0) return;
+            const ctx = getAudioCtx(); if(!ctx) return;
+            try {
+                const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'sine'; osc.frequency.setValueAtTime(1200, ctx.currentTime); 
+                gain.gain.setValueAtTime(0.6 * globalSfxVolume, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+                osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.3);
+            } catch(e) {}
         }
 
         function playPopSound() {
-            initAudioCtx();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(600, audioCtx.currentTime); 
-            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1); 
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            osc.start(audioCtx.currentTime);
-            osc.stop(audioCtx.currentTime + 0.1);
+            if(globalSfxVolume <= 0) return;
+            const ctx = getAudioCtx(); if(!ctx) return;
+            try {
+                const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'sine'; osc.frequency.setValueAtTime(600, ctx.currentTime); 
+                osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1); 
+                gain.gain.setValueAtTime(0.6 * globalSfxVolume, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+                osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.1);
+            } catch(e) {}
+        }
+
+        function playTone(freq, startTimeOffset, duration, type='sine') {
+            const ctx = getAudioCtx(); if(!ctx) return;
+            try {
+                const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = type; osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0, ctx.currentTime + startTimeOffset);
+                gain.gain.linearRampToValueAtTime(0.4 * globalSfxVolume, ctx.currentTime + startTimeOffset + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startTimeOffset + duration);
+                osc.start(ctx.currentTime + startTimeOffset);
+                osc.stop(ctx.currentTime + startTimeOffset + duration);
+            } catch(e) {}
         }
 
         function playStartSound() {
-            initAudioCtx();
+            if(globalSfxVolume <= 0) return;
             playTone(880, 0, 0.15, 'triangle'); 
             playTone(587.33, 0.15, 0.3, 'sine'); 
         }
 
         function playExitSound() {
-            initAudioCtx();
+            if(globalSfxVolume <= 0) return;
             playTone(587.33, 0, 0.15, 'sine'); 
             playTone(880, 0.15, 0.3, 'triangle'); 
         }
 
-        function playTone(freq, startTimeOffset, duration, type='sine') {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = type; osc.frequency.value = freq;
-            gain.gain.setValueAtTime(0, audioCtx.currentTime + startTimeOffset);
-            gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + startTimeOffset + 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + startTimeOffset + duration);
-            osc.start(audioCtx.currentTime + startTimeOffset);
-            osc.stop(audioCtx.currentTime + startTimeOffset + duration);
+        function playFanfare() {
+            if(globalSfxVolume <= 0) return;
+            const notes = [523.25, 659.25, 783.99, 1046.50]; 
+            notes.forEach((freq, i) => { playTone(freq, i * 0.15, 0.4, 'square'); });
         }
 
         document.addEventListener('click', (e) => {
-            initAudioCtx(); 
+            getAudioCtx(); 
             const isButton = e.target.closest('button');
             const isRange = e.target.closest('input[type="range"]');
             const isCard = e.target.closest('.subject-card');
             const isOption = e.target.closest('.option-btn');
             const isIsland = e.target.closest('#dynamic-island');
             
-            if (isCard) {
-                playStartSound();
-            } else if (isOption && !isReviewMode) {
-                playTingSound();
-            } else if (isButton || isIsland || isRange) {
-                if (!e.target.closest('button[onclick="backToMenu()"]')) {
+            if (isCard) { playStartSound(); } 
+            else if (isOption && !isReviewMode) { playTingSound(); } 
+            else if (isButton || isIsland) {
+                if (!e.target.closest('button[onclick="backToMenu()"]') && !e.target.closest('button[onclick="readQuestionText()"]')) {
                     playPopSound();
                 }
             }
         });
+
+        // --- 🗣️ SAFE TEXT TO SPEECH ---
+        function readQuestionText() {
+            playPopSound();
+            try {
+                if (!('speechSynthesis' in window) || !window.speechSynthesis) return;
+                stopTTS(); 
+                const text = document.getElementById('question-text').innerText;
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.9; 
+                window.speechSynthesis.speak(utterance);
+            } catch(e) { console.warn("TTS Error", e); }
+        }
+
+        // --- 🎉 CONFETTI SYSTEM ---
+        function shootConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.classList.remove('hidden');
+            container.innerHTML = ''; 
+            const colors = ['#f87171', '#34d399', '#60a5fa', '#fbbf24', '#c084fc'];
+            for(let i=0; i<100; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                conf.style.animationDelay = (Math.random() * 1) + 's';
+                container.appendChild(conf);
+            }
+            setTimeout(() => { container.classList.add('hidden'); container.innerHTML = ''; }, 4000);
+        }
 
         // --- 🎵 MUSIC PLAYER ---
         const playlist = [
@@ -442,12 +528,8 @@
             { title: 'Lofi Melody', artist: 'Pulsebox', src: './Lofi Melody - Pulsebox.mp3' }
         ];
         
-        let currentTrackIndex = 0;
-        let isPlaying = false;
-        let isPlayerExpanded = false;
-
-        const audioEl = document.getElementById('audio-player');
-        audioEl.loop = false; 
+        let currentTrackIndex = 0; let isPlaying = false; let isPlayerExpanded = false;
+        const audioEl = document.getElementById('audio-player'); audioEl.loop = false; 
 
         const playIcon = document.getElementById('play-icon');
         const musicIconContainer = document.getElementById('music-icon-container');
@@ -474,8 +556,7 @@
 
         function formatTime(seconds) {
             if (isNaN(seconds)) return "0:00";
-            const min = Math.floor(seconds / 60);
-            const sec = Math.floor(seconds % 60);
+            const min = Math.floor(seconds / 60); const sec = Math.floor(seconds % 60);
             return `${min}:${sec.toString().padStart(2, '0')}`;
         }
 
@@ -488,53 +569,51 @@
                 timeCurrent.innerText = formatTime(audioEl.currentTime);
             });
             audioEl.addEventListener('ended', nextTrack);
-
-            progressBar.addEventListener('input', (e) => {
-                audioEl.currentTime = (audioEl.duration * (e.target.value / 100));
-            });
+            progressBar.addEventListener('input', (e) => { audioEl.currentTime = (audioEl.duration * (e.target.value / 100)); });
         }
 
         function loadTrack(index) {
-            currentTrackIndex = index;
-            const track = playlist[index];
-            audioEl.src = track.src;
-            document.getElementById('track-title').innerText = track.title;
-            document.getElementById('track-artist').innerText = track.artist;
+            currentTrackIndex = index; const track = playlist[index]; audioEl.src = track.src;
+            document.getElementById('track-title').innerText = track.title; document.getElementById('track-artist').innerText = track.artist;
             progressBar.value = 0; timeCurrent.innerText = "0:00"; timeTotal.innerText = "0:00";
-            if (isPlaying) audioEl.play();
+            if (isPlaying) { const p = audioEl.play(); if(p !== undefined) p.catch(e=>{}); }
         }
 
         function togglePlay() {
             if (isPlaying) {
-                audioEl.pause(); isPlaying = false;
-                playIcon.classList.replace('ph-pause', 'ph-play');
+                audioEl.pause(); isPlaying = false; playIcon.classList.replace('ph-pause', 'ph-play');
                 musicIconContainer.className = "w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300";
                 musicStateIcon.className = "ph-fill ph-speaker-slash text-xl";
             } else {
-                audioEl.play().catch(e => console.log("Gagal memutar:", e)); isPlaying = true;
+                const p = audioEl.play(); if(p !== undefined) p.catch(e=>{}); isPlaying = true;
                 playIcon.classList.replace('ph-play', 'ph-pause');
                 musicIconContainer.className = "w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300";
                 musicStateIcon.className = "ph-fill ph-speaker-high text-xl";
             }
         }
 
-        function nextTrack() {
-            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-            loadTrack(currentTrackIndex);
-            if (!isPlaying) togglePlay();
-        }
+        function nextTrack() { currentTrackIndex = (currentTrackIndex + 1) % playlist.length; loadTrack(currentTrackIndex); if (!isPlaying) togglePlay(); }
+        function prevTrack() { currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length; loadTrack(currentTrackIndex); if (!isPlaying) togglePlay(); }
 
-        function prevTrack() {
-            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
-            loadTrack(currentTrackIndex);
-            if (!isPlaying) togglePlay();
-        }
+        function updateMusicVolume(val) { audioEl.volume = val; setStorage('musicVol', val); }
+        function updateSfxVolume(val) { globalSfxVolume = parseFloat(val); setStorage('sfxVol', val); playPopSound(); }
 
-        // --- 📚 DATA KUIS PJOK ---
+        // --- 📚 DATA KUIS ---
         const subjects = [
             { id: 'pjok', name: 'PJOK', icon: 'ph-person-simple-run', color: 'text-emerald-500 dark:text-emerald-400' }
         ];
 
+        // FUNGSI ACAK ARRAY
+        function shuffleArray(array) {
+            let shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // 40 SOAL PJOK LENGKAP
         const quizData = {
             'pjok': [
                 {
@@ -789,9 +868,8 @@
             initTheme(); initSettings(); initMusicPlayer(); renderHome(); 
         };
 
-        // --- THEME & SETTINGS ---
         function initTheme() {
-            const saved = localStorage.getItem('theme'); const html = document.documentElement; const icon = document.getElementById('theme-icon');
+            const saved = getStorage('theme', 'dark'); const html = document.documentElement; const icon = document.getElementById('theme-icon');
             if (saved === 'light') { html.classList.remove('dark'); icon.classList.replace('ph-moon', 'ph-sun'); icon.classList.replace('text-teal-400', 'text-amber-500'); } 
             else { html.classList.add('dark'); icon.classList.replace('ph-sun', 'ph-moon'); icon.classList.replace('text-amber-500', 'text-teal-400'); }
         }
@@ -800,12 +878,21 @@
             const html = document.documentElement; const icon = document.getElementById('theme-icon');
             icon.classList.remove('rotate-spin'); void icon.offsetWidth; icon.classList.add('rotate-spin');
             setTimeout(() => {
-                if (html.classList.contains('dark')) { html.classList.remove('dark'); localStorage.setItem('theme', 'light'); icon.classList.replace('ph-moon', 'ph-sun'); icon.classList.replace('text-teal-400', 'text-amber-500'); } 
-                else { html.classList.add('dark'); localStorage.setItem('theme', 'dark'); icon.classList.replace('ph-sun', 'ph-moon'); icon.classList.replace('text-amber-500', 'text-teal-400'); }
+                if (html.classList.contains('dark')) { html.classList.remove('dark'); setStorage('theme', 'light'); icon.classList.replace('ph-moon', 'ph-sun'); icon.classList.replace('text-teal-400', 'text-amber-500'); } 
+                else { html.classList.add('dark'); setStorage('theme', 'dark'); icon.classList.replace('ph-sun', 'ph-moon'); icon.classList.replace('text-amber-500', 'text-teal-400'); }
             }, 300);
         }
 
-        function initSettings() { setTextSize(localStorage.getItem('textSize') || 'md', false); }
+        function initSettings() { 
+            setTextSize(getStorage('textSize', 'md'), false); 
+            const savedMusicVol = getStorage('musicVol', null);
+            if(savedMusicVol !== null) { document.getElementById('music-volume').value = savedMusicVol; audioEl.volume = parseFloat(savedMusicVol); } 
+            else { audioEl.volume = 0.5; }
+
+            const savedSfxVol = getStorage('sfxVol', null);
+            if(savedSfxVol !== null) { document.getElementById('sfx-volume').value = savedSfxVol; globalSfxVolume = parseFloat(savedSfxVol); }
+        }
+        
         function openSettings() { document.getElementById('settings-modal').classList.remove('opacity-0', 'pointer-events-none'); document.getElementById('settings-content').classList.remove('scale-95'); }
         function closeSettings() { document.getElementById('settings-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('settings-content').classList.add('scale-95'); }
 
@@ -815,16 +902,25 @@
                 const btn = document.getElementById(`btn-size-${s}`);
                 if (btn) btn.className = `flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold transition-all ${s === size ? 'bg-white dark:bg-slate-700 shadow text-teal-600 dark:text-white' : 'text-slate-500 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'}`;
             });
-            if (save) localStorage.setItem('textSize', size);
+            if (save) setStorage('textSize', size);
         }
 
-        // --- KUIS & REVIEW UTAMA ---
         function renderHome() {
             const grid = document.getElementById('subject-grid'); grid.innerHTML = '';
             subjects.forEach(sub => {
+                const hs = getStorage('hs_' + sub.id, 0);
                 const card = document.createElement('div'); card.className = 'glass-panel p-5 md:p-6 rounded-2xl cursor-pointer subject-card flex flex-col items-center text-center max-w-sm mx-auto w-full';
                 card.onclick = () => startQuiz(sub.id);
-                card.innerHTML = `<div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center mb-3 md:mb-4 border border-slate-200 dark:border-slate-700/50 shadow-sm"><i class="ph ${sub.icon} text-3xl md:text-4xl ${sub.color}"></i></div><h3 class="font-bold text-base md:text-lg text-slate-800 dark:text-white mb-1 cinematic-title">${sub.name}</h3><p class="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400">${quizData[sub.id].length} Soal • 90 Menit</p>`;
+                card.innerHTML = `
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center mb-3 md:mb-4 border border-slate-200 dark:border-slate-700/50 shadow-sm relative">
+                        <i class="ph ${sub.icon} text-3xl md:text-4xl ${sub.color}"></i>
+                        <div class="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm border border-yellow-200">
+                            ⭐ ${hs}
+                        </div>
+                    </div>
+                    <h3 class="font-bold text-base md:text-lg text-slate-800 dark:text-white mb-1 cinematic-title leading-tight">${sub.name}</h3>
+                    <p class="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400">${quizData[sub.id].length} Soal • 90 Menit</p>
+                `;
                 grid.appendChild(card);
             });
         }
@@ -832,10 +928,28 @@
         function startQuiz(subjectId) {
             isReviewMode = false;
             currentSubject = subjects.find(s => s.id === subjectId); 
-            currentQuestions = quizData[subjectId]; 
-            currentIndex = 0; userAnswers = {}; timeLeft = 90 * 60; 
             
-            document.getElementById('quiz-subject-title').innerHTML = currentSubject.name; 
+            let rawQuestions = quizData[subjectId];
+            currentQuestions = shuffleArray(rawQuestions).map(q => {
+                let newQ = JSON.parse(JSON.stringify(q)); 
+                if (newQ.options.length > 2) {
+                    let optsWithIndex = newQ.options.map((text, idx) => ({text, idx}));
+                    optsWithIndex = shuffleArray(optsWithIndex);
+                    newQ.options = optsWithIndex.map(o => o.text);
+                    newQ.answer = optsWithIndex.findIndex(o => o.idx === q.answer);
+                }
+                return newQ;
+            });
+
+            currentIndex = 0; userAnswers = {}; timeLeft = 90 * 60; 
+            timeStart = Date.now(); 
+            stopTTS(); 
+            
+            const parts = currentSubject.name.split(' ');
+            if(parts.length > 2) { document.getElementById('quiz-subject-title').innerHTML = `${parts.slice(0, 2).join(' ')}<br>${parts.slice(2).join(' ')}`; } 
+            else if(parts.length == 2) { document.getElementById('quiz-subject-title').innerHTML = `${parts[0]}<br>${parts[1]}`; } 
+            else { document.getElementById('quiz-subject-title').innerHTML = currentSubject.name; }
+            
             document.getElementById('total-question-num').innerText = currentQuestions.length;
             
             document.getElementById('timer-container').classList.remove('hidden');
@@ -855,6 +969,7 @@
         function startReview() {
             isReviewMode = true;
             currentIndex = 0;
+            stopTTS();
             
             document.getElementById('timer-container').classList.add('hidden');
             document.getElementById('timer-container').classList.remove('flex');
@@ -866,9 +981,7 @@
             centerBtn.className = "px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-white bg-slate-700 hover:bg-slate-600 transition-colors text-sm md:text-base shadow-sm";
             centerBtn.onclick = () => switchScreen('screen-result');
 
-            switchScreen('screen-quiz'); 
-            renderQuestion(); 
-            renderGrid();
+            switchScreen('screen-quiz'); renderQuestion(); renderGrid();
         }
 
         function renderQuestion() {
@@ -887,7 +1000,7 @@
                 const btn = document.createElement('button');
                 
                 let btnClass = `option-btn w-full text-left p-3.5 md:p-4 rounded-xl border flex items-start gap-3 md:gap-4 transition-all duration-300 `;
-                let badgeClass = `w-7 h-7 md:w-8 md:h-8 rounded-lg shadow-sm flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0 border `;
+                let badgeClass = `w-7 h-7 md:w-8 md:h-8 rounded-lg shadow-sm flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0 border cinematic-title `; 
 
                 let badgeText = isTF ? (index === 0 ? 'B' : 'S') : abcd[index];
 
@@ -939,6 +1052,7 @@
         }
 
         function nextQuestion() { 
+            stopTTS();
             if (currentIndex < currentQuestions.length - 1) { 
                 currentIndex++; 
                 const area = document.getElementById('quiz-content-area');
@@ -947,6 +1061,7 @@
             } 
         }
         function prevQuestion() { 
+            stopTTS();
             if (currentIndex > 0) { 
                 currentIndex--; 
                 const area = document.getElementById('quiz-content-area');
@@ -955,6 +1070,7 @@
             } 
         }
         function jumpToQuestion(index) { 
+            stopTTS();
             currentIndex = index; 
             const area = document.getElementById('quiz-content-area');
             area.style.opacity = '0';
@@ -990,7 +1106,7 @@
                     const isCorrect = userAnswers[i] === q.answer;
                     const btn = document.createElement('button');
                     
-                    let classes = `grid-number w-full aspect-square rounded-lg font-bold text-xs md:text-sm flex items-center justify-center transition-all border `;
+                    let classes = `grid-number w-full aspect-square rounded-lg cinematic-title text-base flex items-center justify-center transition-all border `;
                     
                     if (isReviewMode) {
                         if (isAnswered) classes += isCorrect ? 'bg-emerald-400 text-emerald-950 border-emerald-500 shadow-sm' : 'bg-red-400 text-red-950 border-red-500 shadow-sm';
@@ -1019,10 +1135,19 @@
         function hideConfirmModal() { document.getElementById('confirm-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('modal-content').classList.add('scale-95'); }
 
         function finishQuiz() {
+            timeEnd = Date.now();
+            stopTTS();
             hideConfirmModal(); closeMobileNav(); clearInterval(timerInterval);
             let correct = 0; currentQuestions.forEach((q, i) => { if (userAnswers[i] === q.answer) correct++; });
             const finalScore = Math.round((correct / currentQuestions.length) * 100);
             
+            const oldHs = parseInt(getStorage('hs_' + currentSubject.id, 0));
+            if (finalScore > oldHs) setStorage('hs_' + currentSubject.id, finalScore);
+
+            const totalSeconds = Math.floor((timeEnd - timeStart) / 1000);
+            const avgSeconds = (totalSeconds / currentQuestions.length).toFixed(1);
+            document.getElementById('time-analysis').innerText = `${avgSeconds} detik/soal`;
+
             document.getElementById('result-subject-name').innerText = currentSubject.name; 
             
             const scoreEl = document.getElementById('final-score');
@@ -1030,7 +1155,11 @@
             const step = finalScore / 30; 
             const counterInterval = setInterval(() => {
                 currentDisplay += step;
-                if(currentDisplay >= finalScore) { currentDisplay = finalScore; clearInterval(counterInterval); }
+                if(currentDisplay >= finalScore) { 
+                    currentDisplay = finalScore; 
+                    clearInterval(counterInterval); 
+                    if(finalScore >= 70) { playFanfare(); shootConfetti(); }
+                }
                 scoreEl.innerText = Math.round(currentDisplay);
             }, 30);
 
@@ -1046,10 +1175,12 @@
         }
         
         function backToMenu() { 
+            stopTTS();
             playExitSound(); 
             clearInterval(timerInterval); 
             closeMobileNav(); 
             switchScreen('screen-home'); 
+            renderHome(); 
         }
     </script>
 </body>
