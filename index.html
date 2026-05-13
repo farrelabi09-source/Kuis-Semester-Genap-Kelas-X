@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
@@ -104,8 +105,9 @@
             height: 48px; overflow: hidden; display: flex; align-items: center; white-space: nowrap;
         }
         .di-collapsed { width: 48px; border-radius: 24px; cursor: pointer; }
-        .di-expanded { width: clamp(230px, calc(100vw - 130px), 380px); border-radius: 24px; cursor: default; }
-        .di-content-wrapper { width: clamp(230px, calc(100vw - 130px), 380px); transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
+        /* Ruang aman lebih besar (170px) agar tidak menabrak 3 ikon di kanan pada layar HP */
+        .di-expanded { width: clamp(200px, calc(100vw - 170px), 380px); border-radius: 24px; cursor: default; }
+        .di-content-wrapper { width: clamp(200px, calc(100vw - 170px), 380px); transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
 
         .cinematic-title { font-family: 'Archivo Black', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.03em; }
 
@@ -130,6 +132,7 @@
 
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[100] overflow-hidden hidden"></div>
 
+    <!-- DYNAMIC ISLAND MUSIC PLAYER WIDGET -->
     <div id="dynamic-island" class="fixed top-3 left-3 md:top-6 md:left-8 z-[70] bg-white/80 dark:bg-slate-800/90 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dynamic-island di-collapsed" onclick="togglePlayerState(event)">
         <div id="music-icon-container" class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300">
             <i id="music-state-icon" class="ph-fill ph-speaker-slash text-xl"></i>
@@ -162,11 +165,16 @@
         </div>
     </div>
 
-    <div class="fixed top-3 right-3 md:top-6 md:right-8 z-50 flex gap-2 md:gap-3">
-        <button onclick="openSettings()" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
-            <i class="ph-fill ph-gear text-xl md:text-2xl text-slate-600 dark:text-slate-300 hover:rotate-90 transition-transform duration-500"></i>
+    <!-- TOP RIGHT CONTROLS -->
+    <div class="fixed top-3 right-3 md:top-6 md:right-8 z-50 flex gap-1.5 md:gap-3">
+        <!-- Tombol Announcement -->
+        <button onclick="openAnnouncement()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg text-blue-500 dark:text-blue-400 border-blue-200 dark:border-blue-900/50">
+            <i class="ph-fill ph-megaphone text-xl md:text-2xl"></i>
         </button>
-        <button onclick="toggleTheme()" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
+        <button onclick="openSettings()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
+            <i class="ph-fill ph-gear text-xl md:text-2xl text-slate-600 dark:text-slate-300"></i>
+        </button>
+        <button onclick="toggleTheme()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
             <i id="theme-icon" class="ph-fill ph-moon text-xl md:text-2xl text-teal-500 dark:text-teal-400"></i>
         </button>
     </div>
@@ -176,13 +184,12 @@
         
         <!-- SCREEN 1: HOME -->
         <div id="screen-home" class="w-full max-w-5xl fade-in block px-2 md:px-0">
-            <div class="text-center mb-8 md:mb-10 mt-12 md:mt-4">
+            <div class="text-center mb-8 md:mb-10 mt-16 md:mt-4">
                 <h1 class="text-3xl md:text-5xl mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-teal-400 to-emerald-400 dark:from-blue-400 dark:via-teal-300 dark:to-emerald-300 cinematic-title" style="line-height: 1.3;">
                     Kuis Semester Genap<br>Kelas X
                 </h1>
                 <p class="text-slate-600 dark:text-slate-400 text-sm md:text-lg mt-2">Pilih mata pelajaran untuk memulai ujian.</p>
             </div>
-            <!-- Hanya Mapel PJOK -->
             <div class="flex justify-center w-full" id="subject-grid"></div>
         </div>
 
@@ -374,11 +381,40 @@
         </div>
     </div>
 
+    <!-- MODAL ANNOUNCEMENT / PATCH NOTES -->
+    <div id="announcement-modal" class="fixed inset-0 z-[80] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="absolute inset-0 modal-overlay" onclick="closeAnnouncement()"></div>
+        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="announcement-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title">
+                    <i class="ph-fill ph-megaphone text-blue-500"></i> Pengumuman
+                </h3>
+                <button onclick="closeAnnouncement()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white">
+                    <i class="ph ph-x text-2xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
+                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50">
+                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.26 - Ultimate Update 🎉</h4>
+                    <ul class="list-disc pl-4 text-xs md:text-sm text-slate-600 dark:text-slate-300 space-y-1.5 font-medium">
+                        <li><strong>UI Baru:</strong> Skor "Sebelumnya" kini hanya muncul dengan rapi setelah kamu menyelesaikan kuis.</li>
+                        <li><strong>Tombol Pengumuman:</strong> Tombol Megaphone ditambahkan agar kamu tak ketinggalan info fitur terbaru.</li>
+                        <li><strong>Mode Pembahasan:</strong> Fitur review interaktif lengkap dengan penjelasan materi mendalam.</li>
+                        <li><strong>Baca Soal Cerdas (TTS):</strong> AI akan membacakan teks soal secara otomatis jika tombol ditekan.</li>
+                        <li><strong>Smart Shuffle:</strong> Sistem pengacakan soal dan opsi berganda anti-tebak.</li>
+                        <li><strong>SFX & Confetti:</strong> Hujan kertas dan terompet kemenangan menantimu saat mendapat nilai tinggi!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- TAG AUDIO NATIVE -->
     <audio id="audio-player"></audio>
 
     <script>
-        // --- SAFE STORAGE UTILITY (Anti Error di Browser Ketat) ---
+        // --- SAFE STORAGE UTILITY ---
         function getStorage(key, defaultVal) {
             try { return localStorage.getItem(key) || defaultVal; } 
             catch(e) { return defaultVal; }
@@ -388,18 +424,17 @@
             catch(e) {}
         }
 
-        // --- SAFE TTS UTILITY (Mencegah Crash pada Mobile Webview) ---
+        // --- SAFE TTS UTILITY ---
         function stopTTS() {
             try { if ('speechSynthesis' in window && window.speechSynthesis) window.speechSynthesis.cancel(); } 
             catch(e) { console.warn("TTS Error", e); }
         }
 
-        // --- VARIABEL GLOBAL ---
         let globalSfxVolume = 0.5;
         let timeStart = 0;
         let timeEnd = 0;
 
-        // --- 🔊 SISTEM SOUND EFFECTS SAFE GUARD (Anti Error Web Audio API) ---
+        // --- 🔊 SISTEM SOUND EFFECTS (WeB Audio API) ---
         let audioCtx;
         function getAudioCtx() {
             try {
@@ -597,6 +632,17 @@
 
         function updateMusicVolume(val) { audioEl.volume = val; setStorage('musicVol', val); }
         function updateSfxVolume(val) { globalSfxVolume = parseFloat(val); setStorage('sfxVol', val); playPopSound(); }
+
+        // --- PENGUMUMAN MODAL ---
+        function openAnnouncement() { 
+            document.getElementById('announcement-modal').classList.remove('opacity-0', 'pointer-events-none'); 
+            document.getElementById('announcement-content').classList.remove('scale-95'); 
+        }
+        function closeAnnouncement() { 
+            document.getElementById('announcement-modal').classList.add('opacity-0', 'pointer-events-none'); 
+            document.getElementById('announcement-content').classList.add('scale-95'); 
+        }
+
 
         // --- 📚 DATA KUIS ---
         const subjects = [
@@ -908,15 +954,24 @@
         function renderHome() {
             const grid = document.getElementById('subject-grid'); grid.innerHTML = '';
             subjects.forEach(sub => {
-                const hs = getStorage('hs_' + sub.id, 0);
-                const card = document.createElement('div'); card.className = 'glass-panel p-5 md:p-6 rounded-2xl cursor-pointer subject-card flex flex-col items-center text-center max-w-sm mx-auto w-full';
+                const hs = getStorage('hs_' + sub.id, null); // Akan null jika belum pernah dimainkan
+                
+                // Hanya munculkan label nilai kalau sudah pernah dimainkan
+                let badgeHTML = '';
+                if(hs !== null) {
+                    badgeHTML = `
+                    <div class="absolute top-3 right-3 bg-teal-100 dark:bg-teal-900/50 border border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 text-[10px] md:text-xs font-bold px-2.5 py-1 rounded-full shadow-sm cinematic-title">
+                        Sebelumnya: ${hs}
+                    </div>`;
+                }
+
+                const card = document.createElement('div'); 
+                card.className = 'glass-panel p-5 md:p-6 rounded-2xl cursor-pointer subject-card flex flex-col items-center text-center max-w-sm mx-auto w-full relative';
                 card.onclick = () => startQuiz(sub.id);
                 card.innerHTML = `
-                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center mb-3 md:mb-4 border border-slate-200 dark:border-slate-700/50 shadow-sm relative">
+                    ${badgeHTML}
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center mb-3 md:mb-4 border border-slate-200 dark:border-slate-700/50 shadow-sm mt-3">
                         <i class="ph ${sub.icon} text-3xl md:text-4xl ${sub.color}"></i>
-                        <div class="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm border border-yellow-200">
-                            ⭐ ${hs}
-                        </div>
                     </div>
                     <h3 class="font-bold text-base md:text-lg text-slate-800 dark:text-white mb-1 cinematic-title leading-tight">${sub.name}</h3>
                     <p class="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400">${quizData[sub.id].length} Soal • 90 Menit</p>
@@ -1141,8 +1196,8 @@
             let correct = 0; currentQuestions.forEach((q, i) => { if (userAnswers[i] === q.answer) correct++; });
             const finalScore = Math.round((correct / currentQuestions.length) * 100);
             
-            const oldHs = parseInt(getStorage('hs_' + currentSubject.id, 0));
-            if (finalScore > oldHs) setStorage('hs_' + currentSubject.id, finalScore);
+            // SIMPAN SCORE (Disimpan ke memory sebagai "Sebelumnya")
+            setStorage('hs_' + currentSubject.id, finalScore);
 
             const totalSeconds = Math.floor((timeEnd - timeStart) / 1000);
             const avgSeconds = (totalSeconds / currentQuestions.length).toFixed(1);
@@ -1158,7 +1213,11 @@
                 if(currentDisplay >= finalScore) { 
                     currentDisplay = finalScore; 
                     clearInterval(counterInterval); 
-                    if(finalScore >= 70) { playFanfare(); shootConfetti(); }
+                    
+                    if(finalScore >= 70) {
+                        playFanfare();
+                        shootConfetti();
+                    }
                 }
                 scoreEl.innerText = Math.round(currentDisplay);
             }, 30);
@@ -1180,8 +1239,10 @@
             clearInterval(timerInterval); 
             closeMobileNav(); 
             switchScreen('screen-home'); 
-            renderHome(); 
+            renderHome(); // Refresh layar utama agar skor ter-update
         }
     </script>
 </body>
 </html>
+
+```
