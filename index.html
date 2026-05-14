@@ -206,7 +206,7 @@
 
                         <!-- KONTROL KANAN -->
                         <div class="flex flex-col items-end gap-2 mt-1 relative w-auto">
-                            <!-- Tombol Keluar Panjang -->
+                            <!-- Tombol Keluar -->
                             <button onclick="backToMenu()" class="w-full h-10 md:h-12 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-500 flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm px-3" title="Keluar">
                                 <i class="ph-bold ph-sign-out text-lg md:text-xl"></i>
                                 <span class="font-bold text-xs md:text-sm uppercase tracking-wider">Keluar</span>
@@ -282,7 +282,8 @@
                     <div class="flex-1 overflow-y-auto p-6 pt-5">
                         <div class="grid grid-cols-5 gap-3 content-start" id="question-grid-desktop"></div>
                     </div>
-                    <div class="p-5 pt-4 border-t border-slate-200 dark:border-white/10 flex-shrink-0 bg-slate-50/50 dark:bg-slate-900/50" id="legend-desktop"></div>
+                    <div class="p-5 pt-4 border-t border-slate-200 dark:border-white/10 flex-shrink-0 bg-slate-50/50 dark:bg-slate-900/50" id="legend-desktop">
+                    </div>
                 </div>
             </div>
         </div>
@@ -383,7 +384,7 @@
         </div>
     </div>
 
-    <!-- MODAL ANNOUNCEMENT -->
+    <!-- MODAL ANNOUNCEMENT / PATCH NOTES -->
     <div id="announcement-modal" class="fixed inset-0 z-[80] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="absolute inset-0 modal-overlay" onclick="closeAnnouncement()"></div>
         <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="announcement-content">
@@ -396,10 +397,12 @@
             
             <div class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50">
-                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.31 - Ekspan Mapel Baru 🎉</h4>
+                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.32 - Tambahan Mapel Baru 🎉</h4>
                     <ul class="list-disc pl-4 text-xs md:text-sm text-slate-600 dark:text-slate-300 space-y-1.5 font-medium">
-                        <li><strong>Tambahan Mapel Baru:</strong> Ada Mata Pelajaran Baru yang telah ditambahkan, yaitu Pendidikan Pancasila dan Ekonomi!</li>
-                        <li><strong>Anti Error:</strong> Pastikan di dalam JS mapel JANGAN ADA kata <code>const subjects</code> atau <code>const quizData</code> lagi.</li>
+                        <li><strong>Mata Pelajaran Baru:</strong> Sekarang kamu bisa menguji kemampuanmu di mapel Ekonomi dan Pendidikan Pancasila!</li>
+                        <li><strong>Fitur Baca Soal:</strong> Gunakan ikon speaker di samping soal untuk mendengarkan soal dibacakan oleh sistem.</li>
+                        <li><strong>Mode Pembahasan Interaktif:</strong> Evaluasi jawabanmu setelah kuis selesai dengan penjelasan lengkap.</li>
+                        <li><strong>Efek Spesial:</strong> Jangan lupa raih skor di atas 70 untuk melihat hujan Confetti!</li>
                     </ul>
                 </div>
             </div>
@@ -408,9 +411,8 @@
 
     <audio id="audio-player"></audio>
 
-    <!-- WADAH DATA GLOBAL UNTUK MENCEGAH ERROR "ALREADY DECLARED" -->
+    <!-- WADAH DATA GLOBAL UNTUK MENCEGAH ERROR -->
     <script>
-        // Array dan Object kosong ini akan diisi oleh file-file eksternal (JS)
         const subjects = [];
         const quizData = {};
         window.failedScripts = []; 
@@ -419,7 +421,6 @@
             window.failedScripts.push(scriptName);
         }
 
-        // FUNGSI ACAK ARRAY (Bisa dipanggil oleh semua mapel)
         function shuffleArray(array) {
             let shuffled = [...array];
             for (let i = shuffled.length - 1; i > 0; i--) {
@@ -629,7 +630,6 @@
         window.onload = () => { 
             initTheme(); initSettings(); initMusicPlayer(); 
             
-            // JIKA ADA FILE JS YANG ERROR/HILANG, MUNCULKAN PESAN BANTUAN DI LAYAR
             if (window.failedScripts && window.failedScripts.length > 0) {
                 document.getElementById('subject-grid').innerHTML = `
                 <div class="col-span-full glass-panel p-6 rounded-2xl text-center border-red-500/30 w-full max-w-lg mx-auto">
@@ -643,7 +643,7 @@
                         <b>Solusi:</b><br>
                         1. Pastikan nama file JS <b>persis sama</b> (huruf besar/kecil berpengaruh).<br>
                         2. Pastikan file HTML dan JS berada di dalam <b>folder yang sama persis</b>.<br>
-                        3. Periksa file JS kamu, pastikan <b>TIDAK ADA</b> tulisan <code class="bg-slate-200 dark:bg-slate-700 px-1">const subjects</code> atau <code class="bg-slate-200 dark:bg-slate-700 px-1">const quizData</code> di dalamnya karena itu bikin browser nge-crash.
+                        3. Jika dibuka langsung (file://), pastikan tidak ada <i>typo</i> atau tanda kurung yang hilang di dalam file JS tersebut.
                     </p>
                 </div>`;
             } 
