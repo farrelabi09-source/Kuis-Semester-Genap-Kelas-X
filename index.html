@@ -104,9 +104,8 @@
             height: 48px; overflow: hidden; display: flex; align-items: center; white-space: nowrap;
         }
         .di-collapsed { width: 48px; border-radius: 24px; cursor: pointer; }
-        /* Ruang aman lebih besar (170px) agar tidak menabrak 3 ikon di kanan pada layar HP */
-        .di-expanded { width: clamp(200px, calc(100vw - 170px), 380px); border-radius: 24px; cursor: default; }
-        .di-content-wrapper { width: clamp(200px, calc(100vw - 170px), 380px); transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
+        .di-expanded { width: clamp(200px, calc(100vw - 180px), 380px); border-radius: 24px; cursor: default; }
+        .di-content-wrapper { width: clamp(200px, calc(100vw - 180px), 380px); transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
 
         .cinematic-title { font-family: 'Archivo Black', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.03em; }
 
@@ -122,9 +121,12 @@
 
         /* CONFETTI STYLES */
         .confetti {
-            position: absolute; width: 10px; height: 10px; background-color: #f00; animation: fall linear forwards;
+            position: absolute; width: 10px; height: 10px; animation: fall linear forwards; border-radius: 2px;
         }
-        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+        @keyframes fall { 
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
     </style>
 </head>
 <body class="p-2 md:p-8 flex flex-col items-center justify-center relative overflow-x-hidden pt-20 md:pt-10" data-text-size="md">
@@ -150,6 +152,7 @@
                 </div>
             </div>
 
+            <!-- Kontrol Player -->
             <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0 ml-1.5 md:ml-3" onclick="event.stopPropagation()">
                 <button onclick="prevTrack()" class="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
                     <i class="ph-fill ph-skip-back text-[14px] md:text-[16px]"></i>
@@ -166,7 +169,6 @@
 
     <!-- TOP RIGHT CONTROLS -->
     <div class="fixed top-3 right-3 md:top-6 md:right-8 z-50 flex gap-1.5 md:gap-3">
-        <!-- Tombol Announcement -->
         <button onclick="openAnnouncement()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg text-blue-500 dark:text-blue-400 border-blue-200 dark:border-blue-900/50">
             <i class="ph-fill ph-megaphone text-xl md:text-2xl"></i>
         </button>
@@ -189,7 +191,8 @@
                 </h1>
                 <p class="text-slate-600 dark:text-slate-400 text-sm md:text-lg mt-2">Pilih mata pelajaran untuk memulai ujian.</p>
             </div>
-            <div class="flex justify-center w-full" id="subject-grid"></div>
+            <!-- Grid Mapel Akan Dimunculkan Oleh Script Otomatis -->
+            <div class="flex flex-wrap justify-center gap-4 md:gap-6 w-full" id="subject-grid"></div>
         </div>
 
         <!-- SCREEN 2: QUIZ / REVIEW INTERFACE -->
@@ -201,7 +204,7 @@
                     <div class="flex justify-between items-start p-4 md:p-8 pb-3 md:pb-4 flex-shrink-0 border-b md:border-none border-slate-200/50 dark:border-white/5">
                         <div class="flex flex-col justify-between">
                             <h2 id="quiz-subject-title" class="text-xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 dark:from-blue-400 dark:to-teal-300 cinematic-title mb-1 leading-tight">
-                                PJOK
+                                MAPEL
                             </h2>
                             <div class="text-sm md:text-base font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">
                                 Soal <span id="current-question-num" class="text-slate-800 dark:text-white">1</span> / <span id="total-question-num">40</span>
@@ -217,19 +220,19 @@
                             </button>
                             
                             <div class="flex items-center gap-2 mt-auto relative">
-                                <!-- Timer -->
+                                <!-- Timer: Aktif saat Kuis -->
                                 <div id="timer-container" class="flex glass-panel px-3 h-10 md:h-12 md:px-4 rounded-lg md:rounded-xl items-center gap-1.5 border-teal-500/30 text-teal-500 dark:text-teal-400 font-mono font-bold text-sm md:text-lg shadow-sm">
                                     <i class="ph ph-timer"></i>
                                     <span id="timer-display">90:00</span>
                                 </div>
 
-                                <!-- Badge Pembahasan -->
+                                <!-- Badge Pembahasan: Aktif saat Review Mode (Tumpuk) -->
                                 <div id="review-badge" class="hidden glass-panel h-10 md:h-12 bg-yellow-400/90 dark:bg-yellow-500/90 border-yellow-300 dark:border-yellow-400/50 text-yellow-950 px-3 md:px-4 rounded-lg md:rounded-xl font-bold shadow-sm cinematic-title flex-col justify-center leading-none text-center flex-shrink-0">
                                     <span class="text-[9px] md:text-[10px]">Sesi</span>
                                     <span class="text-[10px] md:text-xs">Pembahasan</span>
                                 </div>
 
-                                <!-- Navigasi Mobile -->
+                                <!-- Tombol Navigasi Mobile -->
                                 <button onclick="openMobileNav()" class="md:hidden glass-panel w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center text-slate-700 dark:text-slate-200 border-slate-300 dark:border-white/10 active:scale-95 transition-transform">
                                     <i class="ph ph-squares-four text-xl"></i>
                                 </button>
@@ -239,7 +242,15 @@
 
                     <!-- AREA KONTEN SOAL -->
                     <div id="quiz-content-area" class="flex-1 overflow-y-auto px-4 md:px-8 pb-6 pt-2">
-                        <div class="flex items-start justify-between gap-4 mb-6">
+                        
+                        <!-- NEW: Kotak Teks Cerita (Story Box) -->
+                        <div id="story-box" class="hidden mb-6 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-inner max-h-48 overflow-y-auto fade-in">
+                            <h4 class="text-xs md:text-sm font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-widest flex items-center gap-1.5"><i class="ph-fill ph-book-open-text"></i> Teks Bacaan</h4>
+                            <div id="story-text" class="text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-medium"></div>
+                        </div>
+
+                        <!-- Fitur Baca Soal (TTS) -->
+                        <div class="flex items-start justify-between gap-4 mb-6 mt-2">
                             <div id="question-text" class="q-text-dynamic font-semibold text-slate-800 dark:text-slate-100 flex-1">Memuat pertanyaan...</div>
                             <button onclick="readQuestionText()" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-teal-500 flex items-center justify-center flex-shrink-0 transition-colors shadow-sm" title="Bacakan Soal">
                                 <i class="ph-fill ph-speaker-high"></i>
@@ -248,6 +259,7 @@
 
                         <div id="options-container" class="flex flex-col gap-3 pb-2"></div>
                         
+                        <!-- KOTAK PENJELASAN (Mode Review) -->
                         <div id="explanation-box" class="hidden mt-6 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-5 fade-in shadow-inner">
                             <h4 class="text-teal-600 dark:text-teal-400 font-bold mb-2 flex items-center gap-2 uppercase tracking-wide text-sm"><i class="ph-fill ph-lightbulb"></i> Penjelasan Materi:</h4>
                             <p id="explanation-text" class="text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-medium"></p>
@@ -293,7 +305,7 @@
                 
                 <div class="bg-slate-100 dark:bg-slate-900/50 rounded-2xl p-6 md:p-8 mb-4 inline-block border border-slate-200 dark:border-white/10 w-full max-w-xs">
                     <p class="text-slate-500 dark:text-slate-400 text-xs md:text-sm font-semibold uppercase tracking-widest mb-2">Skor Akhir Anda</p>
-                    <div class="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-600 via-teal-500 to-emerald-400 dark:from-blue-400 dark:via-teal-300 dark:to-emerald-300 cinematic-title" id="final-score">0</div>
+                    <div class="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-600 via-teal-500 to-emerald-400 cinematic-title" id="final-score">0</div>
                 </div>
 
                 <!-- Analisis Waktu -->
@@ -380,7 +392,7 @@
         </div>
     </div>
 
-    <!-- MODAL ANNOUNCEMENT / PATCH NOTES -->
+    <!-- MODAL ANNOUNCEMENT -->
     <div id="announcement-modal" class="fixed inset-0 z-[80] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="absolute inset-0 modal-overlay" onclick="closeAnnouncement()"></div>
         <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="announcement-content">
@@ -388,52 +400,52 @@
                 <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title">
                     <i class="ph-fill ph-megaphone text-blue-500"></i> Pengumuman
                 </h3>
-                <button onclick="closeAnnouncement()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white">
-                    <i class="ph ph-x text-2xl"></i>
-                </button>
+                <button onclick="closeAnnouncement()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white"><i class="ph ph-x text-2xl"></i></button>
             </div>
             
             <div class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50">
-                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.26 - Ultimate Update 🎉</h4>
+                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.28 - Update Wadah Global 🎉</h4>
                     <ul class="list-disc pl-4 text-xs md:text-sm text-slate-600 dark:text-slate-300 space-y-1.5 font-medium">
-                        <li><strong>UI Baru:</strong> Skor "Sebelumnya" kini hanya muncul dengan rapi setelah kamu menyelesaikan kuis.</li>
-                        <li><strong>Tombol Pengumuman:</strong> Tombol Megaphone ditambahkan agar kamu tak ketinggalan info fitur terbaru.</li>
+                        <li><strong>Dukungan Multi-File JS:</strong> Siap membaca file <code>BahasaInggris.js</code> dan <code>PJOK.js</code> sekaligus secara aman dari luar!</li>
                         <li><strong>Mode Pembahasan:</strong> Fitur review interaktif lengkap dengan penjelasan materi mendalam.</li>
-                        <li><strong>Baca Soal Cerdas (TTS):</strong> AI akan membacakan teks soal secara otomatis jika tombol ditekan.</li>
-                        <li><strong>Smart Shuffle:</strong> Sistem pengacakan soal dan opsi berganda anti-tebak.</li>
-                        <li><strong>SFX & Confetti:</strong> Hujan kertas dan terompet kemenangan menantimu saat mendapat nilai tinggi!</li>
+                        <li><strong>Kotak Teks Bacaan:</strong> Box scroll khusus untuk teks bahasa inggris.</li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- TAG AUDIO NATIVE -->
     <audio id="audio-player"></audio>
 
+    <!-- WADAH DATA GLOBAL UNTUK MENCEGAH ERROR SAAT DATA BELUM LOAD -->
     <script>
-        // --- SAFE STORAGE UTILITY ---
-        function getStorage(key, defaultVal) {
-            try { return localStorage.getItem(key) || defaultVal; } 
-            catch(e) { return defaultVal; }
-        }
-        function setStorage(key, val) {
-            try { localStorage.setItem(key, val); } 
-            catch(e) {}
-        }
+        const subjects = [];
+        const quizData = {};
 
-        // --- SAFE TTS UTILITY ---
-        function stopTTS() {
-            try { if ('speechSynthesis' in window && window.speechSynthesis) window.speechSynthesis.cancel(); } 
-            catch(e) { console.warn("TTS Error", e); }
+        function shuffleArray(array) {
+            let shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
         }
+    </script>
 
-        let globalSfxVolume = 0.5;
-        let timeStart = 0;
-        let timeEnd = 0;
+    <!-- ======================================================================= -->
+    <!-- PANGGIL FILE SOAL EKSTERNAL DI BAWAH INI                                -->
+    <!-- ======================================================================= -->
+    <script src="BahasaInggris.js"></script>
+    <script src="PJOK.js"></script>
 
-        // --- 🔊 SISTEM SOUND EFFECTS (WeB Audio API) ---
+    <!-- SCRIPT LOGIKA UTAMA -->
+    <script>
+        function getStorage(key, defaultVal) { try { return localStorage.getItem(key) || defaultVal; } catch(e) { return defaultVal; } }
+        function setStorage(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
+        function stopTTS() { try { if ('speechSynthesis' in window && window.speechSynthesis) window.speechSynthesis.cancel(); } catch(e) { console.warn("TTS Error", e); } }
+
+        let globalSfxVolume = 0.5; let timeStart = 0; let timeEnd = 0;
         let audioCtx;
         function getAudioCtx() {
             try {
@@ -487,30 +499,14 @@
             } catch(e) {}
         }
 
-        function playStartSound() {
-            if(globalSfxVolume <= 0) return;
-            playTone(880, 0, 0.15, 'triangle'); 
-            playTone(587.33, 0.15, 0.3, 'sine'); 
-        }
-
-        function playExitSound() {
-            if(globalSfxVolume <= 0) return;
-            playTone(587.33, 0, 0.15, 'sine'); 
-            playTone(880, 0.15, 0.3, 'triangle'); 
-        }
-
-        function playFanfare() {
-            if(globalSfxVolume <= 0) return;
-            const notes = [523.25, 659.25, 783.99, 1046.50]; 
-            notes.forEach((freq, i) => { playTone(freq, i * 0.15, 0.4, 'square'); });
-        }
+        function playStartSound() { if(globalSfxVolume <= 0) return; playTone(880, 0, 0.15, 'triangle'); playTone(587.33, 0.15, 0.3, 'sine'); }
+        function playExitSound() { if(globalSfxVolume <= 0) return; playTone(587.33, 0, 0.15, 'sine'); playTone(880, 0.15, 0.3, 'triangle'); }
+        function playFanfare() { if(globalSfxVolume <= 0) return; const notes = [523.25, 659.25, 783.99, 1046.50]; notes.forEach((freq, i) => { playTone(freq, i * 0.15, 0.4, 'square'); }); }
 
         document.addEventListener('click', (e) => {
             getAudioCtx(); 
-            const isButton = e.target.closest('button');
-            const isRange = e.target.closest('input[type="range"]');
-            const isCard = e.target.closest('.subject-card');
-            const isOption = e.target.closest('.option-btn');
+            const isButton = e.target.closest('button'); const isRange = e.target.closest('input[type="range"]');
+            const isCard = e.target.closest('.subject-card'); const isOption = e.target.closest('.option-btn');
             const isIsland = e.target.closest('#dynamic-island');
             
             if (isCard) { playStartSound(); } 
@@ -530,28 +526,25 @@
                 stopTTS(); 
                 const text = document.getElementById('question-text').innerText;
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'id-ID';
-                utterance.rate = 0.9; 
+                utterance.lang = 'id-ID'; utterance.rate = 0.9; 
                 window.speechSynthesis.speak(utterance);
-            } catch(e) { console.warn("TTS Error", e); }
+            } catch(e) {}
         }
 
         // --- 🎉 CONFETTI SYSTEM ---
         function shootConfetti() {
             const container = document.getElementById('confetti-container');
-            container.classList.remove('hidden');
-            container.innerHTML = ''; 
+            container.classList.remove('hidden'); container.innerHTML = ''; 
             const colors = ['#f87171', '#34d399', '#60a5fa', '#fbbf24', '#c084fc'];
             for(let i=0; i<100; i++) {
-                const conf = document.createElement('div');
-                conf.className = 'confetti';
+                const conf = document.createElement('div'); conf.className = 'confetti';
                 conf.style.left = Math.random() * 100 + 'vw';
                 conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                conf.style.animationDelay = (Math.random() * 1) + 's';
+                if (Math.random() > 0.5) conf.style.borderRadius = '50%';
+                conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; conf.style.animationDelay = (Math.random() * 0.5) + 's';
                 container.appendChild(conf);
             }
-            setTimeout(() => { container.classList.add('hidden'); container.innerHTML = ''; }, 4000);
+            setTimeout(() => { container.classList.add('hidden'); container.innerHTML = ''; }, 4500);
         }
 
         // --- 🎵 MUSIC PLAYER ---
@@ -565,14 +558,10 @@
         let currentTrackIndex = 0; let isPlaying = false; let isPlayerExpanded = false;
         const audioEl = document.getElementById('audio-player'); audioEl.loop = false; 
 
-        const playIcon = document.getElementById('play-icon');
-        const musicIconContainer = document.getElementById('music-icon-container');
-        const musicStateIcon = document.getElementById('music-state-icon');
-        const progressBar = document.getElementById('track-progress');
-        const island = document.getElementById('dynamic-island');
-        const contentWrapper = document.getElementById('di-content');
-        const timeCurrent = document.getElementById('track-current');
-        const timeTotal = document.getElementById('track-total');
+        const playIcon = document.getElementById('play-icon'); const musicIconContainer = document.getElementById('music-icon-container');
+        const musicStateIcon = document.getElementById('music-state-icon'); const progressBar = document.getElementById('track-progress');
+        const island = document.getElementById('dynamic-island'); const contentWrapper = document.getElementById('di-content');
+        const timeCurrent = document.getElementById('track-current'); const timeTotal = document.getElementById('track-total');
 
         function togglePlayerState(e) {
             if(e && (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.closest('button'))) return;
@@ -632,285 +621,28 @@
         function updateMusicVolume(val) { audioEl.volume = val; setStorage('musicVol', val); }
         function updateSfxVolume(val) { globalSfxVolume = parseFloat(val); setStorage('sfxVol', val); playPopSound(); }
 
-        // --- PENGUMUMAN MODAL ---
-        function openAnnouncement() { 
-            document.getElementById('announcement-modal').classList.remove('opacity-0', 'pointer-events-none'); 
-            document.getElementById('announcement-content').classList.remove('scale-95'); 
-        }
-        function closeAnnouncement() { 
-            document.getElementById('announcement-modal').classList.add('opacity-0', 'pointer-events-none'); 
-            document.getElementById('announcement-content').classList.add('scale-95'); 
-        }
-
-
-        // --- 📚 DATA KUIS ---
-        const subjects = [
-            { id: 'pjok', name: 'PJOK', icon: 'ph-person-simple-run', color: 'text-emerald-500 dark:text-emerald-400' }
-        ];
-
-        // FUNGSI ACAK ARRAY
-        function shuffleArray(array) {
-            let shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled;
-        }
-
-        // 40 SOAL PJOK LENGKAP
-        const quizData = {
-            'pjok': [
-                {
-                    question: "Dalam situasi tendangan bebas tidak langsung di dalam kotak penalti, bola ditendang dan langsung masuk ke gawang lawan tanpa menyentuh pemain lain. Keputusan wasit yang benar adalah...",
-                    options: ["Gol sah", "Tendangan penalti", "Tendangan gawang untuk tim lawan", "Tendangan bebas diulang"],
-                    answer: 2,
-                    explanation: "Sesuai aturan FIFA, bola dari tendangan bebas tidak langsung harus menyentuh pemain lain (kawan atau lawan) sebelum masuk gawang agar sah. Jika langsung masuk, maka dianggap bola mati dan dimulai kembali dengan tendangan gawang."
-                },
-                {
-                    question: "Pemain yang berada dalam posisi offside tidak akan dijatuhi hukuman jika ia menerima bola langsung dari tendangan sudut.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 0,
-                    explanation: "Ada tiga kondisi di mana aturan offside tidak berlaku: menerima bola langsung dari lemparan ke dalam, tendangan gawang, dan tendangan sudut."
-                },
-                {
-                    question: "Strategi Park the Bus dalam sepak bola sering dianggap negatif namun efektif. Fokus utama dari taktik ini adalah...",
-                    options: ["Menyerang total dengan seluruh pemain", "Menumpuk pemain di area pertahanan untuk menutup ruang gerak lawan", "Melakukan pressing tinggi di area lawan", "Mengandalkan penguasaan bola di lini tengah"],
-                    answer: 1,
-                    explanation: "Taktik ini mengutamakan pertahanan rapat (low block) dengan menempatkan hampir seluruh pemain di area penalti sendiri untuk menyulitkan lawan mencetak gol."
-                },
-                {
-                    question: "Jika bola keluar melewati garis gawang dan terakhir disentuh oleh pemain bertahan, maka wasit akan memberikan tendangan gawang (goal kick).",
-                    options: ["BENAR", "SALAH"],
-                    answer: 1,
-                    explanation: "Jika terakhir disentuh pemain bertahan, wasit akan memberikan tendangan sudut (corner kick). Tendangan gawang diberikan jika terakhir disentuh pemain penyerang."
-                },
-                {
-                    question: "Seorang setter berada di posisi 1 (belakang kanan) saat servis dilakukan. Setelah bola menyeberang net, ia segera lari menuju depan net antara posisi 2 dan 3. Tindakan ini bertujuan untuk...",
-                    options: ["Melakukan blocking", "Mengambil posisi ideal untuk memberikan umpan (taktik switch)", "Melakukan servis ulang", "Menggantikan peran libero"],
-                    answer: 1,
-                    explanation: "Dalam sistem voli modern, setter dari posisi belakang sering lari ke depan setelah servis agar tim memiliki 3 penyerang di baris depan yang siap menerima umpan."
-                },
-                {
-                    question: "Seorang libero diperbolehkan melakukan servis untuk menggantikan pemain tengah (middle blocker) jika aturan kompetisi tersebut mengizinkannya.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 0,
-                    explanation: "Meskipun aturan FIVB internasional melarang, banyak liga mengizinkan libero melakukan satu rotasi servis. Namun secara umum, teknis libero tetaplah spesialis pertahanan."
-                },
-                {
-                    question: "Dalam voli, pelanggaran \"Double Hit\" sering terjadi pada saat...",
-                    options: ["Melakukan blocking yang mengenai dua tangan bersamaan", "Pemain menyentuh bola dua kali berturut-turut secara sengaja", "Bola mengenai net dua kali", "Bola mengenai lantai area sendiri"],
-                    answer: 1,
-                    explanation: "Pemain tidak boleh menyentuh bola dua kali berturut-turut, kecuali sentuhan pertama adalah hasil blocking."
-                },
-                {
-                    question: "Poin tetap diberikan kepada salah satu tim meskipun terjadi double fault (pelanggaran bersamaan oleh kedua tim).",
-                    options: ["BENAR", "SALAH"],
-                    answer: 1,
-                    explanation: "Jika terjadi pelanggaran bersamaan, reli dianggap tidak sah dan harus diulang (replay) tanpa ada penambahan poin."
-                },
-                {
-                    question: "Seorang pemain seringkali melakukan pukulan yang jatuh pelan di dekat net lawan saat lawan sedang bersiap di garis belakang. Strategi ini disebut...",
-                    options: ["Smash tajam", "Dropshot", "Drive", "Clear/Lob"],
-                    answer: 1,
-                    explanation: "Dropshot bertujuan mengecoh lawan yang posisinya terlalu jauh di belakang agar kesulitan menjangkau bola pendek di depan net."
-                },
-                {
-                    question: "Pada sistem rally point 21, jika skor mencapai 29-29, maka pemain yang mendapatkan poin ke-30 dinyatakan sebagai pemenang tanpa perlu selisih 2 poin.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 0,
-                    explanation: "Batas maksimal poin dalam bulutangkis adalah 30. Jika skor 29-29, tidak berlaku lagi selisih 2 poin (deuce)."
-                },
-                {
-                    question: "Apa keunggulan utama dari pegangan raket American Grip?",
-                    options: ["Memudahkan pukulan backhand", "Sangat efektif untuk melakukan smash keras karena permukaan raket menghadap bola", "Memudahkan netting silang", "Menghemat tenaga pergelangan tangan"],
-                    answer: 1,
-                    explanation: "American Grip menempatkan ibu jari dan jari telunjuk menempel pada bagian luas gagang raket, sehingga pukulan overhead (seperti smash) menjadi sangat kuat."
-                },
-                {
-                    question: "Jika shuttlecock mengenai raket pemain sebanyak dua kali dalam satu ayunan yang sama secara tidak sengaja, maka hal tersebut dianggap sah.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 0,
-                    explanation: "Aturan terbaru BWF menyatakan jika terkena dua kali dalam satu gerakan ayunan tunggal (tidak sengaja), permainan tetap dilanjutkan."
-                },
-                {
-                    question: "Saat melakukan guling depan, jika dagu tidak menempel ke dada, risiko cedera yang paling mungkin terjadi adalah pada bagian...",
-                    options: ["Pergelangan tangan", "Tulang leher dan kepala", "Otot perut", "Tulang ekor"],
-                    answer: 1,
-                    explanation: "Dagu yang menempel ke dada memastikan tengkuk (bukan dahi atau ubun-ubun) yang menyentuh matras, sehingga leher terlindungi dari beban tubuh."
-                },
-                {
-                    question: "Posisi tangan saat melakukan handstand harus selebar bahu dengan jari-jari dirapatkan untuk memperkuat tumpuan.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 1,
-                    explanation: "Jari-jari justru harus sedikit direnggangkan (seperti mencengkeram) untuk membantu keseimbangan dan distribusi berat badan yang lebih baik."
-                },
-                {
-                    question: "Unsur gerakan yang paling dominan pada saat melakukan guling lenting (neck spring) adalah...",
-                    options: ["Keseimbangan statis", "Fleksibilitas dan lecutan kaki", "Kekuatan otot lengan saja", "Ketahanan pernapasan"],
-                    answer: 1,
-                    explanation: "Guling lenting membutuhkan lenturan punggung dan lecutan kaki yang kuat untuk melemparkan tubuh ke depan atas."
-                },
-                {
-                    question: "Gerakan meroda (cartwheel) menggunakan arah gerakan ke depan, searah dengan pandangan mata.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 1,
-                    explanation: "Gerakan meroda dilakukan ke samping (menyamping), bukan ke depan atau belakang."
-                },
-                {
-                    question: "Zat adiktif dalam narkotika yang bekerja dengan cara mempercepat kerja jantung dan membuat pengguna merasa sangat bersemangat secara tidak wajar disebut...",
-                    options: ["Depresan", "Stimulan", "Halusinogen", "Sedatif"],
-                    answer: 1,
-                    explanation: "Stimulan memicu sistem saraf pusat dan meningkatkan metabolisme tubuh, denyut jantung, serta tekanan darah."
-                },
-                {
-                    question: "Seseorang yang sudah kecanduan narkoba jenis opioid akan mengalami gejala \"sakau\" yang hebat jika pemakaiannya dihentikan secara mendadak.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 0,
-                    explanation: "Tubuh yang sudah beradaptasi dengan zat tersebut akan mengalami reaksi fisik dan psikis yang menyakitkan (gejala putus zat) saat zat tersebut hilang dari sistem."
-                },
-                {
-                    question: "Salah satu dampak sosial dari penyalahgunaan narkoba di tingkat remaja adalah...",
-                    options: ["Meningkatnya prestasi akademik", "Terganggunya keharmonisan keluarga dan meningkatnya kriminalitas", "Tubuh menjadi lebih kebal terhadap penyakit", "Memperluas pergaulan yang sehat"],
-                    answer: 1,
-                    explanation: "Narkoba sering memicu perilaku impulsif, emosi tidak stabil, dan kebutuhan finansial tinggi yang berujung pada tindakan kriminal atau konflik keluarga."
-                },
-                {
-                    question: "Narkotika Golongan II adalah zat yang memiliki potensi ketergantungan sangat tinggi dan sama sekali tidak boleh digunakan untuk pengobatan.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 1,
-                    explanation: "Itu adalah definisi Golongan I. Golongan II memiliki potensi tinggi tetapi bisa digunakan untuk pengobatan sebagai pilihan terakhir."
-                },
-                {
-                    question: "Posisi kaki yang simetris di mana kedua kaki dibuka lebar dan berat badan berada di tengah disebut kuda-kuda...",
-                    options: ["Depan", "Samping", "Tengah", "Belakang"],
-                    answer: 2,
-                    explanation: "Kuda-kuda tengah memberikan stabilitas yang paling kuat untuk menahan serangan dari arah mana pun karena titik berat berada tepat di tengah."
-                },
-                {
-                    question: "Teknik elakan dilakukan dengan cara memindahkan posisi kaki untuk menjauh dari serangan lawan.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 1,
-                    explanation: "Elakan hanya memindahkan posisi tubuh (bidang sasaran) tanpa memindahkan kaki. Jika kaki berpindah, itu disebut hindaran."
-                },
-                {
-                    question: "Dalam sebuah pertandingan, pesilat berhasil menjatuhkan lawan dengan teknik sapuan yang sah. Poin yang didapatkan adalah...",
-                    options: ["1 poin", "2 poin", "3 poin", "4 poin"],
-                    answer: 2,
-                    explanation: "Teknik menjatuhkan lawan (bantingan/sapuan/guntingan) yang sah dalam pencak silat bernilai 3 poin."
-                },
-                {
-                    question: "Pukulan yang dilakukan dengan lintasan dari samping bawah ke atas dengan mengepal disebut pukulan bandul.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 0,
-                    explanation: "Pukulan bandul atau sengkol memiliki lintasan melengkung dari bawah ke atas menuju sasaran dagu atau ulu hati."
-                },
-                {
-                    question: "Seorang pemain bertahan sengaja menghentikan bola dengan tangan tepat di garis gawang untuk mencegah gol. Keputusan wasit adalah...",
-                    options: ["Kartu kuning dan tendangan bebas", "Kartu merah dan tendangan penalti", "Hanya tendangan sudut", "Peringatan lisan"],
-                    answer: 1,
-                    explanation: "Menghalangi peluang gol yang pasti dengan tangan (DOGSO) berbuah kartu merah langsung dan penalti."
-                },
-                {
-                    question: "Sentuhan bola pada saat blocking tidak dihitung sebagai satu dari tiga sentuhan yang diperbolehkan bagi sebuah tim.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 0,
-                    explanation: "Setelah block, tim masih memiliki hak 3 kali sentuhan untuk mengembalikan bola."
-                },
-                {
-                    question: "Jenis servis yang sering digunakan dalam permainan ganda untuk mencegah lawan melakukan serangan langsung adalah...",
-                    options: ["Servis panjang (High serve)", "Servis pendek (Short serve)", "Servis drive", "Servis lob"],
-                    answer: 1,
-                    explanation: "Servis pendek memaksa lawan memukul bola dari bawah ke atas, sehingga tidak bisa langsung melakukan smash tajam."
-                },
-                {
-                    question: "Sikap kayang yang benar mengharuskan tumpuan berat badan berada sepenuhnya pada otot punggung.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 1,
-                    explanation: "Tumpuan harus merata pada kedua telapak tangan dan kedua telapak kaki dengan lengan dan kaki yang lurus."
-                },
-                {
-                    question: "Halusinogen seperti LSD dapat menyebabkan fenomena \"flashback\". Apa yang dimaksud dengan fenomena ini?",
-                    options: ["Pengguna merasa kembali sehat", "Pengguna mengalami kembali efek halusinasi meskipun sudah lama tidak memakai zat tersebut", "Pengguna tertidur pulas", "Pengguna merasa sangat lapar"],
-                    answer: 1,
-                    explanation: "LSD tersimpan dalam jaringan tubuh dan bisa \"terlepas\" kembali secara tiba-tiba, memicu halusinasi tanpa konsumsi baru."
-                },
-                {
-                    question: "Tangkisan luar dilakukan dengan menggerakkan tangan dari dalam dada ke arah luar untuk membuang serangan lawan.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 0,
-                    explanation: "Sesuai namanya, arah gerakannya menuju luar tubuh pemain."
-                },
-                {
-                    question: "Jika tim lawan menggunakan strategi High Pressing, langkah taktis yang paling logis untuk membangun serangan adalah...",
-                    options: ["Melakukan umpan-umpan pendek di area sendiri", "Menggunakan umpan lambung panjang (long ball) langsung ke lini depan", "Meminta kiper berdiam diri dengan bola", "Menambah jumlah pemain bertahan di kotak penalti"],
-                    answer: 1,
-                    explanation: "Umpan panjang melewati lini tengah akan mematikan jebakan pressing lawan dan memanfaatkan ruang kosong yang ditinggalkan pemain lawan di area belakang mereka."
-                },
-                {
-                    question: "Bola dinyatakan \"masuk\" jika menyentuh garis lapangan, meskipun sebagian besar bola berada di luar garis.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 0,
-                    explanation: "Garis adalah bagian dari area permainan. Selama ada bagian bola yang menyentuh garis, maka poin sah."
-                },
-                {
-                    question: "Seorang pemain tunggal memiliki jangkauan kaki yang terbatas. Latihan fisik apa yang paling tepat untuk memperbaiki performanya?",
-                    options: ["Angkat beban berat", "Latihan Footwork dan kelincahan (shuttle run)", "Lari maraton 10 km", "Renang gaya dada"],
-                    answer: 1,
-                    explanation: "Bulutangkis sangat mengandalkan kecepatan perpindahan kaki (footwork) untuk menjangkau seluruh sudut lapangan dengan efisien."
-                },
-                {
-                    question: "Lompat harimau (tiger sprong) membutuhkan keberanian yang lebih tinggi dibandingkan guling depan karena adanya fase melayang di udara.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 0,
-                    explanation: "Secara teknis, lompat harimau adalah guling depan yang didahului dengan loncatan dan fase melayang."
-                },
-                {
-                    question: "Apa yang harus dilakukan jika melihat teman menunjukkan gejala pengguna narkoba?",
-                    options: ["Menjauhinya agar tidak tertular", "Melaporkannya ke polisi untuk dipenjara", "Mendekati secara persuasif dan menyarankan rehabilitasi", "Mengabaikannya karena itu urusan pribadi"],
-                    answer: 2,
-                    explanation: "Pengguna adalah korban yang butuh bantuan medis dan rehabilitasi, bukan kriminal yang harus langsung dipenjara (jika hanya sebagai pengguna)."
-                },
-                {
-                    question: "Variasi pola langkah dalam silat (seperti pola langkah S atau U) hanya berfungsi sebagai tarian keindahan dalam seni.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 1,
-                    explanation: "Pola langkah berfungsi untuk mencari posisi strategis, mengecoh lawan, dan mengatur jarak serang/bela secara taktis."
-                },
-                {
-                    question: "Siapakah pemain yang bertugas mengoordinasi pertahanan dan sering menjadi orang terakhir sebelum kiper?",
-                    options: ["Playmaker", "Stopper / Center Back", "Winger", "Target man"],
-                    answer: 1,
-                    explanation: "Bek tengah (CB) adalah jantung pertahanan yang bertugas memotong serangan lawan di area sentral."
-                },
-                {
-                    question: "Tim dinyatakan menang dalam satu set (kecuali set penentuan) jika sudah mencapai poin 25 dengan selisih minimal 1 poin.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 1,
-                    explanation: "Harus selisih minimal 2 poin (misal 25-23). Jika 25-24, permainan lanjut hingga ada selisih 2."
-                },
-                {
-                    question: "Mengapa pemanasan (warming up) sangat wajib dilakukan sebelum olahraga berat seperti voli atau sepak bola?",
-                    options: ["Agar badan cepat berkeringat", "Meningkatkan suhu otot dan elastisitas tendon untuk mengurangi risiko cedera", "Untuk menghabiskan waktu latihan", "Supaya tidak perlu melakukan pendinginan nantinya"],
-                    answer: 1,
-                    explanation: "Otot yang \"hangat\" lebih fleksibel dan siap menerima beban kontraksi yang mendadak."
-                },
-                {
-                    question: "Dalam pencak silat, etika atau budi pekerti luhur lebih diutamakan daripada sekadar kemampuan fisik untuk menyakiti orang lain.",
-                    options: ["BENAR", "SALAH"],
-                    answer: 0,
-                    explanation: "Pencak silat adalah budaya bangsa yang mengajarkan pengendalian diri, sportivitas, dan penghormatan kepada lawan."
-                }
-            ]
-        };
+        function openAnnouncement() { document.getElementById('announcement-modal').classList.remove('opacity-0', 'pointer-events-none'); document.getElementById('announcement-content').classList.remove('scale-95'); }
+        function closeAnnouncement() { document.getElementById('announcement-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('announcement-content').classList.add('scale-95'); }
 
         let currentSubject = null; let currentQuestions = []; let currentIndex = 0;
         let userAnswers = {}; let timerInterval = null; let timeLeft = 90 * 60; 
         let isReviewMode = false; 
 
-        // INIT
+        // --- INIT STATE ---
         window.onload = () => { 
-            initTheme(); initSettings(); initMusicPlayer(); renderHome(); 
+            initTheme(); initSettings(); initMusicPlayer(); 
+            
+            // CEK APAKAH ARRAY SUBJECTS KOSONG
+            if (subjects.length === 0) {
+                document.getElementById('subject-grid').innerHTML = `
+                <div class="col-span-full glass-panel p-6 rounded-2xl text-center border-red-500/30">
+                    <i class="ph-fill ph-warning-circle text-4xl text-red-500 mb-2"></i>
+                    <h3 class="font-bold text-slate-800 dark:text-white mb-2">Menunggu File Soal...</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-400">Silakan pastikan file <code class="bg-slate-200 dark:bg-slate-700 px-1 rounded">BahasaInggris.js</code> dan <code class="bg-slate-200 dark:bg-slate-700 px-1 rounded">PJOK.js</code> sudah berada di satu folder yang sama.</p>
+                </div>`;
+            } else {
+                renderHome(); 
+            }
         };
 
         function initTheme() {
@@ -933,7 +665,6 @@
             const savedMusicVol = getStorage('musicVol', null);
             if(savedMusicVol !== null) { document.getElementById('music-volume').value = savedMusicVol; audioEl.volume = parseFloat(savedMusicVol); } 
             else { audioEl.volume = 0.5; }
-
             const savedSfxVol = getStorage('sfxVol', null);
             if(savedSfxVol !== null) { document.getElementById('sfx-volume').value = savedSfxVol; globalSfxVolume = parseFloat(savedSfxVol); }
         }
@@ -953,9 +684,7 @@
         function renderHome() {
             const grid = document.getElementById('subject-grid'); grid.innerHTML = '';
             subjects.forEach(sub => {
-                const hs = getStorage('hs_' + sub.id, null); // Akan null jika belum pernah dimainkan
-                
-                // Hanya munculkan label nilai kalau sudah pernah dimainkan
+                const hs = getStorage('hs_' + sub.id, null); 
                 let badgeHTML = '';
                 if(hs !== null) {
                     badgeHTML = `
@@ -983,6 +712,7 @@
             isReviewMode = false;
             currentSubject = subjects.find(s => s.id === subjectId); 
             
+            // SMART SHUFFLE
             let rawQuestions = quizData[subjectId];
             currentQuestions = shuffleArray(rawQuestions).map(q => {
                 let newQ = JSON.parse(JSON.stringify(q)); 
@@ -995,9 +725,7 @@
                 return newQ;
             });
 
-            currentIndex = 0; userAnswers = {}; timeLeft = 90 * 60; 
-            timeStart = Date.now(); 
-            stopTTS(); 
+            currentIndex = 0; userAnswers = {}; timeLeft = 90 * 60; timeStart = Date.now(); stopTTS(); 
             
             const parts = currentSubject.name.split(' ');
             if(parts.length > 2) { document.getElementById('quiz-subject-title').innerHTML = `${parts.slice(0, 2).join(' ')}<br>${parts.slice(2).join(' ')}`; } 
@@ -1006,10 +734,8 @@
             
             document.getElementById('total-question-num').innerText = currentQuestions.length;
             
-            document.getElementById('timer-container').classList.remove('hidden');
-            document.getElementById('timer-container').classList.add('flex');
-            document.getElementById('review-badge').classList.add('hidden');
-            document.getElementById('review-badge').classList.remove('flex');
+            document.getElementById('timer-container').classList.remove('hidden'); document.getElementById('timer-container').classList.add('flex');
+            document.getElementById('review-badge').classList.add('hidden'); document.getElementById('review-badge').classList.remove('flex');
             document.getElementById('explanation-box').classList.add('hidden');
             
             const centerBtn = document.getElementById('btn-center-action');
@@ -1021,14 +747,10 @@
         }
 
         function startReview() {
-            isReviewMode = true;
-            currentIndex = 0;
-            stopTTS();
+            isReviewMode = true; currentIndex = 0; stopTTS();
             
-            document.getElementById('timer-container').classList.add('hidden');
-            document.getElementById('timer-container').classList.remove('flex');
-            document.getElementById('review-badge').classList.remove('hidden');
-            document.getElementById('review-badge').classList.add('flex');
+            document.getElementById('timer-container').classList.add('hidden'); document.getElementById('timer-container').classList.remove('flex');
+            document.getElementById('review-badge').classList.remove('hidden'); document.getElementById('review-badge').classList.add('flex');
             
             const centerBtn = document.getElementById('btn-center-action');
             centerBtn.innerText = "Tutup Review";
@@ -1043,19 +765,26 @@
             document.getElementById('current-question-num').innerText = currentIndex + 1; 
             document.getElementById('question-text').innerHTML = q.question;
             
-            const optionsContainer = document.getElementById('options-container'); 
-            optionsContainer.innerHTML = ''; 
+            // --- KOTAK TEKS BACAAN (STORY BOX) ---
+            const storyBox = document.getElementById('story-box');
+            if(q.story) {
+                document.getElementById('story-text').innerHTML = q.story.replace(/\n/g, '<br>');
+                storyBox.classList.remove('hidden');
+            } else {
+                storyBox.classList.add('hidden');
+                document.getElementById('story-text').innerHTML = '';
+            }
+            
+            const optionsContainer = document.getElementById('options-container'); optionsContainer.innerHTML = ''; 
             const abcd = ['A', 'B', 'C', 'D', 'E'];
             const isTF = q.options.length === 2; 
             
             q.options.forEach((opt, index) => {
-                const isSelected = userAnswers[currentIndex] === index; 
-                const isCorrect = index === q.answer;
+                const isSelected = userAnswers[currentIndex] === index; const isCorrect = index === q.answer;
                 const btn = document.createElement('button');
                 
                 let btnClass = `option-btn w-full text-left p-3.5 md:p-4 rounded-xl border flex items-start gap-3 md:gap-4 transition-all duration-300 `;
                 let badgeClass = `w-7 h-7 md:w-8 md:h-8 rounded-lg shadow-sm flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0 border cinematic-title `; 
-
                 let badgeText = isTF ? (index === 0 ? 'B' : 'S') : abcd[index];
 
                 if (isReviewMode) {
@@ -1080,7 +809,6 @@
                     }
                     btn.onclick = () => selectOption(index);
                 }
-
                 btn.className = btnClass;
                 btn.innerHTML = `<span class="${badgeClass}">${badgeText}</span><span class="pt-0.5 md:pt-1 o-text-dynamic leading-snug font-medium">${opt}</span>`;
                 optionsContainer.appendChild(btn);
@@ -1088,57 +816,40 @@
 
             const expBox = document.getElementById('explanation-box');
             if (isReviewMode) {
-                expBox.classList.remove('hidden');
-                document.getElementById('explanation-text').innerText = q.explanation;
-            } else {
-                expBox.classList.add('hidden');
-            }
+                expBox.classList.remove('hidden'); document.getElementById('explanation-text').innerText = q.explanation;
+            } else { expBox.classList.add('hidden'); }
 
             document.getElementById('btn-prev').style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
             document.getElementById('btn-next').style.visibility = currentIndex === currentQuestions.length - 1 ? 'hidden' : 'visible';
         }
 
         function selectOption(optIndex) { userAnswers[currentIndex] = optIndex; renderQuestion(); renderGrid(); if(currentIndex < currentQuestions.length - 1) setTimeout(nextQuestion, 300); }
-        
-        function handleCenterAction() {
-            if(isReviewMode) switchScreen('screen-result');
-            else showConfirmModal();
-        }
+        function handleCenterAction() { if(isReviewMode) switchScreen('screen-result'); else showConfirmModal(); }
 
         function nextQuestion() { 
             stopTTS();
             if (currentIndex < currentQuestions.length - 1) { 
-                currentIndex++; 
-                const area = document.getElementById('quiz-content-area');
-                area.style.opacity = '0';
+                currentIndex++; const area = document.getElementById('quiz-content-area'); area.style.opacity = '0';
                 setTimeout(() => { renderQuestion(); updateGridActive(); area.style.opacity = '1'; }, 150);
             } 
         }
         function prevQuestion() { 
             stopTTS();
             if (currentIndex > 0) { 
-                currentIndex--; 
-                const area = document.getElementById('quiz-content-area');
-                area.style.opacity = '0';
+                currentIndex--; const area = document.getElementById('quiz-content-area'); area.style.opacity = '0';
                 setTimeout(() => { renderQuestion(); updateGridActive(); area.style.opacity = '1'; }, 150);
             } 
         }
         function jumpToQuestion(index) { 
-            stopTTS();
-            currentIndex = index; 
-            const area = document.getElementById('quiz-content-area');
-            area.style.opacity = '0';
+            stopTTS(); currentIndex = index; const area = document.getElementById('quiz-content-area'); area.style.opacity = '0';
             setTimeout(() => { renderQuestion(); updateGridActive(); closeMobileNav(); area.style.opacity = '1'; }, 150);
         }
 
-        const modalContent = document.getElementById('mobile-nav-content');
-        const dragHeader = document.getElementById('mobile-nav-header');
+        const modalContent = document.getElementById('mobile-nav-content'); const dragHeader = document.getElementById('mobile-nav-header');
         let startY = 0; let currentY = 0; let isDragging = false;
-
         dragHeader.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; isDragging = true; modalContent.style.transition = 'none'; }, {passive: true});
         dragHeader.addEventListener('touchmove', (e) => { if (!isDragging) return; const y = e.touches[0].clientY; const deltaY = y - startY; if (deltaY > 0) { currentY = deltaY; modalContent.style.transform = `translateY(${deltaY}px)`; } }, {passive: true});
         dragHeader.addEventListener('touchend', (e) => { if (!isDragging) return; isDragging = false; modalContent.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'; if (currentY > 80) closeMobileNav(); else modalContent.style.transform = 'translateY(0)'; currentY = 0; });
-
         function openMobileNav() { document.getElementById('mobile-nav-modal').classList.remove('opacity-0', 'pointer-events-none'); modalContent.style.transform = 'translateY(0)'; modalContent.classList.remove('translate-y-full'); document.body.classList.add('modal-open'); }
         function closeMobileNav() { document.getElementById('mobile-nav-modal').classList.add('opacity-0', 'pointer-events-none'); modalContent.style.transform = ''; modalContent.classList.add('translate-y-full'); document.body.classList.remove('modal-open'); }
 
@@ -1149,26 +860,21 @@
                    <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700"></div> Kosong</div>`
                 : `<div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-teal-400"></div> Dijawab</div>
                    <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700"></div> Kosong</div>`;
-            
             document.getElementById('legend-desktop').innerHTML = `<div class="flex gap-3 justify-center md:justify-start flex-wrap">${legendHTML}</div>`;
             document.getElementById('legend-mobile').innerHTML = legendHTML;
 
             ['question-grid-desktop', 'question-grid-mobile'].forEach(gridId => {
                 const grid = document.getElementById(gridId); if(!grid) return; grid.innerHTML = '';
                 currentQuestions.forEach((q, i) => {
-                    const isAnswered = userAnswers[i] !== undefined; 
-                    const isCorrect = userAnswers[i] === q.answer;
+                    const isAnswered = userAnswers[i] !== undefined; const isCorrect = userAnswers[i] === q.answer;
                     const btn = document.createElement('button');
-                    
                     let classes = `grid-number w-full aspect-square rounded-lg cinematic-title text-base flex items-center justify-center transition-all border `;
-                    
                     if (isReviewMode) {
                         if (isAnswered) classes += isCorrect ? 'bg-emerald-400 text-emerald-950 border-emerald-500 shadow-sm' : 'bg-red-400 text-red-950 border-red-500 shadow-sm';
                         else classes += 'bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700';
                     } else {
                         classes += isAnswered ? 'bg-teal-400 text-teal-950 border-teal-500 shadow-sm' : 'bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700';
                     }
-
                     if (i === currentIndex) classes += ' active z-10 border-none';
                     btn.className = classes; btn.innerText = i + 1; btn.onclick = () => jumpToQuestion(i);
                     grid.appendChild(btn);
@@ -1189,38 +895,29 @@
         function hideConfirmModal() { document.getElementById('confirm-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('modal-content').classList.add('scale-95'); }
 
         function finishQuiz() {
-            timeEnd = Date.now();
-            stopTTS();
-            hideConfirmModal(); closeMobileNav(); clearInterval(timerInterval);
+            timeEnd = Date.now(); stopTTS(); hideConfirmModal(); closeMobileNav(); clearInterval(timerInterval);
             let correct = 0; currentQuestions.forEach((q, i) => { if (userAnswers[i] === q.answer) correct++; });
             const finalScore = Math.round((correct / currentQuestions.length) * 100);
             
-            // SIMPAN SCORE (Disimpan ke memory sebagai "Sebelumnya")
-            setStorage('hs_' + currentSubject.id, finalScore);
+            // SIMPAN SCORE 
+            const oldHs = parseInt(getStorage('hs_' + currentSubject.id, 0));
+            if (finalScore > oldHs) setStorage('hs_' + currentSubject.id, finalScore);
 
             const totalSeconds = Math.floor((timeEnd - timeStart) / 1000);
             const avgSeconds = (totalSeconds / currentQuestions.length).toFixed(1);
             document.getElementById('time-analysis').innerText = `${avgSeconds} detik/soal`;
-
             document.getElementById('result-subject-name').innerText = currentSubject.name; 
             
             const scoreEl = document.getElementById('final-score');
-            let currentDisplay = 0;
-            const step = finalScore / 30; 
+            let currentDisplay = 0; const step = finalScore / 30; 
             const counterInterval = setInterval(() => {
                 currentDisplay += step;
                 if(currentDisplay >= finalScore) { 
-                    currentDisplay = finalScore; 
-                    clearInterval(counterInterval); 
-                    
-                    if(finalScore >= 70) {
-                        playFanfare();
-                        shootConfetti();
-                    }
+                    currentDisplay = finalScore; clearInterval(counterInterval); 
+                    if(finalScore >= 70) { playFanfare(); shootConfetti(); }
                 }
                 scoreEl.innerText = Math.round(currentDisplay);
             }, 30);
-
             switchScreen('screen-result');
         }
 
@@ -1232,14 +929,7 @@
             });
         }
         
-        function backToMenu() { 
-            stopTTS();
-            playExitSound(); 
-            clearInterval(timerInterval); 
-            closeMobileNav(); 
-            switchScreen('screen-home'); 
-            renderHome(); // Refresh layar utama agar skor ter-update
-        }
+        function backToMenu() { stopTTS(); playExitSound(); clearInterval(timerInterval); closeMobileNav(); switchScreen('screen-home'); renderHome(); }
     </script>
 </body>
 </html>
