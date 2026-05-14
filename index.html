@@ -18,8 +18,6 @@
                 extend: {
                     fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
                     colors: { 
-                        accent: '#3b82f6', 
-                        accentHover: '#2563eb',
                         teal: { 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488' }
                     }
                 }
@@ -71,79 +69,64 @@
             border: 1px solid var(--glass-border);
             box-shadow: var(--glass-shadow);
         }
-
         .glass-nav { background: var(--nav-bg); }
         .modal-overlay { background: var(--overlay-bg); backdrop-filter: blur(4px); }
 
-        .subject-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .subject-card { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s, border-color 0.3s; }
         .subject-card:hover { transform: translateY(-5px); background: rgba(45, 212, 191, 0.1); border-color: rgba(45, 212, 191, 0.3); }
 
         .option-btn { transition: all 0.2s ease; }
         .option-btn:active { transform: scale(0.98); }
-        @media (min-width: 768px) { .option-btn:hover { transform: translateX(5px); } }
+        @media (min-width: 768px) { .option-btn:hover:not(:disabled) { transform: translateX(5px); } }
 
         .grid-number { transition: all 0.2s; }
-        .grid-number.active { transform: scale(1.1); box-shadow: 0 0 0 2px var(--bg-main), 0 0 10px #2dd4bf; }
-
-        .rotate-spin { animation: spinOnce 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes spinOnce { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(0.8); } 100% { transform: rotate(360deg) scale(1); } }
+        .grid-number.active { transform: scale(1.15); box-shadow: 0 0 0 2px var(--bg-main), 0 0 10px #2dd4bf; z-index: 10; }
 
         input[type=range] { -webkit-appearance: none; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 10px; width: 10px; border-radius: 50%; background: #2dd4bf; cursor: pointer; margin-top: -3.5px; box-shadow: 0 0 5px rgba(45, 212, 191, 0.5); }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: #2dd4bf; cursor: pointer; margin-top: -4.5px; box-shadow: 0 0 5px rgba(45, 212, 191, 0.5); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 3px; cursor: pointer; background: rgba(148, 163, 184, 0.4); border-radius: 2px; }
         .dark input[type=range]::-webkit-slider-runnable-track { background: rgba(255, 255, 255, 0.2); }
 
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.6); }
 
-        .fade-in { animation: fadeIn 0.4s ease forwards; }
+        .fade-in { animation: fadeIn 0.3s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         body.modal-open { overflow: hidden; touch-action: none; }
         .mobile-dvh-fix { height: calc(100dvh - 6rem); }
         @media (min-width: 768px) { .mobile-dvh-fix { height: 80vh; max-height: 750px; } }
 
-        /* CSS DYNAMIC ISLAND */
+        /* DYNAMIC ISLAND */
         .dynamic-island {
-            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                        border-radius 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
-                        background-color 0.3s ease;
-            height: 48px; 
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            white-space: nowrap;
+            transition: width 0.4s ease-in-out, border-radius 0.4s ease-in-out, background-color 0.3s ease;
+            height: 48px; overflow: hidden; display: flex; align-items: center; white-space: nowrap;
         }
-        
         .di-collapsed { width: 48px; border-radius: 24px; cursor: pointer; }
-        .di-expanded { width: calc(100vw - 110px); max-width: 320px; border-radius: 24px; cursor: default; }
-        @media (min-width: 768px) { .di-expanded { width: 360px; max-width: none; } }
+        .di-expanded { width: clamp(200px, calc(100vw - 180px), 380px); border-radius: 24px; cursor: default; }
+        .di-content-wrapper { width: clamp(200px, calc(100vw - 180px), 380px); transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
 
-        .di-content-wrapper {
-            width: calc(100vw - 110px); max-width: 320px;
-            transition: opacity 0.3s ease, visibility 0.3s;
-            display: flex;
-            align-items: center;
-        }
-        @media (min-width: 768px) { .di-content-wrapper { width: 360px; max-width: none; } }
+        .cinematic-title { font-family: 'Archivo Black', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.03em; }
 
-        .cinematic-title {
-            font-family: 'Archivo Black', sans-serif;
-            font-weight: 400; 
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-        }
-
-        /* --- SISTEM UKURAN TEKS DINAMIS KHUSUS SOAL --- */
+        /* UKURAN TEKS SOAL DINAMIS */
         body[data-text-size="sm"] .q-text-dynamic { font-size: 1rem; line-height: 1.5; }
         body[data-text-size="md"] .q-text-dynamic { font-size: 1.25rem; line-height: 1.75; }
         body[data-text-size="lg"] .q-text-dynamic { font-size: 1.5rem; line-height: 2; }
-
         body[data-text-size="sm"] .o-text-dynamic { font-size: 0.875rem; }
         body[data-text-size="md"] .o-text-dynamic { font-size: 1rem; }
         body[data-text-size="lg"] .o-text-dynamic { font-size: 1.125rem; }
+        
+        #quiz-content-area { transition: opacity 0.2s ease-in-out; }
+
+        /* CONFETTI STYLES */
+        .confetti {
+            position: absolute; width: 10px; height: 10px; animation: fall linear forwards; border-radius: 2px;
+        }
+        @keyframes fall { 
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
     </style>
 </head>
 <body class="p-2 md:p-8 flex flex-col items-center justify-center relative overflow-x-hidden pt-20 md:pt-10" data-text-size="md">
@@ -155,6 +138,7 @@
         <div id="music-icon-container" class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300">
             <i id="music-state-icon" class="ph-fill ph-speaker-slash text-xl"></i>
         </div>
+        
         <div id="di-content" class="di-content-wrapper pl-[3.25rem] pr-2 opacity-0 invisible">
             <div class="flex-1 min-w-0 flex flex-col justify-center translate-y-[1px]">
                 <div class="flex justify-between items-end">
@@ -167,6 +151,7 @@
                     <span class="text-[8px] md:text-[9px] text-slate-500 dark:text-slate-400 font-mono w-5 md:w-6 shrink-0" id="track-total">0:00</span>
                 </div>
             </div>
+
             <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0 ml-1.5 md:ml-3" onclick="event.stopPropagation()">
                 <button onclick="prevTrack()" class="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform"><i class="ph-fill ph-skip-back text-[14px] md:text-[16px]"></i></button>
                 <button onclick="togglePlay()" class="w-7 h-7 md:w-9 md:h-9 flex items-center justify-center text-teal-500 dark:text-teal-400 hover:text-teal-600 active:scale-95 transition-transform"><i class="ph-fill ph-play text-xl md:text-2xl" id="play-icon"></i></button>
@@ -190,6 +175,7 @@
 
     <!-- MAIN WRAPPER -->
     <div class="w-full flex-1 flex flex-col items-center justify-center">
+        
         <!-- SCREEN 1: HOME -->
         <div id="screen-home" class="w-full max-w-5xl fade-in block px-2 md:px-0">
             <div class="text-center mb-8 md:mb-10 mt-16 md:mt-4">
@@ -198,13 +184,16 @@
                 </h1>
                 <p class="text-slate-600 dark:text-slate-400 text-sm md:text-lg mt-2">Pilih mata pelajaran untuk memulai ujian.</p>
             </div>
+            <!-- Grid Mapel Akan Dimunculkan Oleh Script Otomatis -->
             <div class="flex flex-wrap justify-center gap-4 md:gap-6 w-full" id="subject-grid"></div>
         </div>
 
-        <!-- SCREEN 2: QUIZ INTERFACE -->
+        <!-- SCREEN 2: QUIZ / REVIEW INTERFACE -->
         <div id="screen-quiz" class="w-full max-w-6xl fade-in hidden px-1 md:px-0 mt-2 md:mt-0">
             <div class="glass-panel rounded-2xl overflow-hidden flex flex-col md:flex-row mobile-dvh-fix w-full relative">
+
                 <div class="flex-1 min-w-0 flex flex-col relative h-full">
+                    <!-- HEADER KUIS -->
                     <div class="flex justify-between items-start p-4 md:p-8 pb-3 md:pb-4 flex-shrink-0 border-b md:border-none border-slate-200/50 dark:border-white/5">
                         <div class="flex flex-col justify-between">
                             <h2 id="quiz-subject-title" class="text-xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 dark:from-blue-400 dark:to-teal-300 cinematic-title mb-1 leading-tight">
@@ -215,18 +204,28 @@
                             </div>
                         </div>
 
+                        <!-- KONTROL KANAN -->
                         <div class="flex flex-col items-end gap-2 mt-1 relative w-auto">
+                            <!-- Tombol Keluar Panjang -->
                             <button onclick="backToMenu()" class="w-full h-10 md:h-12 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-500 flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm px-3" title="Keluar">
                                 <i class="ph-bold ph-sign-out text-lg md:text-xl"></i>
                                 <span class="font-bold text-xs md:text-sm uppercase tracking-wider">Keluar</span>
                             </button>
+                            
                             <div class="flex items-center gap-2 mt-auto relative">
+                                <!-- Timer -->
                                 <div id="timer-container" class="flex glass-panel px-3 h-10 md:h-12 md:px-4 rounded-lg md:rounded-xl items-center gap-1.5 border-teal-500/30 text-teal-500 dark:text-teal-400 font-mono font-bold text-sm md:text-lg shadow-sm">
-                                    <i class="ph ph-timer"></i> <span id="timer-display">90:00</span>
+                                    <i class="ph ph-timer"></i>
+                                    <span id="timer-display">90:00</span>
                                 </div>
+
+                                <!-- Badge Pembahasan -->
                                 <div id="review-badge" class="hidden glass-panel h-10 md:h-12 bg-yellow-400/90 dark:bg-yellow-500/90 border-yellow-300 dark:border-yellow-400/50 text-yellow-950 px-3 md:px-4 rounded-lg md:rounded-xl font-bold shadow-sm cinematic-title flex-col justify-center leading-none text-center flex-shrink-0">
-                                    <span class="text-[9px] md:text-[10px]">Sesi</span> <span class="text-[10px] md:text-xs">Pembahasan</span>
+                                    <span class="text-[9px] md:text-[10px]">Sesi</span>
+                                    <span class="text-[10px] md:text-xs">Pembahasan</span>
                                 </div>
+
+                                <!-- Tombol Navigasi Mobile -->
                                 <button onclick="openMobileNav()" class="md:hidden glass-panel w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center text-slate-700 dark:text-slate-200 border-slate-300 dark:border-white/10 active:scale-95 transition-transform">
                                     <i class="ph ph-squares-four text-xl"></i>
                                 </button>
@@ -234,18 +233,26 @@
                         </div>
                     </div>
 
+                    <!-- AREA KONTEN SOAL -->
                     <div id="quiz-content-area" class="flex-1 overflow-y-auto px-4 md:px-8 pb-6 pt-2">
+                        
+                        <!-- Kotak Teks Cerita (Story Box) -->
                         <div id="story-box" class="hidden mb-6 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-inner max-h-48 overflow-y-auto fade-in">
                             <h4 class="text-xs md:text-sm font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-widest flex items-center gap-1.5"><i class="ph-fill ph-book-open-text"></i> Teks Bacaan</h4>
                             <div id="story-text" class="text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-medium"></div>
                         </div>
+
+                        <!-- Fitur Baca Soal -->
                         <div class="flex items-start justify-between gap-4 mb-6 mt-2">
                             <div id="question-text" class="q-text-dynamic font-semibold text-slate-800 dark:text-slate-100 flex-1">Memuat pertanyaan...</div>
                             <button onclick="readQuestionText()" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-teal-500 flex items-center justify-center flex-shrink-0 transition-colors shadow-sm" title="Bacakan Soal">
                                 <i class="ph-fill ph-speaker-high"></i>
                             </button>
                         </div>
+
                         <div id="options-container" class="flex flex-col gap-3 pb-2"></div>
+                        
+                        <!-- KOTAK PENJELASAN (Mode Review) -->
                         <div id="explanation-box" class="hidden mt-6 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-5 fade-in shadow-inner">
                             <h4 class="text-teal-600 dark:text-teal-400 font-bold mb-2 flex items-center gap-2 uppercase tracking-wide text-sm"><i class="ph-fill ph-lightbulb"></i> Penjelasan Materi:</h4>
                             <p id="explanation-text" class="text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-medium"></p>
@@ -256,15 +263,18 @@
                         <button onclick="prevQuestion()" id="btn-prev" class="px-3 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold text-slate-600 dark:text-slate-300 bg-slate-200 hover:bg-slate-300 dark:bg-white/5 dark:hover:bg-white/10 transition-colors flex items-center gap-1 md:gap-2 text-sm md:text-base">
                             <i class="ph ph-caret-left text-lg"></i> <span class="hidden sm:inline">Sebelumnya</span>
                         </button>
+                        
                         <button onclick="handleCenterAction()" id="btn-center-action" class="px-5 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-emerald-950 dark:text-white bg-emerald-400 hover:bg-emerald-500 dark:bg-emerald-500/30 dark:hover:bg-emerald-500/50 border border-emerald-500 transition-colors text-sm md:text-base shadow-sm">
                             Selesai
                         </button>
+                        
                         <button onclick="nextQuestion()" id="btn-next" class="px-3 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold text-white bg-blue-500 hover:bg-blue-600 transition-colors flex items-center gap-1 md:gap-2 shadow-lg shadow-blue-500/30 text-sm md:text-base">
                             <span class="hidden sm:inline">Berikutnya</span> <i class="ph ph-caret-right text-lg"></i>
                         </button>
                     </div>
                 </div>
 
+                <!-- Right Area: Navigation Grid (DESKTOP) -->
                 <div class="hidden md:flex w-80 flex-shrink-0 flex-col glass-nav border-l border-slate-200 dark:border-white/10">
                     <div class="flex items-center justify-between p-6 pb-4 border-b border-slate-200/50 dark:border-white/5 flex-shrink-0">
                         <h3 class="font-bold text-lg text-slate-800 dark:text-white cinematic-title">Navigasi Soal</h3>
@@ -284,13 +294,16 @@
                 <i class="ph-fill ph-check-circle text-6xl md:text-7xl text-emerald-500 dark:text-emerald-400 mb-4 md:mb-6 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]"></i>
                 <h2 class="text-3xl md:text-4xl mb-2 text-slate-800 dark:text-white cinematic-title">Kuis Selesai!</h2>
                 <p class="text-slate-600 dark:text-slate-400 mb-6 text-sm md:text-base font-medium" id="result-subject-name">Mata Pelajaran</p>
+                
                 <div class="bg-slate-100 dark:bg-slate-900/50 rounded-2xl p-6 md:p-8 mb-4 inline-block border border-slate-200 dark:border-white/10 w-full max-w-xs">
                     <p class="text-slate-500 dark:text-slate-400 text-xs md:text-sm font-semibold uppercase tracking-widest mb-2">Skor Akhir Anda</p>
                     <div class="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-600 via-teal-500 to-emerald-400 cinematic-title" id="final-score">0</div>
                 </div>
+
                 <div class="mb-6 text-sm text-slate-500 dark:text-slate-400 font-medium bg-white/50 dark:bg-black/20 py-2 px-4 rounded-lg inline-block border border-slate-200 dark:border-white/5">
                     <i class="ph-fill ph-clock text-teal-500"></i> Rata-rata waktu: <span id="time-analysis" class="font-bold text-slate-700 dark:text-white">0 detik/soal</span>
                 </div>
+
                 <div class="flex flex-col sm:flex-row justify-center gap-3 w-full">
                     <button onclick="startReview()" class="flex-1 py-3.5 md:py-4 rounded-xl font-bold text-teal-950 bg-teal-400 hover:bg-teal-500 transition-colors shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2">
                         <i class="ph-bold ph-book-open text-lg"></i> Lihat Pembahasan
@@ -316,7 +329,8 @@
             <div class="p-6 overflow-y-auto flex-1 overscroll-contain">
                 <div class="grid grid-cols-5 sm:grid-cols-7 gap-3 content-start" id="question-grid-mobile"></div>
             </div>
-            <div class="p-5 border-t border-slate-200 dark:border-white/10 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md rounded-t-none flex justify-around flex-shrink-0" id="legend-mobile"></div>
+            <div class="p-5 border-t border-slate-200 dark:border-white/10 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md rounded-t-none flex justify-around flex-shrink-0" id="legend-mobile">
+            </div>
         </div>
     </div>
 
@@ -382,11 +396,10 @@
             
             <div class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50">
-                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.28 - Update Wadah Global 🎉</h4>
+                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.31 - Ekspan Mapel Baru 🎉</h4>
                     <ul class="list-disc pl-4 text-xs md:text-sm text-slate-600 dark:text-slate-300 space-y-1.5 font-medium">
-                        <li><strong>Dukungan Multi-File JS:</strong> Kuis kini dapat memuat file soal secara bergantian tanpa error konflik memori (seperti mapel Pendidikan Pancasila).</li>
-                        <li><strong>Mode Pembahasan:</strong> Fitur review interaktif lengkap dengan penjelasan materi mendalam.</li>
-                        <li><strong>Kotak Teks Bacaan:</strong> Box scroll khusus untuk teks bahasa inggris / paragraf panjang.</li>
+                        <li><strong>Dukungan Multi-File JS:</strong> Berhasil dihubungkan dengan <code>Ekonomi.js</code> dan lainnya.</li>
+                        <li><strong>Anti Error:</strong> Pastikan di dalam JS mapel JANGAN ADA kata <code>const subjects</code> atau <code>const quizData</code> lagi.</li>
                     </ul>
                 </div>
             </div>
@@ -395,14 +408,18 @@
 
     <audio id="audio-player"></audio>
 
-    <!-- WADAH DATA GLOBAL UNTUK MENCEGAH ERROR SAAT DATA BELUM LOAD -->
+    <!-- WADAH DATA GLOBAL UNTUK MENCEGAH ERROR "ALREADY DECLARED" -->
     <script>
-        window.failedScripts = []; 
-        function scriptError(scriptName) { window.failedScripts.push(scriptName); }
-
+        // Array dan Object kosong ini akan diisi oleh file-file eksternal (JS)
         const subjects = [];
         const quizData = {};
+        window.failedScripts = []; 
 
+        function scriptError(scriptName) {
+            window.failedScripts.push(scriptName);
+        }
+
+        // FUNGSI ACAK ARRAY (Bisa dipanggil oleh semua mapel)
         function shuffleArray(array) {
             let shuffled = [...array];
             for (let i = shuffled.length - 1; i > 0; i--) {
@@ -413,13 +430,11 @@
         }
     </script>
 
-    <!-- ======================================================================= -->
-    <!-- PANGGIL FILE SOAL EKSTERNAL DI BAWAH INI                                -->
-    <!-- (Pastikan nama file besar/kecilnya SAMA PERSIS dengan di folder kamu)   -->
-    <!-- ======================================================================= -->
+    <!-- PANGGIL FILE SOAL EKSTERNAL DI SINI -->
     <script src="BahasaInggris.js" onerror="scriptError('BahasaInggris.js')"></script>
     <script src="PJOK.js" onerror="scriptError('PJOK.js')"></script>
     <script src="PendidikanPancasila.js" onerror="scriptError('PendidikanPancasila.js')"></script>
+    <script src="Ekonomi.js" onerror="scriptError('Ekonomi.js')"></script>
 
     <!-- SCRIPT LOGIKA UTAMA -->
     <script>
@@ -614,8 +629,8 @@
         window.onload = () => { 
             initTheme(); initSettings(); initMusicPlayer(); 
             
-            // CEK APAKAH ADA FILE JS YANG GAGAL DIMUAT
-            if (window.failedScripts.length > 0) {
+            // JIKA ADA FILE JS YANG ERROR/HILANG, MUNCULKAN PESAN BANTUAN DI LAYAR
+            if (window.failedScripts && window.failedScripts.length > 0) {
                 document.getElementById('subject-grid').innerHTML = `
                 <div class="col-span-full glass-panel p-6 rounded-2xl text-center border-red-500/30 w-full max-w-lg mx-auto">
                     <i class="ph-fill ph-warning-circle text-5xl text-red-500 mb-3"></i>
@@ -628,7 +643,7 @@
                         <b>Solusi:</b><br>
                         1. Pastikan nama file JS <b>persis sama</b> (huruf besar/kecil berpengaruh).<br>
                         2. Pastikan file HTML dan JS berada di dalam <b>folder yang sama persis</b>.<br>
-                        3. Jika dibuka langsung (file://), pastikan tidak ada <i>typo</i> atau tanda kurung yang hilang di dalam file JS tersebut.
+                        3. Periksa file JS kamu, pastikan <b>TIDAK ADA</b> tulisan <code class="bg-slate-200 dark:bg-slate-700 px-1">const subjects</code> atau <code class="bg-slate-200 dark:bg-slate-700 px-1">const quizData</code> di dalamnya karena itu bikin browser nge-crash.
                     </p>
                 </div>`;
             } 
@@ -692,7 +707,6 @@
                     </div>`;
                 }
 
-                // Cek jumlah soal dari quizData untuk mencegah error
                 const soalCount = quizData[sub.id] ? quizData[sub.id].length : 0;
 
                 const card = document.createElement('div'); 
