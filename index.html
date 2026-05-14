@@ -104,8 +104,8 @@
             height: 48px; overflow: hidden; display: flex; align-items: center; white-space: nowrap;
         }
         .di-collapsed { width: 48px; border-radius: 24px; cursor: pointer; }
-        .di-expanded { width: clamp(200px, calc(100vw - 180px), 380px); border-radius: 24px; cursor: default; }
-        .di-content-wrapper { width: clamp(200px, calc(100vw - 180px), 380px); transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
+        .di-expanded { width: clamp(230px, calc(100vw - 105px), 380px); border-radius: 24px; cursor: default; }
+        .di-content-wrapper { width: clamp(230px, calc(100vw - 105px), 380px); transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
 
         .cinematic-title { font-family: 'Archivo Black', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.03em; }
 
@@ -161,15 +161,17 @@
     </div>
 
     <!-- TOP RIGHT CONTROLS -->
-    <div class="fixed top-3 right-3 md:top-6 md:right-8 z-50 flex gap-1.5 md:gap-3">
+    <div class="fixed top-3 right-3 md:top-6 md:right-8 z-50 flex flex-col gap-2 md:gap-3 items-end">
+        <div class="flex gap-2 md:gap-3">
+            <button onclick="openSettings()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none group shadow-lg">
+                <i class="ph-fill ph-gear text-xl md:text-2xl text-slate-600 dark:text-slate-300 group-hover:rotate-90 transition-transform duration-500"></i>
+            </button>
+            <button onclick="toggleTheme()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none group shadow-lg">
+                <i id="theme-icon" class="ph-fill ph-moon text-xl md:text-2xl text-teal-500 dark:text-teal-400"></i>
+            </button>
+        </div>
         <button onclick="openAnnouncement()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg text-blue-500 dark:text-blue-400 border-blue-200 dark:border-blue-900/50">
             <i class="ph-fill ph-megaphone text-xl md:text-2xl"></i>
-        </button>
-        <button onclick="openSettings()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
-            <i class="ph-fill ph-gear text-xl md:text-2xl text-slate-600 dark:text-slate-300"></i>
-        </button>
-        <button onclick="toggleTheme()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
-            <i id="theme-icon" class="ph-fill ph-moon text-xl md:text-2xl text-teal-500 dark:text-teal-400"></i>
         </button>
     </div>
 
@@ -397,12 +399,10 @@
             
             <div class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50">
-                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.32 - Tambahan Mapel Baru 🎉</h4>
+                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.19 - Layout Update 🎉</h4>
                     <ul class="list-disc pl-4 text-xs md:text-sm text-slate-600 dark:text-slate-300 space-y-1.5 font-medium">
-                        <li><strong>Mata Pelajaran Baru:</strong> Sekarang kamu bisa menguji kemampuanmu di mapel Ekonomi dan Pendidikan Pancasila!</li>
-                        <li><strong>Fitur Baca Soal:</strong> Gunakan ikon speaker di samping soal untuk mendengarkan soal dibacakan oleh sistem.</li>
-                        <li><strong>Mode Pembahasan Interaktif:</strong> Evaluasi jawabanmu setelah kuis selesai dengan penjelasan lengkap.</li>
-                        <li><strong>Efek Spesial:</strong> Jangan lupa raih skor di atas 70 untuk melihat hujan Confetti!</li>
+                        <li><strong>Music Player Lega:</strong> Ruang pemutar musik kini diperluas agar lebih nyaman digunakan.</li>
+                        <li><strong>Navigasi Rapi:</strong> Tombol pengumuman dipindahkan ke bawah agar layar tidak sesak.</li>
                     </ul>
                 </div>
             </div>
