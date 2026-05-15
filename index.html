@@ -104,8 +104,8 @@
             height: 48px; overflow: hidden; display: flex; align-items: center; white-space: nowrap;
         }
         .di-collapsed { width: 48px; border-radius: 24px; cursor: pointer; }
-        .di-expanded { width: calc(100vw - 140px); max-width: 320px; border-radius: 24px; cursor: default; }
-        .di-content-wrapper { width: calc(100vw - 140px); max-width: 320px; transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
+        .di-expanded { width: clamp(200px, calc(100vw - 140px), 320px); border-radius: 24px; cursor: default; }
+        .di-content-wrapper { width: clamp(200px, calc(100vw - 140px), 320px); transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
 
         .cinematic-title { font-family: 'Archivo Black', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.03em; }
 
@@ -193,7 +193,7 @@
                 </h1>
                 <p class="text-slate-600 dark:text-slate-400 text-sm md:text-lg mt-2">Pilih mata pelajaran untuk memulai ujian.</p>
             </div>
-            <!-- Grid Mapel Akan Dimunculkan Oleh Script Otomatis -->
+            <!-- Grid Mapel -->
             <div class="flex flex-wrap justify-center gap-4 md:gap-6 w-full" id="subject-grid"></div>
         </div>
 
@@ -215,7 +215,7 @@
 
                         <!-- KONTROL KANAN -->
                         <div class="flex flex-col items-end gap-2 mt-1 relative w-auto">
-                            <!-- Tombol Keluar -->
+                            <!-- Tombol Keluar Panjang -->
                             <button onclick="backToMenu()" class="w-full h-10 md:h-12 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-500 flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm px-3" title="Keluar">
                                 <i class="ph-bold ph-sign-out text-lg md:text-xl"></i>
                                 <span class="font-bold text-xs md:text-sm uppercase tracking-wider">Keluar</span>
@@ -310,6 +310,7 @@
                     <div class="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-600 via-teal-500 to-emerald-400 cinematic-title" id="final-score">0</div>
                 </div>
 
+                <!-- Analisis Waktu -->
                 <div class="mb-6 text-sm text-slate-500 dark:text-slate-400 font-medium bg-white/50 dark:bg-black/20 py-2 px-4 rounded-lg inline-block border border-slate-200 dark:border-white/5">
                     <i class="ph-fill ph-clock text-teal-500"></i> Rata-rata waktu: <span id="time-analysis" class="font-bold text-slate-700 dark:text-white">0 detik/soal</span>
                 </div>
@@ -393,7 +394,7 @@
         </div>
     </div>
 
-    <!-- MODAL ANNOUNCEMENT / PATCH NOTES -->
+    <!-- MODAL ANNOUNCEMENT -->
     <div id="announcement-modal" class="fixed inset-0 z-[80] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="absolute inset-0 modal-overlay" onclick="closeAnnouncement()"></div>
         <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="announcement-content">
@@ -406,12 +407,12 @@
             
             <div class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50">
-                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.1.5.0 - Layout Update 🎉</h4>
+                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.1.5.1 - Fitur & Mapel Baru 🎉</h4>
                     <ul class="list-disc pl-4 text-xs md:text-sm text-slate-600 dark:text-slate-300 space-y-1.5 font-medium">
+                        <li><strong>Format Teks (Baru!):</strong> Kuis kini mendukung teks tebal, miring, dan garis bawah pada soal!</li>
+                        <li><strong>Mata Pelajaran Baru:</strong> Selamat datang di mapel Ekonomi dan Pendidikan Pancasila.</li>
                         <li><strong>Music Player Presisi:</strong> Ruang pemutar musik diperbaiki agar lega dan tidak menabrak tombol lain di layar HP.</li>
-                        <li><strong>Navigasi Rapi:</strong> Tombol pengumuman dibuat memanjang di bawah pengaturan agar estetik dan bebas tumpang tindih dengan kotak soal.</li>
-                        <li><strong>Pemisahan Data Mapel:</strong> Kini memuat soal berbagai mapel jauh lebih cepat tanpa membuat browser berat.</li>
-                        <li><strong>Kotak Teks Bacaan:</strong> Box scroll khusus untuk membaca artikel/cerpen sebelum menjawab pertanyaan.</li>
+                        <li><strong>Navigasi Rapi:</strong> Tombol pengumuman dibuat memanjang di bawah pengaturan agar estetik dan bebas tumpang tindih.</li>
                     </ul>
                 </div>
             </div>
@@ -792,6 +793,8 @@
             if(currentQuestions.length === 0) return; // Guard
             const q = currentQuestions[currentIndex]; 
             document.getElementById('current-question-num').innerText = currentIndex + 1; 
+            
+            // PERBAIKAN: Menggunakan innerHTML agar tag <u>, <b>, <i> dapat dirender sebagai format teks yang benar
             document.getElementById('question-text').innerHTML = q.question;
             
             const storyBox = document.getElementById('story-box');
@@ -844,7 +847,9 @@
 
             const expBox = document.getElementById('explanation-box');
             if (isReviewMode) {
-                expBox.classList.remove('hidden'); document.getElementById('explanation-text').innerText = q.explanation;
+                expBox.classList.remove('hidden'); 
+                // PERBAIKAN: Memungkinkan teks penjelasan menerima format HTML
+                document.getElementById('explanation-text').innerHTML = q.explanation;
             } else { expBox.classList.add('hidden'); }
 
             document.getElementById('btn-prev').style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
