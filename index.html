@@ -89,10 +89,6 @@
         .rotate-spin { animation: spinOnce 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes spinOnce { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(0.8); } 100% { transform: rotate(360deg) scale(1); } }
 
-        /* Animasi Piringan Hitam Music Player */
-        @keyframes spin-record { 100% { transform: rotate(360deg); } }
-        .spin-record { animation: spin-record 4s linear infinite; }
-
         /* Kustomisasi Range Slider (Progress Bar Musik) */
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: #2dd4bf; cursor: pointer; margin-top: -4.5px; box-shadow: 0 0 5px rgba(45, 212, 191, 0.5); }
@@ -111,10 +107,10 @@
         .mobile-dvh-fix { height: calc(100dvh - 6rem); }
         @media (min-width: 768px) { .mobile-dvh-fix { height: 80vh; max-height: 750px; } }
 
-        /* CSS KHUSUS DYNAMIC ISLAND UNTUK HP */
+        /* CSS KHUSUS DYNAMIC ISLAND (Animasi halus ease-in-out) */
         .dynamic-island {
-            transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                        border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+            transition: width 0.4s ease-in-out, 
+                        border-radius 0.4s ease-in-out,
                         background-color 0.3s ease;
             height: 48px; 
             overflow: hidden;
@@ -130,15 +126,13 @@
         }
         
         .di-expanded {
-            width: calc(100vw - 120px); 
-            max-width: 340px;
+            width: clamp(230px, calc(100vw - 120px), 340px); 
             border-radius: 24px;
             cursor: default;
         }
 
         .di-content-wrapper {
-            width: calc(100vw - 120px); 
-            max-width: 340px;
+            width: clamp(230px, calc(100vw - 120px), 340px); 
             transition: opacity 0.3s ease, visibility 0.3s;
             display: flex;
             align-items: center;
@@ -161,6 +155,9 @@
         body[data-text-size="md"] .o-text-dynamic { font-size: 1rem; }
         body[data-text-size="lg"] .o-text-dynamic { font-size: 1.125rem; }
 
+        /* Animasi Transisi Area Kuis */
+        #quiz-content-area { transition: opacity 0.2s ease, transform 0.2s ease; }
+
         .confetti { position: absolute; width: 10px; height: 10px; background-color: #f00; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
     </style>
@@ -177,7 +174,13 @@
             <p class="text-slate-600 dark:text-slate-400 text-sm mb-8">Masuk dengan akun Google untuk menyinkronkan skor ujianmu antar perangkat secara aman.</p>
             
             <button id="btn-google-login" class="w-full py-4 bg-white text-slate-900 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-slate-100 transition-all active:scale-95 shadow-xl border border-slate-200">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="20" alt="Google">
+                <!-- SVG Google Inline agar tidak ada bug render -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px">
+                    <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                    <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+                    <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+                    <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+                </svg>
                 <span id="login-btn-text">Masuk dengan Google</span>
             </button>
         </div>
@@ -188,12 +191,11 @@
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[100] overflow-hidden hidden"></div>
 
     <!-- DYNAMIC ISLAND MUSIC PLAYER WIDGET -->
-    <div id="dynamic-island" class="fixed top-3 left-3 md:top-6 md:left-8 z-[70] bg-white/80 dark:bg-slate-800/90 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 shadow-lg dynamic-island di-collapsed" onclick="togglePlayerState(event)">
-        <!-- Ikon Piringan Hitam -->
-        <div id="record-disk" class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 border border-slate-700 shadow-inner spin-record z-20 pointer-events-none" style="animation-play-state: paused;">
-            <div class="w-2.5 h-2.5 bg-teal-400 rounded-full absolute z-10"></div>
-            <div class="w-8 h-8 rounded-full border border-slate-700/50 absolute"></div>
-            <i class="ph-fill ph-music-notes text-white/30 text-[10px] absolute left-1.5 top-2.5"></i>
+    <div id="dynamic-island" class="fixed top-3 left-3 md:top-6 md:left-8 z-[70] bg-white/80 dark:bg-slate-800/90 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dynamic-island di-collapsed" onclick="togglePlayerState(event)">
+        
+        <!-- Ikon Volume Speaker Dinamis -->
+        <div id="music-icon-container" class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300">
+            <i id="music-state-icon" class="ph-fill ph-speaker-slash text-xl"></i>
         </div>
         
         <!-- Konten Expanded -->
@@ -206,11 +208,8 @@
                 </div>
             </div>
 
-            <!-- Kontrol Audio -->
+            <!-- Kontrol Audio (Tanpa Loop) -->
             <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0 ml-1.5 md:ml-3" onclick="event.stopPropagation()">
-                <button onclick="toggleLoop()" id="btn-loop" class="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-slate-400 hover:text-teal-500 active:scale-95 transition-colors">
-                    <i class="ph-bold ph-repeat text-[14px]"></i>
-                </button>
                 <button onclick="prevTrack()" class="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
                     <i class="ph-fill ph-skip-back text-lg"></i>
                 </button>
@@ -270,6 +269,7 @@
         <div id="screen-quiz" class="w-full max-w-6xl fade-in hidden px-1 md:px-0 mt-8 md:mt-0">
             <div class="glass-panel rounded-2xl overflow-hidden flex flex-col md:flex-row mobile-dvh-fix w-full relative">
 
+                <!-- Label Mode Review -->
                 <div id="review-badge" class="hidden absolute top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-950 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg z-20 cinematic-title">
                     Mode Pembahasan
                 </div>
@@ -465,9 +465,9 @@
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50">
                     <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.2.1.0 - The Perfect UI 🎉</h4>
                     <ul class="list-disc pl-4 text-xs md:text-sm text-slate-600 dark:text-slate-300 space-y-1.5 font-medium">
-                        <li><strong>Reposisi Cerdas:</strong> Tombol Pengumuman & Info Akun kini dipindahkan ke pojok kanan bawah agar lebih rapi. Saat kuis dimulai, menu ini akan otomatis sembunyi agar layar tidak sumpek!</li>
-                        <li><strong>Animasi Restored:</strong> Semua efek sentuhan (hover), animasi piringan hitam, dan kemunculan layar diaktifkan kembali.</li>
-                        <li><strong>Mobile Friendly:</strong> Pemutar musik kini memiliki ukuran fleksibel yang dijamin pas walau dibuka melalui layar HP yang kecil.</li>
+                        <li><strong>Reposisi Cerdas:</strong> Tombol Pengumuman & Info Akun kini dipindahkan ke pojok kanan bawah agar lebih rapi. Saat kuis dimulai, menu ini akan otomatis sembunyi.</li>
+                        <li><strong>Animasi Restored:</strong> Efek animasi saat pergantian soal diaktifkan kembali.</li>
+                        <li><strong>Music Player Clean:</strong> Animasi dibuat tidak bouncy, fungsi loop dihapus, dan warna lampu musik mengikuti indikator (Merah mati / Hijau nyala).</li>
                     </ul>
                 </div>
             </div>
@@ -730,7 +730,7 @@
             { title: 'Lofi Melody', artist: 'Pulsebox', src: './Lofi Melody - Pulsebox.mp3' }
         ];
         
-        let currentTrackIndex = 0; let isPlaying = false; let isPlayerExpanded = false; let isLooping = false;
+        let currentTrackIndex = 0; let isPlaying = false; let isPlayerExpanded = false;
         const audioEl = document.getElementById('audio-player'); 
         if(audioEl) audioEl.loop = false; 
 
@@ -742,8 +742,6 @@
         const contentWrapper = document.getElementById('di-content');
         const timeCurrent = document.getElementById('track-current'); 
         const timeTotal = document.getElementById('track-total');
-        const loopBtn = document.getElementById('btn-loop');
-        const recordDisk = document.getElementById('record-disk');
 
         function togglePlayerState(e) {
             if(e && (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.closest('button'))) return;
@@ -775,12 +773,7 @@
                 if(timeCurrent) timeCurrent.innerText = formatTime(audioEl.currentTime);
             });
             audioEl.addEventListener('ended', () => {
-                if(isLooping) {
-                    audioEl.currentTime = 0;
-                    audioEl.play();
-                } else {
-                    nextTrack();
-                }
+                nextTrack(); // Otomatis next track tanpa loop
             });
             if(progressBar) progressBar.addEventListener('input', (e) => { audioEl.currentTime = (audioEl.duration * (e.target.value / 100)); });
         }
@@ -803,32 +796,20 @@
             if (isPlaying) {
                 audioEl.pause(); isPlaying = false; 
                 if (playIcon) playIcon.classList.replace('ph-pause', 'ph-play');
+                // State Mati (Merah) - Ikon Volume Silang
                 if (musicIconContainer) musicIconContainer.className = "w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300";
                 if (musicStateIcon) musicStateIcon.className = "ph-fill ph-speaker-slash text-xl";
-                if (recordDisk) recordDisk.style.animationPlayState = 'paused';
             } else {
                 const p = audioEl.play(); if(p !== undefined) p.catch(e=>{}); isPlaying = true;
                 if (playIcon) playIcon.classList.replace('ph-play', 'ph-pause');
+                // State Menyala (Hijau Emerald) - Ikon Volume Penuh
                 if (musicIconContainer) musicIconContainer.className = "w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300";
                 if (musicStateIcon) musicStateIcon.className = "ph-fill ph-speaker-high text-xl";
-                if (recordDisk) recordDisk.style.animationPlayState = 'running';
             }
         }
 
         function nextTrack() { currentTrackIndex = (currentTrackIndex + 1) % playlist.length; loadTrack(currentTrackIndex); if (!isPlaying) togglePlay(); }
         function prevTrack() { currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length; loadTrack(currentTrackIndex); if (!isPlaying) togglePlay(); }
-
-        function toggleLoop() {
-            isLooping = !isLooping;
-            if(!loopBtn) return;
-            if(isLooping) {
-                loopBtn.classList.remove('text-slate-400', 'hover:text-teal-500');
-                loopBtn.classList.add('text-teal-500', 'dark:text-teal-400');
-            } else {
-                loopBtn.classList.remove('text-teal-500', 'dark:text-teal-400');
-                loopBtn.classList.add('text-slate-400', 'hover:text-teal-500');
-            }
-        }
 
         function updateMusicVolume(val) { if(audioEl) audioEl.volume = val; setStorage('musicVol', val); }
         function updateSfxVolume(val) { globalSfxVolume = parseFloat(val); setStorage('sfxVol', val); playPopSound(); }
@@ -1067,26 +1048,59 @@
             }
         }
 
-        function selectOption(optIndex) { userAnswers[currentIndex] = optIndex; renderQuestion(); renderGrid(); if(currentIndex < currentQuestions.length - 1) setTimeout(nextQuestion, 300); }
+        function selectOption(optIndex) { 
+            userAnswers[currentIndex] = optIndex; 
+            renderQuestion(); 
+            renderGrid(); 
+            if(currentIndex < currentQuestions.length - 1) setTimeout(nextQuestion, 300); 
+        }
+
         function handleCenterAction() { if(isReviewMode) switchScreen('screen-result'); else showConfirmModal(); }
+
+        function triggerFadeAnimation(callback) {
+            const area = document.getElementById('quiz-content-area');
+            // Menurunkan opacity dan menggeser layar sedikit ke bawah
+            area.style.opacity = '0';
+            area.style.transform = 'translateY(15px)';
+            
+            setTimeout(() => {
+                callback();
+                // Mengembalikan opacity dan layar ke posisi semula dengan mulus
+                area.style.opacity = '1';
+                area.style.transform = 'translateY(0)';
+            }, 200);
+        }
 
         function nextQuestion() { 
             stopTTS();
             if (currentIndex < currentQuestions.length - 1) { 
-                currentIndex++; const area = document.getElementById('quiz-content-area'); area.style.opacity = '0';
-                setTimeout(() => { renderQuestion(); updateGridActive(); area.style.opacity = '1'; }, 150);
+                triggerFadeAnimation(() => {
+                    currentIndex++; 
+                    renderQuestion(); 
+                    updateGridActive();
+                });
             } 
         }
+
         function prevQuestion() { 
             stopTTS();
             if (currentIndex > 0) { 
-                currentIndex--; const area = document.getElementById('quiz-content-area'); area.style.opacity = '0';
-                setTimeout(() => { renderQuestion(); updateGridActive(); area.style.opacity = '1'; }, 150);
+                triggerFadeAnimation(() => {
+                    currentIndex--; 
+                    renderQuestion(); 
+                    updateGridActive();
+                });
             } 
         }
+
         function jumpToQuestion(index) { 
-            stopTTS(); currentIndex = index; const area = document.getElementById('quiz-content-area'); area.style.opacity = '0';
-            setTimeout(() => { renderQuestion(); updateGridActive(); closeMobileNav(); area.style.opacity = '1'; }, 150);
+            stopTTS(); 
+            triggerFadeAnimation(() => {
+                currentIndex = index; 
+                renderQuestion(); 
+                updateGridActive(); 
+                closeMobileNav();
+            });
         }
 
         const modalContent = document.getElementById('mobile-nav-content'); const dragHeader = document.getElementById('mobile-nav-header');
@@ -1191,6 +1205,7 @@
         
         function backToMenu() { 
             stopTTS(); playExitSound(); clearInterval(timerInterval); closeMobileNav(); 
+            // Munculkan kembali tombol akun & pengumuman di pojok bawah
             document.getElementById('bottom-controls').classList.remove('opacity-0', 'pointer-events-none');
             switchScreen('screen-home'); 
             if(typeof window.renderHome === "function") window.renderHome(); 
