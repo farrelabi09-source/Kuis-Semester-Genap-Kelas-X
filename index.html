@@ -82,6 +82,9 @@
         .grid-number { transition: all 0.2s; }
         .grid-number.active { transform: scale(1.15); box-shadow: 0 0 0 2px var(--bg-main), 0 0 10px #2dd4bf; z-index: 10; }
 
+        @keyframes spin-record { 100% { transform: rotate(360deg); } }
+        .spin-record { animation: spin-record 4s linear infinite; }
+
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: #2dd4bf; cursor: pointer; margin-top: -4.5px; box-shadow: 0 0 5px rgba(45, 212, 191, 0.5); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 3px; cursor: pointer; background: rgba(148, 163, 184, 0.4); border-radius: 2px; }
@@ -95,17 +98,17 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         body.modal-open { overflow: hidden; touch-action: none; }
-        .mobile-dvh-fix { height: calc(100dvh - 8rem); }
+        .mobile-dvh-fix { height: calc(100dvh - 6rem); }
         @media (min-width: 768px) { .mobile-dvh-fix { height: 80vh; max-height: 750px; } }
 
-        /* CSS DYNAMIC ISLAND */
+        /* DYNAMIC ISLAND */
         .dynamic-island {
             transition: width 0.4s ease-in-out, border-radius 0.4s ease-in-out, background-color 0.3s ease;
             height: 48px; overflow: hidden; display: flex; align-items: center; white-space: nowrap;
         }
         .di-collapsed { width: 48px; border-radius: 24px; cursor: pointer; }
-        .di-expanded { width: clamp(200px, calc(100vw - 140px), 320px); border-radius: 24px; cursor: default; }
-        .di-content-wrapper { width: clamp(200px, calc(100vw - 140px), 320px); transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
+        .di-expanded { width: clamp(230px, calc(100vw - 130px), 380px); border-radius: 24px; cursor: default; }
+        .di-content-wrapper { width: clamp(230px, calc(100vw - 130px), 380px); transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
 
         .cinematic-title { font-family: 'Archivo Black', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.03em; }
 
@@ -193,7 +196,7 @@
                 </h1>
                 <p class="text-slate-600 dark:text-slate-400 text-sm md:text-lg mt-2">Pilih mata pelajaran untuk memulai ujian.</p>
             </div>
-            <!-- Grid Mapel -->
+            <!-- Grid Mapel Akan Dimunculkan Oleh Script Otomatis -->
             <div class="flex flex-wrap justify-center gap-4 md:gap-6 w-full" id="subject-grid"></div>
         </div>
 
@@ -222,13 +225,13 @@
                             </button>
                             
                             <div class="flex items-center gap-2 mt-auto relative">
-                                <!-- Timer -->
+                                <!-- Timer: Aktif saat Kuis -->
                                 <div id="timer-container" class="flex glass-panel px-3 h-10 md:h-12 md:px-4 rounded-lg md:rounded-xl items-center gap-1.5 border-teal-500/30 text-teal-500 dark:text-teal-400 font-mono font-bold text-sm md:text-lg shadow-sm">
                                     <i class="ph ph-timer"></i>
                                     <span id="timer-display">90:00</span>
                                 </div>
 
-                                <!-- Badge Pembahasan -->
+                                <!-- Badge Pembahasan: Aktif saat Review Mode (Tumpuk) -->
                                 <div id="review-badge" class="hidden glass-panel h-10 md:h-12 bg-yellow-400/90 dark:bg-yellow-500/90 border-yellow-300 dark:border-yellow-400/50 text-yellow-950 px-3 md:px-4 rounded-lg md:rounded-xl font-bold shadow-sm cinematic-title flex-col justify-center leading-none text-center flex-shrink-0">
                                     <span class="text-[9px] md:text-[10px]">Sesi</span>
                                     <span class="text-[10px] md:text-xs">Pembahasan</span>
@@ -251,7 +254,7 @@
                             <div id="story-text" class="text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-medium"></div>
                         </div>
 
-                        <!-- Fitur Baca Soal -->
+                        <!-- Fitur Baca Soal (TTS) -->
                         <div class="flex items-start justify-between gap-4 mb-6 mt-2">
                             <div id="question-text" class="q-text-dynamic font-semibold text-slate-800 dark:text-slate-100 flex-1">Memuat pertanyaan...</div>
                             <button onclick="readQuestionText()" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-teal-500 flex items-center justify-center flex-shrink-0 transition-colors shadow-sm" title="Bacakan Soal">
@@ -394,7 +397,7 @@
         </div>
     </div>
 
-    <!-- MODAL ANNOUNCEMENT -->
+    <!-- MODAL ANNOUNCEMENT / PATCH NOTES -->
     <div id="announcement-modal" class="fixed inset-0 z-[80] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="absolute inset-0 modal-overlay" onclick="closeAnnouncement()"></div>
         <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="announcement-content">
@@ -407,12 +410,12 @@
             
             <div class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50">
-                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.1.5.1 - Fitur & Mapel Baru 🎉</h4>
+                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.1.6.1 - Pemulihan Fitur Utama 🎉</h4>
                     <ul class="list-disc pl-4 text-xs md:text-sm text-slate-600 dark:text-slate-300 space-y-1.5 font-medium">
-                        <li><strong>Format Teks (Baru!):</strong> Kuis kini mendukung teks tebal, miring, dan garis bawah pada soal!</li>
-                        <li><strong>Mata Pelajaran Baru:</strong> Selamat datang di mapel Ekonomi dan Pendidikan Pancasila.</li>
-                        <li><strong>Music Player Presisi:</strong> Ruang pemutar musik diperbaiki agar lega dan tidak menabrak tombol lain di layar HP.</li>
-                        <li><strong>Navigasi Rapi:</strong> Tombol pengumuman dibuat memanjang di bawah pengaturan agar estetik dan bebas tumpang tindih.</li>
+                        <li><strong>Fitur Restored:</strong> Sistem pengaturan Volume Musik dan Volume SFX yang sempat hilang kini telah dikembalikan ke dalam menu Pengaturan.</li>
+                        <li><strong>Pembaruan UI:</strong> Desain lencana skor kini menggunakan simbol Bintang (⭐) di atas ikon mapel yang jauh lebih elegan.</li>
+                        <li><strong>Format Teks:</strong> Kuis kini mendukung format garis bawah, miring, dan cetak tebal pada soal mapel apapun.</li>
+                        <li><strong>Mapel Lengkap:</strong> Penambahan Kimia dan perbaikan sistem pemanggilan data eksternal.</li>
                     </ul>
                 </div>
             </div>
@@ -421,7 +424,7 @@
 
     <audio id="audio-player"></audio>
 
-    <!-- WADAH DATA GLOBAL UNTUK MENCEGAH ERROR -->
+    <!-- WADAH DATA GLOBAL -->
     <script>
         const subjects = [];
         const quizData = {};
@@ -446,6 +449,7 @@
     <script src="PJOK.js" onerror="scriptError('PJOK.js')"></script>
     <script src="PendidikanPancasila.js" onerror="scriptError('PendidikanPancasila.js')"></script>
     <script src="Ekonomi.js" onerror="scriptError('Ekonomi.js')"></script>
+    <script src="Kimia.js" onerror="scriptError('Kimia.js')"></script>
 
     <!-- SCRIPT LOGIKA UTAMA -->
     <script>
@@ -454,6 +458,7 @@
         function stopTTS() { try { if ('speechSynthesis' in window && window.speechSynthesis) window.speechSynthesis.cancel(); } catch(e) { console.warn("TTS Error", e); } }
 
         let globalSfxVolume = 0.5; let timeStart = 0; let timeEnd = 0;
+        
         let audioCtx;
         function getAudioCtx() {
             try {
@@ -710,10 +715,10 @@
             subjects.forEach(sub => {
                 const hs = getStorage('hs_' + sub.id, null); 
                 let badgeHTML = '';
-                if(hs !== null) {
+                if(hs !== null && hs !== 0 && hs !== "0") {
                     badgeHTML = `
-                    <div class="absolute top-3 right-3 bg-teal-100 dark:bg-teal-900/50 border border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 text-[10px] md:text-xs font-bold px-2.5 py-1 rounded-full shadow-sm cinematic-title">
-                        Sebelumnya: ${hs}
+                    <div class="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-[10px] md:text-xs font-bold px-1.5 py-0.5 rounded shadow-sm border border-yellow-200 cinematic-title">
+                        ⭐ ${hs}
                     </div>`;
                 }
 
@@ -726,9 +731,9 @@
                     else alert("Soal untuk " + sub.name + " belum tersedia!");
                 };
                 card.innerHTML = `
-                    ${badgeHTML}
-                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center mb-3 md:mb-4 border border-slate-200 dark:border-slate-700/50 shadow-sm mt-3">
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center mb-3 md:mb-4 border border-slate-200 dark:border-slate-700/50 shadow-sm mt-3 relative">
                         <i class="ph ${sub.icon} text-3xl md:text-4xl ${sub.color}"></i>
+                        ${badgeHTML}
                     </div>
                     <h3 class="font-bold text-base md:text-lg text-slate-800 dark:text-white mb-1 cinematic-title leading-tight">${sub.name}</h3>
                     <p class="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400">${soalCount} Soal • 90 Menit</p>
@@ -794,19 +799,22 @@
             const q = currentQuestions[currentIndex]; 
             document.getElementById('current-question-num').innerText = currentIndex + 1; 
             
-            // PERBAIKAN: Menggunakan innerHTML agar tag <u>, <b>, <i> dapat dirender sebagai format teks yang benar
+            // PERBAIKAN: Menggunakan innerHTML agar tag <u>, <b>, <i> dapat dirender sebagai format teks
             document.getElementById('question-text').innerHTML = q.question;
             
             const storyBox = document.getElementById('story-box');
-            if(q.story) {
-                document.getElementById('story-text').innerHTML = q.story.replace(/\n/g, '<br>');
-                storyBox.classList.remove('hidden');
-            } else {
-                storyBox.classList.add('hidden');
-                document.getElementById('story-text').innerHTML = '';
+            if(storyBox) {
+                if(q.story) {
+                    document.getElementById('story-text').innerHTML = q.story.replace(/\n/g, '<br>');
+                    storyBox.classList.remove('hidden');
+                } else {
+                    storyBox.classList.add('hidden');
+                    document.getElementById('story-text').innerHTML = '';
+                }
             }
-            
-            const optionsContainer = document.getElementById('options-container'); optionsContainer.innerHTML = ''; 
+
+            const optionsContainer = document.getElementById('options-container'); 
+            optionsContainer.innerHTML = ''; 
             const abcd = ['A', 'B', 'C', 'D', 'E'];
             const isTF = q.options.length === 2; 
             
@@ -846,11 +854,15 @@
             });
 
             const expBox = document.getElementById('explanation-box');
-            if (isReviewMode) {
-                expBox.classList.remove('hidden'); 
-                // PERBAIKAN: Memungkinkan teks penjelasan menerima format HTML
-                document.getElementById('explanation-text').innerHTML = q.explanation;
-            } else { expBox.classList.add('hidden'); }
+            if (expBox) {
+                if (isReviewMode) {
+                    expBox.classList.remove('hidden'); 
+                    // Penjelasan juga pakai innerHTML biar bisa cetak tebal dll
+                    document.getElementById('explanation-text').innerHTML = q.explanation;
+                } else { 
+                    expBox.classList.add('hidden'); 
+                }
+            }
 
             document.getElementById('btn-prev').style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
             document.getElementById('btn-next').style.visibility = currentIndex === currentQuestions.length - 1 ? 'hidden' : 'visible';
@@ -887,13 +899,13 @@
         function closeMobileNav() { document.getElementById('mobile-nav-modal').classList.add('opacity-0', 'pointer-events-none'); modalContent.style.transform = ''; modalContent.classList.add('translate-y-full'); document.body.classList.remove('modal-open'); }
 
         function renderGrid() {
-            if(currentQuestions.length === 0) return;
             const legendHTML = isReviewMode 
                 ? `<div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-emerald-400"></div> Benar</div>
                    <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-red-400"></div> Salah</div>
                    <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700"></div> Kosong</div>`
                 : `<div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-teal-400"></div> Dijawab</div>
                    <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700"></div> Kosong</div>`;
+            
             document.getElementById('legend-desktop').innerHTML = `<div class="flex gap-3 justify-center md:justify-start flex-wrap">${legendHTML}</div>`;
             document.getElementById('legend-mobile').innerHTML = legendHTML;
 
