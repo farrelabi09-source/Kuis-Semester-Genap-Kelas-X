@@ -62,6 +62,7 @@
             min-height: 100dvh; 
             transition: background-color 0.5s ease, color 0.5s ease;
             -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
         }
 
         .glass-panel {
@@ -94,7 +95,7 @@
 
         /* Kustomisasi Range Slider (Progress Bar Musik) */
         input[type=range] { -webkit-appearance: none; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 10px; width: 10px; border-radius: 50%; background: #2dd4bf; cursor: pointer; margin-top: -3.5px; box-shadow: 0 0 5px rgba(45, 212, 191, 0.5); }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: #2dd4bf; cursor: pointer; margin-top: -4.5px; box-shadow: 0 0 5px rgba(45, 212, 191, 0.5); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 3px; cursor: pointer; background: rgba(148, 163, 184, 0.4); border-radius: 2px; }
         .dark input[type=range]::-webkit-slider-runnable-track { background: rgba(255, 255, 255, 0.2); }
 
@@ -110,10 +111,10 @@
         .mobile-dvh-fix { height: calc(100dvh - 6rem); }
         @media (min-width: 768px) { .mobile-dvh-fix { height: 80vh; max-height: 750px; } }
 
-        /* CSS KHUSUS DYNAMIC ISLAND (Diperbaiki agar mulus & tidak kegedean) */
+        /* CSS KHUSUS DYNAMIC ISLAND UNTUK HP */
         .dynamic-island {
-            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                        border-radius 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+            transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
                         background-color 0.3s ease;
             height: 48px; 
             overflow: hidden;
@@ -129,34 +130,26 @@
         }
         
         .di-expanded {
-            width: calc(100vw - 110px); 
+            width: calc(100vw - 120px); 
             max-width: 340px;
             border-radius: 24px;
             cursor: default;
         }
 
         .di-content-wrapper {
-            width: calc(100vw - 110px); 
+            width: calc(100vw - 120px); 
             max-width: 340px;
             transition: opacity 0.3s ease, visibility 0.3s;
             display: flex;
             align-items: center;
         }
 
-        .cinematic-title {
-            font-family: 'Archivo Black', sans-serif;
-            font-weight: 400; 
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-        }
+        .cinematic-title { font-family: 'Archivo Black', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.03em; }
 
         /* LAYAR LOGIN & SPINNER */
-        #login-screen {
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            z-index: 100;
-        }
-        .user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #3b82f6; object-fit: cover; }
+        #login-screen { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 100; }
+        .user-avatar { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #2dd4bf; object-fit: cover; }
+        @media (min-width: 768px) { .user-avatar { width: 32px; height: 32px; } }
         .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #3b82f6; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -168,9 +161,7 @@
         body[data-text-size="md"] .o-text-dynamic { font-size: 1rem; }
         body[data-text-size="lg"] .o-text-dynamic { font-size: 1.125rem; }
 
-        .confetti {
-            position: absolute; width: 10px; height: 10px; background-color: #f00; animation: fall linear forwards;
-        }
+        .confetti { position: absolute; width: 10px; height: 10px; background-color: #f00; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
     </style>
 </head>
@@ -183,7 +174,7 @@
                 <i class="ph-fill ph-cloud-arrow-up text-5xl text-blue-400"></i>
             </div>
             <h2 class="text-2xl font-bold mb-2 cinematic-title text-slate-800 dark:text-white">Cloud Sync</h2>
-            <p class="text-slate-600 dark:text-slate-400 text-sm mb-8">Masuk dengan akun Google untuk menyinkronkan skor ujianmu antar perangkat.</p>
+            <p class="text-slate-600 dark:text-slate-400 text-sm mb-8">Masuk dengan akun Google untuk menyinkronkan skor ujianmu antar perangkat secara aman.</p>
             
             <button id="btn-google-login" class="w-full py-4 bg-white text-slate-900 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-slate-100 transition-all active:scale-95 shadow-xl border border-slate-200">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="20" alt="Google">
@@ -197,53 +188,68 @@
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[100] overflow-hidden hidden"></div>
 
     <!-- DYNAMIC ISLAND MUSIC PLAYER WIDGET -->
-    <div id="dynamic-island" class="fixed top-3 left-3 md:top-6 md:left-8 z-[70] bg-white/80 dark:bg-slate-800/90 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dynamic-island di-collapsed" onclick="togglePlayerState(event)">
+    <div id="dynamic-island" class="fixed top-3 left-3 md:top-6 md:left-8 z-[70] bg-white/80 dark:bg-slate-800/90 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 shadow-lg dynamic-island di-collapsed" onclick="togglePlayerState(event)">
+        <!-- Ikon Piringan Hitam -->
         <div id="record-disk" class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 border border-slate-700 shadow-inner spin-record z-20 pointer-events-none" style="animation-play-state: paused;">
-            <div class="w-2.5 h-2.5 bg-slate-200 rounded-full absolute z-10"></div>
+            <div class="w-2.5 h-2.5 bg-teal-400 rounded-full absolute z-10"></div>
             <div class="w-8 h-8 rounded-full border border-slate-700/50 absolute"></div>
             <i class="ph-fill ph-music-notes text-white/30 text-[10px] absolute left-1.5 top-2.5"></i>
         </div>
         
-        <div id="di-content" class="di-content-wrapper pl-12 pr-2 opacity-0 invisible">
+        <!-- Konten Expanded -->
+        <div id="di-content" class="di-content-wrapper pl-[3.25rem] pr-2 opacity-0 invisible">
             <div class="flex-1 min-w-0 flex flex-col justify-center translate-y-[1px]">
-                <div class="truncate text-[13px] font-bold text-slate-800 dark:text-white leading-none" id="track-title">Lofi Production</div>
-                <div class="truncate text-[9px] text-slate-500 dark:text-slate-400 font-medium mt-0.5" id="track-artist">Pulsebox</div>
+                <div class="truncate text-[12px] md:text-[14px] font-bold text-slate-800 dark:text-white leading-none" id="track-title">Lofi Production</div>
+                <div class="truncate text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-0.5" id="track-artist">Pulsebox</div>
                 <div class="flex items-center gap-1.5 w-full mt-0.5">
                     <input type="range" id="track-progress" value="0" max="100" class="flex-1 h-1" onclick="event.stopPropagation()">
                 </div>
             </div>
 
-            <div class="flex items-center gap-1 flex-shrink-0 ml-1" onclick="event.stopPropagation()">
-                <button onclick="togglePlay()" class="w-8 h-8 flex items-center justify-center text-teal-500 dark:text-teal-400 hover:text-teal-600 active:scale-95 transition-transform">
-                    <i class="ph-fill ph-play text-xl" id="play-icon"></i>
+            <!-- Kontrol Audio -->
+            <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0 ml-1.5 md:ml-3" onclick="event.stopPropagation()">
+                <button onclick="toggleLoop()" id="btn-loop" class="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-slate-400 hover:text-teal-500 active:scale-95 transition-colors">
+                    <i class="ph-bold ph-repeat text-[14px]"></i>
                 </button>
-                <button onclick="nextTrack()" class="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 active:scale-95 transition-transform">
+                <button onclick="prevTrack()" class="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
+                    <i class="ph-fill ph-skip-back text-lg"></i>
+                </button>
+                <button onclick="togglePlay()" class="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center text-teal-500 dark:text-teal-400 hover:text-teal-600 active:scale-95 transition-transform">
+                    <i class="ph-fill ph-play text-2xl" id="play-icon"></i>
+                </button>
+                <button onclick="nextTrack()" class="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
                     <i class="ph-fill ph-skip-forward text-lg"></i>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- TOP RIGHT CONTROLS -->
+    <!-- TOP RIGHT CONTROLS (Tema & Setting) -->
     <div class="fixed top-3 right-3 md:top-6 md:right-8 z-50 flex gap-2 md:gap-3 items-center">
-        <!-- USER INFO UI -->
-        <div id="user-info" class="hidden glass-panel px-2.5 py-1.5 md:py-2 md:px-3 rounded-full flex items-center gap-2 shadow-lg border-blue-500/30 fade-in bg-white/80 dark:bg-slate-800/90">
-            <img id="user-photo" src="" alt="User" class="w-7 h-7 md:w-8 md:h-8 rounded-full border-2 border-blue-400 object-cover" referrerpolicy="no-referrer">
-            <span id="user-name" class="text-[10px] md:text-xs font-bold text-slate-800 dark:text-white hidden md:block cinematic-title">User</span>
-            <button onclick="window.handleLogout()" class="text-red-500 hover:text-red-600 ml-1 active:scale-95 transition-transform bg-red-500/10 rounded-full p-1" title="Keluar Akun">
+        <button onclick="openSettings()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
+            <i class="ph-fill ph-gear text-xl md:text-2xl text-slate-600 dark:text-slate-300 group-hover:rotate-90 transition-transform duration-500"></i>
+        </button>
+        <button onclick="toggleTheme()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
+            <i id="theme-icon" class="ph-fill ph-moon text-xl md:text-2xl text-teal-500 dark:text-teal-400"></i>
+        </button>
+    </div>
+
+    <!-- BOTTOM CONTROLS (Pengumuman & Akun) -->
+    <div id="bottom-controls" class="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 flex gap-2 md:gap-3 items-center transition-opacity duration-300">
+        <!-- Tombol Pengumuman -->
+        <button onclick="openAnnouncement()" class="h-10 md:h-12 px-3 md:px-4 rounded-full glass-panel flex items-center justify-center hover:scale-105 active:scale-95 transition-transform outline-none shadow-lg text-blue-500 dark:text-blue-400 border-blue-200 dark:border-blue-900/50 gap-1.5 md:gap-2">
+            <i class="ph-fill ph-megaphone text-lg md:text-xl"></i>
+            <span class="text-[10px] md:text-xs font-bold uppercase cinematic-title hidden sm:block">Update</span>
+        </button>
+
+        <!-- UI User Info -->
+        <div id="user-info" class="hidden glass-panel h-10 md:h-12 px-2.5 py-1.5 md:py-2 md:px-3 rounded-full flex items-center gap-2 shadow-lg border-teal-500/30 fade-in hover:scale-105 transition-transform">
+            <img id="user-photo" src="" alt="User" class="user-avatar" referrerpolicy="no-referrer">
+            <span id="user-name" class="text-[10px] md:text-xs font-bold text-slate-800 dark:text-white cinematic-title px-1">User</span>
+            <button onclick="window.handleLogout()" class="text-red-500 hover:text-white ml-1 active:scale-95 transition-colors bg-red-500/10 hover:bg-red-500 rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center" title="Keluar Akun">
                 <i class="ph-bold ph-sign-out text-sm md:text-lg"></i>
             </button>
         </div>
-
-        <button onclick="openAnnouncement()" class="p-2.5 md:p-3 rounded-full glass-panel hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
-            <i class="ph-fill ph-megaphone text-xl md:text-2xl text-blue-500 dark:text-blue-400"></i>
-        </button>
-        <button onclick="openSettings()" class="p-2.5 md:p-3 rounded-full glass-panel hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
-            <i class="ph-fill ph-gear text-xl md:text-2xl text-slate-600 dark:text-slate-300 hover:rotate-90 transition-transform duration-500"></i>
-        </button>
-        <button onclick="toggleTheme()" class="p-2.5 md:p-3 rounded-full glass-panel hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
-            <i id="theme-icon" class="ph-fill ph-moon text-xl md:text-2xl text-teal-500 dark:text-teal-400"></i>
-        </button>
     </div>
 
     <!-- MAIN WRAPPER -->
@@ -261,10 +267,9 @@
         </div>
 
         <!-- SCREEN 2: QUIZ / REVIEW INTERFACE -->
-        <div id="screen-quiz" class="w-full max-w-6xl fade-in hidden px-1 md:px-0">
+        <div id="screen-quiz" class="w-full max-w-6xl fade-in hidden px-1 md:px-0 mt-8 md:mt-0">
             <div class="glass-panel rounded-2xl overflow-hidden flex flex-col md:flex-row mobile-dvh-fix w-full relative">
 
-                <!-- Label Mode Review -->
                 <div id="review-badge" class="hidden absolute top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-950 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg z-20 cinematic-title">
                     Mode Pembahasan
                 </div>
@@ -285,7 +290,7 @@
                             </button>
                             
                             <div class="flex items-center gap-2">
-                                <button onclick="openMobileNav()" class="md:hidden glass-panel p-1.5 rounded-lg flex items-center justify-center text-slate-700 dark:text-slate-200 border-slate-300 dark:border-white/10 active:scale-95 transition-transform">
+                                <button onclick="openMobileNav()" class="md:hidden glass-panel p-2 rounded-lg flex items-center justify-center text-slate-700 dark:text-slate-200 border-slate-300 dark:border-white/10 active:scale-95 transition-transform">
                                     <i class="ph ph-squares-four text-xl"></i>
                                 </button>
                                 <div id="timer-container" class="glass-panel px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl flex items-center gap-1.5 border-teal-500/30 text-teal-500 dark:text-teal-400 font-mono font-bold text-sm md:text-lg shadow-sm">
@@ -305,8 +310,8 @@
 
                         <div class="flex items-start justify-between gap-4 mb-6 mt-2">
                             <div id="question-text" class="q-text-dynamic font-semibold text-slate-800 dark:text-slate-100 flex-1">Memuat pertanyaan...</div>
-                            <button onclick="readQuestionText()" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-teal-500 flex items-center justify-center flex-shrink-0 transition-colors shadow-sm" title="Bacakan Soal">
-                                <i class="ph-fill ph-speaker-high"></i>
+                            <button onclick="readQuestionText()" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-teal-500 hover:scale-110 flex items-center justify-center flex-shrink-0 transition-transform shadow-sm" title="Bacakan Soal">
+                                <i class="ph-fill ph-speaker-high text-lg"></i>
                             </button>
                         </div>
 
@@ -320,15 +325,15 @@
 
                     <!-- BOTTOM CONTROLS -->
                     <div class="flex justify-between items-center p-3 md:p-6 border-t border-slate-200 dark:border-white/10 flex-shrink-0 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md z-10">
-                        <button onclick="prevQuestion()" id="btn-prev" class="px-3 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold text-slate-600 dark:text-slate-300 bg-slate-200 hover:bg-slate-300 dark:bg-white/5 dark:hover:bg-white/10 transition-colors flex items-center gap-1 md:gap-2 text-sm md:text-base">
+                        <button onclick="prevQuestion()" id="btn-prev" class="px-3 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold text-slate-600 dark:text-slate-300 bg-slate-200 hover:bg-slate-300 dark:bg-white/5 dark:hover:bg-white/10 transition-colors flex items-center gap-1 md:gap-2 text-sm md:text-base active:scale-95">
                             <i class="ph ph-caret-left text-lg"></i> <span class="hidden sm:inline">Sebelumnya</span>
                         </button>
                         
-                        <button onclick="handleCenterAction()" id="btn-center-action" class="px-5 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-emerald-950 dark:text-white bg-emerald-400 hover:bg-emerald-500 dark:bg-emerald-500/30 dark:hover:bg-emerald-500/50 border border-emerald-500 transition-colors text-sm md:text-base shadow-sm">
+                        <button onclick="handleCenterAction()" id="btn-center-action" class="px-5 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-emerald-950 dark:text-white bg-emerald-400 hover:bg-emerald-500 dark:bg-emerald-500/30 dark:hover:bg-emerald-500/50 border border-emerald-500 transition-colors text-sm md:text-base shadow-sm active:scale-95 hover:scale-105">
                             Selesai
                         </button>
                         
-                        <button onclick="nextQuestion()" id="btn-next" class="px-3 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold text-white bg-blue-500 hover:bg-blue-600 transition-colors flex items-center gap-1 md:gap-2 shadow-lg shadow-blue-500/30 text-sm md:text-base">
+                        <button onclick="nextQuestion()" id="btn-next" class="px-3 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold text-white bg-blue-500 hover:bg-blue-600 transition-colors flex items-center gap-1 md:gap-2 shadow-lg shadow-blue-500/30 text-sm md:text-base active:scale-95">
                             <span class="hidden sm:inline">Berikutnya</span> <i class="ph ph-caret-right text-lg"></i>
                         </button>
                     </div>
@@ -357,7 +362,7 @@
                 <h2 class="text-3xl md:text-4xl mb-2 text-slate-800 dark:text-white cinematic-title">Kuis Selesai!</h2>
                 <p class="text-slate-600 dark:text-slate-400 mb-6 text-sm md:text-base font-medium" id="result-subject-name">Mata Pelajaran</p>
                 
-                <div class="bg-slate-100 dark:bg-slate-900/50 rounded-2xl p-6 md:p-8 mb-4 inline-block border border-slate-200 dark:border-white/10 w-full max-w-xs">
+                <div class="bg-slate-100 dark:bg-slate-900/50 rounded-2xl p-6 md:p-8 mb-4 inline-block border border-slate-200 dark:border-white/10 w-full max-w-xs hover:scale-105 transition-transform duration-300">
                     <p class="text-slate-500 dark:text-slate-400 text-xs md:text-sm font-semibold uppercase tracking-widest mb-2">Skor Akhir Anda</p>
                     <div class="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-600 via-teal-500 to-emerald-400 cinematic-title" id="final-score">0</div>
                 </div>
@@ -367,10 +372,10 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row justify-center gap-3 w-full">
-                    <button onclick="startReview()" class="flex-1 py-3.5 md:py-4 rounded-xl font-bold text-teal-900 bg-teal-300 hover:bg-teal-400 transition-colors shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2">
+                    <button onclick="startReview()" class="flex-1 py-3.5 md:py-4 rounded-xl font-bold text-teal-900 bg-teal-300 hover:bg-teal-400 transition-colors shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2 active:scale-95">
                         <i class="ph-bold ph-book-open text-lg"></i> Lihat Pembahasan
                     </button>
-                    <button onclick="backToMenu()" class="flex-1 py-3.5 md:py-4 rounded-xl font-bold text-white bg-slate-700 hover:bg-slate-600 transition-colors flex items-center justify-center gap-2 shadow-lg">
+                    <button onclick="backToMenu()" class="flex-1 py-3.5 md:py-4 rounded-xl font-bold text-white bg-slate-700 hover:bg-slate-600 transition-colors flex items-center justify-center gap-2 shadow-lg active:scale-95">
                         <i class="ph-bold ph-house text-lg"></i> Menu Utama
                     </button>
                 </div>
@@ -403,8 +408,8 @@
             <h3 class="text-xl md:text-2xl mb-2 text-slate-800 dark:text-white cinematic-title">Yakin selesai?</h3>
             <p class="text-sm md:text-base text-slate-600 dark:text-slate-300 mb-6 md:mb-8 font-medium" id="unanswered-warning">Masih ada beberapa soal yang belum kamu jawab. Coba dicek lagi deh.</p>
             <div class="flex justify-end gap-3">
-                <button onclick="hideConfirmModal()" class="px-4 py-2 md:px-5 md:py-2.5 rounded-lg font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white text-sm md:text-base">Batal</button>
-                <button onclick="finishQuiz()" class="px-4 py-2 md:px-5 md:py-2.5 rounded-lg font-semibold bg-emerald-400 hover:bg-emerald-500 text-emerald-950 shadow-lg shadow-emerald-500/20 text-sm md:text-base">Ya, Selesai</button>
+                <button onclick="hideConfirmModal()" class="px-4 py-2 md:px-5 md:py-2.5 rounded-lg font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white text-sm md:text-base active:scale-95">Batal</button>
+                <button onclick="finishQuiz()" class="px-4 py-2 md:px-5 md:py-2.5 rounded-lg font-semibold bg-emerald-400 hover:bg-emerald-500 text-emerald-950 shadow-lg shadow-emerald-500/20 text-sm md:text-base active:scale-95">Ya, Selesai</button>
             </div>
         </div>
     </div>
@@ -415,7 +420,7 @@
         <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="settings-content">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title"><i class="ph-fill ph-gear text-teal-500"></i> Pengaturan</h3>
-                <button onclick="closeSettings()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white"><i class="ph ph-x text-2xl"></i></button>
+                <button onclick="closeSettings()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white active:scale-95"><i class="ph ph-x text-2xl"></i></button>
             </div>
             
             <div class="mb-4">
@@ -437,9 +442,9 @@
             <div class="mb-2">
                 <label class="block text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 mb-3">Ukuran Teks Soal</label>
                 <div class="flex gap-2 bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-xl border border-slate-200 dark:border-white/5">
-                    <button onclick="setTextSize('sm')" id="btn-size-sm" class="flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-500 transition-all">Kecil</button>
-                    <button onclick="setTextSize('md')" id="btn-size-md" class="flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-500 transition-all">Normal</button>
-                    <button onclick="setTextSize('lg')" id="btn-size-lg" class="flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-500 transition-all">Besar</button>
+                    <button onclick="setTextSize('sm')" id="btn-size-sm" class="flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-500 transition-all active:scale-95">Kecil</button>
+                    <button onclick="setTextSize('md')" id="btn-size-md" class="flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-500 transition-all active:scale-95">Normal</button>
+                    <button onclick="setTextSize('lg')" id="btn-size-lg" class="flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-500 transition-all active:scale-95">Besar</button>
                 </div>
             </div>
         </div>
@@ -453,16 +458,16 @@
                 <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title">
                     <i class="ph-fill ph-megaphone text-blue-500"></i> Pengumuman
                 </h3>
-                <button onclick="closeAnnouncement()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white"><i class="ph ph-x text-2xl"></i></button>
+                <button onclick="closeAnnouncement()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white active:scale-95"><i class="ph ph-x text-2xl"></i></button>
             </div>
             
             <div class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50">
-                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.2.0.1 - Cloud Sync Terpadu 🎉</h4>
+                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.2.1.0 - The Perfect UI 🎉</h4>
                     <ul class="list-disc pl-4 text-xs md:text-sm text-slate-600 dark:text-slate-300 space-y-1.5 font-medium">
-                        <li><strong>Firebase Database:</strong> Skor kuis kini otomatis disimpan secara online ke database awan milikmu dan ditampilkan melalui akun Google.</li>
-                        <li><strong>Dukungan Multi-File JS:</strong> Kuis kini dapat memuat banyak file soal secara bergantian tanpa error konflik memori.</li>
-                        <li><strong>Pemulihan Fitur:</strong> Sound Effect (Ting, Pop, Fanfare) dan Text-to-Speech dipastikan tetap menyala normal.</li>
+                        <li><strong>Reposisi Cerdas:</strong> Tombol Pengumuman & Info Akun kini dipindahkan ke pojok kanan bawah agar lebih rapi. Saat kuis dimulai, menu ini akan otomatis sembunyi agar layar tidak sumpek!</li>
+                        <li><strong>Animasi Restored:</strong> Semua efek sentuhan (hover), animasi piringan hitam, dan kemunculan layar diaktifkan kembali.</li>
+                        <li><strong>Mobile Friendly:</strong> Pemutar musik kini memiliki ukuran fleksibel yang dijamin pas walau dibuka melalui layar HP yang kecil.</li>
                     </ul>
                 </div>
             </div>
@@ -729,11 +734,16 @@
         const audioEl = document.getElementById('audio-player'); 
         if(audioEl) audioEl.loop = false; 
 
-        const playIcon = document.getElementById('play-icon'); const musicIconContainer = document.getElementById('music-icon-container');
-        const musicStateIcon = document.getElementById('music-state-icon'); const progressBar = document.getElementById('track-progress');
-        const island = document.getElementById('dynamic-island'); const contentWrapper = document.getElementById('di-content');
-        const timeCurrent = document.getElementById('track-current'); const timeTotal = document.getElementById('track-total');
+        const playIcon = document.getElementById('play-icon'); 
+        const musicIconContainer = document.getElementById('music-icon-container');
+        const musicStateIcon = document.getElementById('music-state-icon'); 
+        const progressBar = document.getElementById('track-progress');
+        const island = document.getElementById('dynamic-island'); 
+        const contentWrapper = document.getElementById('di-content');
+        const timeCurrent = document.getElementById('track-current'); 
+        const timeTotal = document.getElementById('track-total');
         const loopBtn = document.getElementById('btn-loop');
+        const recordDisk = document.getElementById('record-disk');
 
         function togglePlayerState(e) {
             if(e && (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.closest('button'))) return;
@@ -795,11 +805,13 @@
                 if (playIcon) playIcon.classList.replace('ph-pause', 'ph-play');
                 if (musicIconContainer) musicIconContainer.className = "w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300";
                 if (musicStateIcon) musicStateIcon.className = "ph-fill ph-speaker-slash text-xl";
+                if (recordDisk) recordDisk.style.animationPlayState = 'paused';
             } else {
                 const p = audioEl.play(); if(p !== undefined) p.catch(e=>{}); isPlaying = true;
                 if (playIcon) playIcon.classList.replace('ph-play', 'ph-pause');
                 if (musicIconContainer) musicIconContainer.className = "w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300";
                 if (musicStateIcon) musicStateIcon.className = "ph-fill ph-speaker-high text-xl";
+                if (recordDisk) recordDisk.style.animationPlayState = 'running';
             }
         }
 
@@ -951,8 +963,11 @@
                 
                 const centerBtn = document.getElementById('btn-center-action');
                 centerBtn.innerText = "Selesai";
-                centerBtn.className = "px-5 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-emerald-950 dark:text-white bg-emerald-400 hover:bg-emerald-500 dark:bg-emerald-500/30 dark:hover:bg-emerald-500/50 border border-emerald-500 transition-colors text-sm md:text-base shadow-sm";
+                centerBtn.className = "px-5 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-emerald-950 dark:text-white bg-emerald-400 hover:bg-emerald-500 dark:bg-emerald-500/30 dark:hover:bg-emerald-500/50 border border-emerald-500 transition-colors text-sm md:text-base shadow-sm hover:scale-105 active:scale-95";
                 centerBtn.onclick = showConfirmModal;
+
+                // Sembunyikan kontrol bawah (akun & update) saat kuis berlangsung
+                document.getElementById('bottom-controls').classList.add('opacity-0', 'pointer-events-none');
 
                 switchScreen('screen-quiz'); renderQuestion(); renderGrid(); startTimer();
             } catch (e) {
@@ -968,7 +983,7 @@
             
             const centerBtn = document.getElementById('btn-center-action');
             centerBtn.innerText = "Tutup Review";
-            centerBtn.className = "px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-white bg-slate-700 hover:bg-slate-600 transition-colors text-sm md:text-base shadow-sm";
+            centerBtn.className = "px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-white bg-slate-700 hover:bg-slate-600 transition-colors text-sm md:text-base shadow-sm hover:scale-105 active:scale-95";
             centerBtn.onclick = () => switchScreen('screen-result');
 
             switchScreen('screen-quiz'); renderQuestion(); renderGrid();
@@ -1174,7 +1189,12 @@
             });
         }
         
-        function backToMenu() { stopTTS(); playExitSound(); clearInterval(timerInterval); closeMobileNav(); switchScreen('screen-home'); if(typeof window.renderHome === "function") window.renderHome(); }
+        function backToMenu() { 
+            stopTTS(); playExitSound(); clearInterval(timerInterval); closeMobileNav(); 
+            document.getElementById('bottom-controls').classList.remove('opacity-0', 'pointer-events-none');
+            switchScreen('screen-home'); 
+            if(typeof window.renderHome === "function") window.renderHome(); 
+        }
     </script>
 </body>
 </html>
