@@ -152,16 +152,15 @@
     <div id="login-screen" class="fixed inset-0 flex items-center justify-center bg-slate-900/80 transition-opacity duration-300">
         <div class="glass-panel p-8 rounded-3xl max-w-sm w-[90%] text-center fade-in">
             <div class="w-20 h-20 bg-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <i class="ph-fill ph-user-circle-plus text-5xl text-blue-400"></i>
+                <i class="ph-fill ph-cloud-arrow-up text-5xl text-blue-400"></i>
             </div>
-            <h2 class="text-2xl font-bold mb-2 cinematic-title text-slate-800 dark:text-white">Selamat Datang!</h2>
-            <p class="text-slate-600 dark:text-slate-400 text-sm mb-8">Masuk dengan akun Google untuk menyimpan skor dan progres belajarmu di cloud secara aman.</p>
+            <h2 class="text-2xl font-bold mb-2 cinematic-title text-slate-800 dark:text-white">Cloud Sync</h2>
+            <p class="text-slate-600 dark:text-slate-400 text-sm mb-8">Masuk dengan akun Google untuk menyinkronkan skor ujianmu antar perangkat.</p>
             
             <button id="btn-google-login" class="w-full py-4 bg-white text-slate-900 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-slate-100 transition-all active:scale-95 shadow-xl border border-slate-200">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="20" alt="Google">
                 <span id="login-btn-text">Masuk dengan Google</span>
             </button>
-            <p class="mt-6 text-[10px] text-slate-500 uppercase tracking-widest font-bold">Projek Kuis Kelas X</p>
         </div>
     </div>
 
@@ -190,14 +189,14 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-1 md:gap-1.5 flex-shrink-0 ml-1.5 md:ml-3" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0 ml-1.5 md:ml-3" onclick="event.stopPropagation()">
                 <button onclick="toggleLoop()" id="btn-loop" class="w-5 h-5 md:w-7 md:h-7 flex items-center justify-center text-slate-400 hover:text-teal-500 active:scale-95 transition-colors">
                     <i class="ph-bold ph-repeat text-[12px] md:text-[14px]"></i>
                 </button>
                 <button onclick="togglePlay()" class="w-7 h-7 md:w-9 md:h-9 flex items-center justify-center text-teal-500 dark:text-teal-400 hover:text-teal-600 active:scale-95 transition-transform">
                     <i class="ph-fill ph-play text-xl md:text-2xl" id="play-icon"></i>
                 </button>
-                <button onclick="nextTrack()" class="w-5 h-5 md:w-7 md:h-7 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
+                <button onclick="nextTrack()" class="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
                     <i class="ph-fill ph-skip-forward text-[14px] md:text-[16px]"></i>
                 </button>
             </div>
@@ -208,16 +207,13 @@
     <div class="fixed top-3 right-3 md:top-6 md:right-8 z-50 flex gap-2 md:gap-3 items-center">
         <!-- USER INFO -->
         <div id="user-info" class="hidden glass-panel px-2.5 py-1.5 md:py-2 md:px-3 rounded-full flex items-center gap-2 shadow-lg border-teal-500/30 mr-1 fade-in">
-            <img id="user-photo" src="" alt="User" class="w-6 h-6 md:w-8 md:h-8 rounded-full border border-teal-400 object-cover">
+            <img id="user-photo" src="" alt="User" class="w-6 h-6 md:w-8 md:h-8 rounded-full border border-teal-400 object-cover" referrerpolicy="no-referrer">
             <span id="user-name" class="text-[10px] md:text-xs font-bold text-slate-800 dark:text-white hidden md:block cinematic-title">User</span>
             <button onclick="handleLogout()" class="text-red-400 hover:text-red-500 ml-1 active:scale-95 transition-transform bg-white/5 rounded-full p-1" title="Keluar Akun">
                 <i class="ph-bold ph-sign-out text-sm md:text-lg"></i>
             </button>
         </div>
 
-        <button onclick="openAnnouncement()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg text-blue-500 dark:text-blue-400 border-blue-200 dark:border-blue-900/50">
-            <i class="ph-fill ph-megaphone text-xl md:text-2xl"></i>
-        </button>
         <button onclick="openSettings()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
             <i class="ph-fill ph-gear text-xl md:text-2xl text-slate-600 dark:text-slate-300 hover:rotate-90 transition-transform duration-500"></i>
         </button>
@@ -227,13 +223,13 @@
     </div>
 
     <!-- MAIN WRAPPER -->
-    <div class="w-full flex-1 flex flex-col items-center justify-center">
+    <div class="w-full flex-1 flex flex-col items-center justify-center pt-28 md:pt-12">
         
         <!-- SCREEN 1: HOME -->
         <div id="screen-home" class="w-full max-w-5xl fade-in block px-2 md:px-0 opacity-0 transition-opacity duration-500">
-            <div class="text-center mb-8 md:mb-10 mt-16 md:mt-4">
-                <h1 class="text-3xl md:text-5xl mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-teal-400 to-emerald-400 dark:from-blue-400 dark:via-teal-300 dark:to-emerald-300 cinematic-title" style="line-height: 1.3;">
-                    Kuis Semester Genap<br>Kelas X
+            <div class="text-center mb-8 md:mb-10 mt-12 md:mt-4">
+                <h1 class="text-3xl md:text-5xl mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-teal-400 to-emerald-400 dark:from-blue-400 dark:via-teal-300 dark:to-emerald-300 cinematic-title" style="line-height: 1.2;">
+                    Kuis Semester Genap
                 </h1>
                 <p class="text-slate-600 dark:text-slate-400 text-sm md:text-lg mt-2">Pilih mata pelajaran untuk memulai ujian.</p>
             </div>
@@ -343,6 +339,7 @@
 
         <!-- SCREEN 3: RESULT -->
         <div id="screen-result" class="w-full max-w-2xl fade-in hidden text-center px-4 mt-8 relative z-10">
+            <div id="confetti-container-result" class="absolute inset-0 pointer-events-none z-50"></div>
             <div class="glass-panel p-8 md:p-12 rounded-3xl relative overflow-hidden">
                 <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-teal-500/20 rounded-full blur-3xl -z-10"></div>
                 <i class="ph-fill ph-check-circle text-6xl md:text-7xl text-emerald-500 dark:text-emerald-400 mb-4 md:mb-6 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]"></i>
@@ -438,34 +435,6 @@
         </div>
     </div>
 
-    <!-- MODAL ANNOUNCEMENT / PATCH NOTES -->
-    <div id="announcement-modal" class="fixed inset-0 z-[80] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="absolute inset-0 modal-overlay" onclick="closeAnnouncement()"></div>
-        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="announcement-content">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title">
-                    <i class="ph-fill ph-megaphone text-blue-500"></i> Pengumuman
-                </h3>
-                <button onclick="closeAnnouncement()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white"><i class="ph ph-x text-2xl"></i></button>
-            </div>
-            
-            <div class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
-                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50">
-                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.2.0.0 - Cloud Sync 🎉</h4>
-                    <ul class="list-disc pl-4 text-xs md:text-sm text-slate-600 dark:text-slate-300 space-y-1.5 font-medium">
-                        <li><strong>Login Google:</strong> Kini kamu bisa login menggunakan akun Google.</li>
-                        <li><strong>Penyimpanan Awan:</strong> Skor kuis akan tersimpan secara otomatis dan aman di Firebase Firestore.</li>
-                        <li><strong>Profil Terpadu:</strong> Nama dan foto profil Google kamu akan muncul di antarmuka kuis.</li>
-                        <li><strong>Multi-Device:</strong> Lanjutkan kuis di HP atau PC mana pun dan skormu tetap tersinkronisasi!</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- TAG AUDIO NATIVE -->
-    <audio id="audio-player"></audio>
-
     <!-- FIREBASE AUTHENTICATION & FIRESTORE SCRIPTS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -493,9 +462,6 @@
         const userPhoto = document.getElementById('user-photo');
         const screenHome = document.getElementById('screen-home');
         
-        // Aturan ketat penyimpanan path (seperti yang diarahkan sistem)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kuis-genap-v25';
-        
         window.currentUser = null;
         window.userScores = {};
 
@@ -521,12 +487,12 @@
             if (!window.currentUser) return;
             const oldScore = window.userScores[subjectId] || 0;
             
-            // Hanya update jika skor baru lebih tinggi atau sama
+            // Hanya update dan kirim ke server jika skor baru lebih tinggi atau sama
             if (newScore > oldScore) {
                 window.userScores[subjectId] = newScore;
                 try {
-                    // Path penyimpanan aman: /artifacts/{appId}/users/{userId}/scores/{subjectId}
-                    const docRef = doc(db, 'artifacts', appId, 'users', window.currentUser.uid, 'scores', subjectId);
+                    // Menyimpan ke koleksi bernama 'users', dengan ID = UID pengguna, lalu di dalam dokumen 'scores'
+                    const docRef = doc(db, 'users', window.currentUser.uid, 'scores', subjectId);
                     await setDoc(docRef, { score: newScore, updatedAt: new Date() }, { merge: true });
                 } catch (e) {
                     console.error("Gagal menyimpan ke Cloud:", e);
@@ -543,19 +509,21 @@
                 userName.innerText = user.displayName.split(' ')[0];
                 userPhoto.src = user.photoURL || 'https://via.placeholder.com/150';
                 
-                // Fetch skor lama dari cloud
+                // Ambil (Fetch) skor dari cloud setiap kali berhasil login
                 try {
-                    const scoresRef = collection(db, 'artifacts', appId, 'users', user.uid, 'scores');
+                    const scoresRef = collection(db, 'users', user.uid, 'scores');
                     const snapshot = await getDocs(scoresRef);
                     window.userScores = {};
                     snapshot.forEach(doc => {
                         window.userScores[doc.id] = doc.data().score;
+                        // Backup juga ke localstorage agar fungsi kuis bawaan tetap jalan
+                        localStorage.setItem('hs_' + doc.id, doc.data().score);
                     });
                 } catch (e) {
-                    console.log("Gagal mengambil data dari Cloud (mungkin pengguna baru atau offline).", e);
+                    console.log("Database belum siap atau error:", e);
                 }
                 
-                // Munculkan home screen
+                // Tampilkan menu utama
                 screenHome.classList.remove('opacity-0');
                 if(typeof renderHome === "function") renderHome(); 
             } else {
@@ -565,7 +533,6 @@
                 userInfo.classList.add('hidden');
                 screenHome.classList.add('opacity-0');
                 
-                // Kembalikan teks tombol jika baru sign out
                 const btnText = document.getElementById('btn-google-login')?.querySelector('span');
                 if(btnText) btnText.innerText = "Masuk dengan Google";
             }
@@ -574,7 +541,6 @@
 
     <!-- WADAH DATA GLOBAL UNTUK MENCEGAH ERROR -->
     <script>
-        // Deklarasikan di luar module agar file JS eksternal bisa membacanya
         window.subjects = [];
         window.quizData = {};
         window.failedScripts = []; 
@@ -583,7 +549,6 @@
             window.failedScripts.push(scriptName);
         }
 
-        // FUNGSI ACAK ARRAY (Bisa dipanggil oleh semua mapel)
         function shuffleArray(array) {
             let shuffled = [...array];
             for (let i = shuffled.length - 1; i > 0; i--) {
@@ -603,13 +568,10 @@
 
     <!-- SCRIPT LOGIKA UTAMA -->
     <script>
-        // Fungsi fallback jika belum login (agar tidak error)
         if(!window.userScores) window.userScores = {};
 
         function getStorage(key, defaultVal) { 
             try { 
-                // Di v2.0.0, kita ganti prioritas membaca dari Memori Awan yang disinkronisasi
-                // Alih-alih pakai localStorage, kita pakai window.userScores
                 const subjectId = key.replace('hs_', '');
                 if(window.userScores && window.userScores[subjectId] !== undefined) {
                     return window.userScores[subjectId];
@@ -619,10 +581,7 @@
         }
         
         function setStorage(key, val) { 
-            try { 
-                localStorage.setItem(key, val); 
-                // Fungsi cloud akan dipanggil terpisah
-            } catch(e) {} 
+            try { localStorage.setItem(key, val); } catch(e) {} 
         }
         
         function stopTTS() { try { if ('speechSynthesis' in window && window.speechSynthesis) window.speechSynthesis.cancel(); } catch(e) { console.warn("TTS Error", e); } }
@@ -694,7 +653,6 @@
             if (isCard) { playStartSound(); } 
             else if (isOption && !isReviewMode) { playTingSound(); } 
             else if (isButton || isIsland) {
-                // Kecualikan tombol login dan tombol lain yang udah ada suara
                 if (isRange) return;
                 if (!e.target.closest('button[onclick="backToMenu()"]') && !e.target.closest('button[onclick="readQuestionText()"]') && !e.target.closest('#btn-google-login')) {
                     playPopSound();
@@ -702,7 +660,6 @@
             }
         });
 
-        // --- 🗣️ SAFE TEXT TO SPEECH ---
         function readQuestionText() {
             playPopSound();
             try {
@@ -715,7 +672,6 @@
             } catch(e) {}
         }
 
-        // --- 🎉 CONFETTI SYSTEM ---
         function shootConfetti() {
             const container = document.getElementById('confetti-container');
             container.classList.remove('hidden'); container.innerHTML = ''; 
@@ -731,7 +687,6 @@
             setTimeout(() => { container.classList.add('hidden'); container.innerHTML = ''; }, 4500);
         }
 
-        // --- 🎵 MUSIC PLAYER ---
         const playlist = [
             { title: 'Lofi Production', artist: 'Pulsebox', src: './Lofi Production - Pulsebox.mp3' },
             { title: 'Lofi Night', artist: 'Pulsebox', src: './Lofi Night - Pulsebox.mp3' },
@@ -740,7 +695,8 @@
         ];
         
         let currentTrackIndex = 0; let isPlaying = false; let isPlayerExpanded = false; let isLooping = false;
-        const audioEl = document.getElementById('audio-player'); audioEl.loop = false; 
+        const audioEl = document.getElementById('audio-player'); 
+        if(audioEl) audioEl.loop = false; 
 
         const playIcon = document.getElementById('play-icon'); const musicIconContainer = document.getElementById('music-icon-container');
         const musicStateIcon = document.getElementById('music-state-icon'); const progressBar = document.getElementById('track-progress');
@@ -754,7 +710,7 @@
             if(isPlayerExpanded) {
                 island.classList.remove('di-collapsed'); island.classList.add('di-expanded');
                 contentWrapper.classList.remove('invisible', 'opacity-0'); contentWrapper.classList.add('opacity-100');
-                if(!isPlaying && audioEl.currentTime === 0) togglePlay();
+                if(!isPlaying && audioEl && audioEl.currentTime === 0) togglePlay();
             } else {
                 island.classList.remove('di-expanded'); island.classList.add('di-collapsed');
                 contentWrapper.classList.remove('opacity-100'); contentWrapper.classList.add('opacity-0');
@@ -769,6 +725,7 @@
         }
 
         function initMusicPlayer() {
+            if (!audioEl) return;
             loadTrack(currentTrackIndex);
             audioEl.addEventListener('loadedmetadata', () => { timeTotal.innerText = formatTime(audioEl.duration); });
             audioEl.addEventListener('timeupdate', () => {
@@ -788,6 +745,7 @@
         }
 
         function loadTrack(index) {
+            if (!audioEl) return;
             currentTrackIndex = index; const track = playlist[index]; audioEl.src = track.src;
             document.getElementById('track-title').innerText = track.title; document.getElementById('track-artist').innerText = track.artist;
             progressBar.value = 0; timeCurrent.innerText = "0:00"; timeTotal.innerText = "0:00";
@@ -795,6 +753,7 @@
         }
 
         function togglePlay() {
+            if (!audioEl) return;
             if (isPlaying) {
                 audioEl.pause(); isPlaying = false; playIcon.classList.replace('ph-pause', 'ph-play');
                 musicIconContainer.className = "w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300";
@@ -821,11 +780,11 @@
             }
         }
 
-        function updateMusicVolume(val) { audioEl.volume = val; setStorage('musicVol', val); }
+        function updateMusicVolume(val) { if(audioEl) audioEl.volume = val; setStorage('musicVol', val); }
         function updateSfxVolume(val) { globalSfxVolume = parseFloat(val); setStorage('sfxVol', val); playPopSound(); }
 
-        function openAnnouncement() { document.getElementById('announcement-modal').classList.remove('opacity-0', 'pointer-events-none'); document.getElementById('announcement-content').classList.remove('scale-95'); }
-        function closeAnnouncement() { document.getElementById('announcement-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('announcement-content').classList.add('scale-95'); }
+        function openSettings() { document.getElementById('settings-modal').classList.remove('opacity-0', 'pointer-events-none'); document.getElementById('settings-content').classList.remove('scale-95'); }
+        function closeSettings() { document.getElementById('settings-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('settings-content').classList.add('scale-95'); }
 
         let currentSubject = null; let currentQuestions = []; let currentIndex = 0;
         let userAnswers = {}; let timerInterval = null; let timeLeft = 90 * 60; 
@@ -834,13 +793,6 @@
         // --- INIT STATE ---
         window.onload = () => { 
             initTheme(); initSettings(); initMusicPlayer(); 
-            
-            // Perhatian: renderHome tidak langsung dipanggil lagi di sini
-            // Karena sekarang onAuthStateChanged (Firebase) yang akan merendernya.
-            // Namun, beri fallback jika belum login tapi sistem ingin menampilkan sesuatu
-            if(!window.currentUser) {
-                // Do nothing, login screen covers it
-            }
             
             if (window.failedScripts && window.failedScripts.length > 0) {
                 document.getElementById('subject-grid').innerHTML = `
@@ -851,22 +803,8 @@
                     <div class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-mono text-sm py-2 px-4 rounded-lg inline-block mb-3 border border-red-200 dark:border-red-800/50">
                         ${window.failedScripts.join('<br>')}
                     </div>
-                    <p class="text-xs text-slate-500 dark:text-slate-500 text-left bg-slate-100 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-white/5">
-                        <b>Solusi:</b><br>
-                        1. Pastikan nama file JS <b>persis sama</b> (huruf besar/kecil berpengaruh).<br>
-                        2. Pastikan file HTML dan JS berada di dalam <b>folder yang sama persis</b>.<br>
-                        3. Periksa isi file JS. Jangan gunakan kata kunci <code class="bg-slate-200 dark:bg-slate-700 px-1">const subjects</code> atau <code class="bg-slate-200 dark:bg-slate-700 px-1">const quizData</code> lagi karena itu bikin bentrok/error.
-                    </p>
                 </div>`;
             } 
-            else if (typeof window.subjects === 'undefined' || window.subjects.length === 0) {
-                document.getElementById('subject-grid').innerHTML = `
-                <div class="col-span-full glass-panel p-6 rounded-2xl text-center border-amber-500/30 w-full max-w-md mx-auto">
-                    <i class="ph-fill ph-warning text-5xl text-amber-500 mb-3"></i>
-                    <h3 class="font-bold text-slate-800 dark:text-white mb-2 text-xl">Belum Ada Soal</h3>
-                    <p class="text-sm text-slate-600 dark:text-slate-400">Semua file berhasil dimuat, tapi data mata pelajaran masih kosong. Silakan isi data di dalam file JS-mu.</p>
-                </div>`;
-            }
         };
 
         function initTheme() {
@@ -894,9 +832,6 @@
             const savedSfxVol = getStorage('sfxVol', null);
             if(savedSfxVol !== null) { document.getElementById('sfx-volume').value = savedSfxVol; globalSfxVolume = parseFloat(savedSfxVol); }
         }
-        
-        function openSettings() { document.getElementById('settings-modal').classList.remove('opacity-0', 'pointer-events-none'); document.getElementById('settings-content').classList.remove('scale-95'); }
-        function closeSettings() { document.getElementById('settings-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('settings-content').classList.add('scale-95'); }
 
         function setTextSize(size, save = true) {
             document.body.setAttribute('data-text-size', size);
@@ -912,9 +847,7 @@
             if(!grid) return;
             grid.innerHTML = '';
             
-            // Baca array subjects global
             window.subjects.forEach(sub => {
-                // Di V24: Ambil skor dari memory sinkronisasi Cloud (atau fallback)
                 const hs = getStorage('hs_' + sub.id, 0); 
                 
                 let badgeHTML = '';
@@ -925,7 +858,6 @@
                     </div>`;
                 }
 
-                // Ambil count dari quizData global
                 const soalCount = window.quizData[sub.id] ? window.quizData[sub.id].length : 0;
 
                 const card = document.createElement('div'); 
@@ -951,7 +883,6 @@
                 isReviewMode = false;
                 currentSubject = window.subjects.find(s => s.id === subjectId); 
                 
-                // SMART SHUFFLE
                 let rawQuestions = window.quizData[subjectId] || [];
                 currentQuestions = shuffleArray(rawQuestions).map(q => {
                     let newQ = JSON.parse(JSON.stringify(q)); 
@@ -1076,7 +1007,7 @@
                 document.getElementById('btn-prev').style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
                 document.getElementById('btn-next').style.visibility = currentIndex === currentQuestions.length - 1 ? 'hidden' : 'visible';
             } catch (e) {
-                alert("Oops! Ada format teks atau kurung yang salah di file soal ini. (Error: " + e.message + ")");
+                console.error(e);
             }
         }
 
@@ -1167,14 +1098,14 @@
             let correct = 0; currentQuestions.forEach((q, i) => { if (userAnswers[i] === q.answer) correct++; });
             const finalScore = Math.round((correct / currentQuestions.length) * 100);
             
-            // SIMPAN KE CLOUD FIREBASE JIKA LOGIN
+            // SIMPAN KE CLOUD FIREBASE
             if (typeof window.saveScoreToCloud === 'function') {
                 await window.saveScoreToCloud(currentSubject.id, finalScore);
-            } else {
-                // Fallback local storage
-                const oldHs = parseInt(getStorage('hs_' + currentSubject.id, 0));
-                if (finalScore > oldHs) setStorage('hs_' + currentSubject.id, finalScore);
-            }
+            } 
+            
+            // SIMPAN KE LOCAL SEBAGAI BACKUP ATAU JIKA OFFLINE/BELUM LOGIN
+            const oldHs = parseInt(getStorage('hs_' + currentSubject.id, 0));
+            if (finalScore > oldHs) setStorage('hs_' + currentSubject.id, finalScore);
 
             const totalSeconds = Math.floor((timeEnd - timeStart) / 1000);
             const avgSeconds = (totalSeconds / currentQuestions.length).toFixed(1);
