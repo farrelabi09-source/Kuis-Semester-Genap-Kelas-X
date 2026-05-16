@@ -115,8 +115,8 @@
             height: 48px; overflow: hidden; display: flex; align-items: center; white-space: nowrap; 
         }
         .di-collapsed { width: 48px; border-radius: 24px; cursor: pointer; }
-        .di-expanded { width: calc(100vw - 120px); max-width: 320px; border-radius: 24px; cursor: default; }
-        .di-content-wrapper { width: calc(100vw - 120px); max-width: 320px; transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
+        .di-expanded { width: calc(100vw - 120px); max-width: 260px; border-radius: 24px; cursor: default; }
+        .di-content-wrapper { width: calc(100vw - 120px); max-width: 260px; transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
 
         .cinematic-title { font-family: 'Archivo Black', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.03em; }
 
@@ -177,17 +177,17 @@
 
     <!-- DYNAMIC ISLAND MUSIC PLAYER WIDGET -->
     <div id="dynamic-island" class="fixed top-3 left-3 md:top-6 md:left-8 z-[70] bg-white/80 dark:bg-slate-800/90 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dynamic-island di-collapsed" onclick="togglePlayerState(event)">
-        <div id="record-disk" class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 border border-slate-700 shadow-inner spin-record z-20 pointer-events-none" style="animation-play-state: paused;">
-            <div class="w-2.5 h-2.5 bg-teal-400 rounded-full absolute z-10"></div>
-            <div class="w-8 h-8 rounded-full border border-slate-700/50 absolute"></div>
-            <i class="ph-fill ph-music-notes text-white/30 text-[10px] absolute left-1.5 top-2.5"></i>
+        
+        <!-- Logo Musik: Volume (Merah: Pause/Mute, Hijau: Play) -->
+        <div id="music-icon-container" class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300 spin-record" style="animation-play-state: paused;">
+            <i id="music-state-icon" class="ph-fill ph-speaker-slash text-xl"></i>
         </div>
         
-        <div id="di-content" class="di-content-wrapper pl-[3.25rem] pr-2 opacity-0 invisible">
-            <div class="flex-1 min-w-0 flex flex-col justify-center translate-y-[1px]">
+        <!-- Kontainer Text & Tombol (Sizing PX Presisi) -->
+        <div id="di-content" class="w-full h-full pl-[50px] pr-[8px] opacity-0 invisible transition-opacity duration-300 flex items-center justify-between">
+            <div class="flex-1 min-w-0 flex flex-col justify-center">
                 <div class="truncate text-[12px] md:text-[14px] font-bold text-slate-800 dark:text-white leading-none" id="track-title">Lofi Production</div>
-                <div class="truncate text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-0.5" id="track-artist">Pulsebox</div>
-                <div class="flex items-center gap-1.5 w-full mt-0.5">
+                <div class="truncate text-[9px] md:text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-[2px]" id="track-artist">Pulsebox</div>
                     <input type="range" id="track-progress" value="0" max="100" class="flex-1 h-1" onclick="event.stopPropagation()">
                 </div>
             </div>
@@ -708,19 +708,25 @@
         function togglePlay() { 
             if(!audioEl) return; 
             const playIcon = document.getElementById('play-icon'); 
-            const recordDisk = document.getElementById('record-disk');
-            const tonearm = document.getElementById('tonearm');
+            const musicIconContainer = document.getElementById('music-icon-container');
+            const musicStateIcon = document.getElementById('music-state-icon');
             
             if (isPlaying) { 
                 audioEl.pause(); isPlaying = false; 
                 if (playIcon) playIcon.classList.replace('ph-pause', 'ph-play'); 
-                if (recordDisk) recordDisk.style.animationPlayState = 'paused';
-                if (tonearm) tonearm.style.transform = 'rotate(-40deg)';
+                if (musicIconContainer) {
+                    musicIconContainer.className = "w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300 spin-record";
+                    musicIconContainer.style.animationPlayState = 'paused';
+                }
+                if (musicStateIcon) musicStateIcon.className = "ph-fill ph-speaker-slash text-xl";
             } else { 
                 const p = audioEl.play(); if(p !== undefined) p.catch(e=>{}); isPlaying = true; 
                 if (playIcon) playIcon.classList.replace('ph-play', 'ph-pause'); 
-                if (recordDisk) recordDisk.style.animationPlayState = 'running';
-                if (tonearm) tonearm.style.transform = 'rotate(15deg)';
+                if (musicIconContainer) {
+                    musicIconContainer.className = "w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-500/20 text-teal-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300 spin-record";
+                    musicIconContainer.style.animationPlayState = 'running';
+                }
+                if (musicStateIcon) musicStateIcon.className = "ph-fill ph-speaker-high text-xl";
             } 
         }
         function nextTrack() { currentTrackIndex = (currentTrackIndex + 1) % playlist.length; loadTrack(currentTrackIndex); if (!isPlaying) togglePlay(); }
