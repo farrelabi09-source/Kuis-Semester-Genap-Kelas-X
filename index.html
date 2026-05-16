@@ -93,16 +93,21 @@
         @keyframes spin-record { 100% { transform: rotate(360deg); } }
         .spin-record { animation: spin-record 4s linear infinite; }
 
-        /* Kustomisasi Range Slider (Progress Bar Musik) */
+        /* Kustomisasi Range Slider */
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: #2dd4bf; cursor: pointer; margin-top: -4.5px; box-shadow: 0 0 5px rgba(45, 212, 191, 0.5); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 3px; cursor: pointer; background: rgba(148, 163, 184, 0.4); border-radius: 2px; }
         .dark input[type=range]::-webkit-slider-runnable-track { background: rgba(255, 255, 255, 0.2); }
 
-        ::-webkit-scrollbar { width: 5px; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.6); }
+
+        /* Hilangkan scrollbar tapi tetap bisa di-scroll (khusus container kategori) */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         .fade-in { animation: fadeIn 0.4s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -123,24 +128,9 @@
             white-space: nowrap; 
         }
         
-        .di-collapsed {
-            width: 48px;
-            border-radius: 24px;
-            cursor: pointer;
-        }
-        
-        .di-expanded {
-            width: clamp(230px, calc(100vw - 120px), 340px); 
-            border-radius: 24px;
-            cursor: default;
-        }
-
-        .di-content-wrapper {
-            width: clamp(230px, calc(100vw - 120px), 340px); 
-            transition: opacity 0.3s ease, visibility 0.3s;
-            display: flex;
-            align-items: center;
-        }
+        .di-collapsed { width: 48px; border-radius: 24px; cursor: pointer; }
+        .di-expanded { width: clamp(230px, calc(100vw - 120px), 340px); border-radius: 24px; cursor: default; }
+        .di-content-wrapper { width: clamp(230px, calc(100vw - 120px), 340px); transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
 
         .cinematic-title { font-family: 'Archivo Black', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.03em; }
 
@@ -262,7 +252,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6" id="subject-grid"></div>
         </div>
 
-        <!-- SCREEN LITERASI -->
+        <!-- SCREEN LITERASI (DENGAN FILTER MAPEL) -->
         <div id="screen-literasi" class="w-full max-w-6xl fade-in hidden px-4 md:px-0 mt-8 md:mt-0 pb-24">
             <div class="flex items-center gap-4 mb-6 pt-16 md:pt-4">
                 <button onclick="backToMenu()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform shadow-sm text-slate-500 dark:text-slate-400">
@@ -276,9 +266,14 @@
                 </div>
             </div>
             
-            <div class="glass-panel p-2 md:p-3 rounded-2xl mb-8 flex items-center gap-3 sticky top-20 z-40 shadow-lg border border-indigo-500/20">
+            <div class="glass-panel p-2 md:p-3 rounded-2xl mb-4 flex items-center gap-3 sticky top-20 z-40 shadow-lg border border-indigo-500/20">
                 <i class="ph-bold ph-magnifying-glass text-xl md:text-2xl text-indigo-500 ml-3"></i>
                 <input type="text" id="search-literasi" onkeyup="window.renderLiterasi(this.value)" placeholder="Cari materi... (contoh: inflasi, redoks, trigonometri)" class="w-full bg-transparent border-none outline-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 py-2 h-10 md:h-12 text-sm md:text-base">
+            </div>
+
+            <!-- Filter Kategori Mapel -->
+            <div id="literasi-categories" class="flex overflow-x-auto gap-2 md:gap-3 mb-6 pb-2 hide-scrollbar snap-x">
+                <!-- Diisi oleh JS -->
             </div>
 
             <div id="literasi-container" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -444,11 +439,11 @@
             <div class="flex justify-between items-center mb-6"><h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title"><i class="ph-fill ph-megaphone text-blue-500"></i> Pengumuman</h3><button onclick="closeAnnouncement()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white active:scale-95"><i class="ph ph-x text-2xl"></i></button></div>
             <div class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50">
-                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.2.2.0 - Asisten Belajar Cerdas 🎉</h4>
+                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.2.3.0 - Pustaka Terpusat 🎉</h4>
                     <ul class="list-disc pl-4 text-xs md:text-sm text-slate-600 dark:text-slate-300 space-y-1.5 font-medium">
-                        <li><strong>Pojok Literasi:</strong> Temukan rangkuman penjelasan seluruh materi dengan mudah lewat menu Literasi di kanan bawah.</li>
-                        <li><strong>Rekomendasi AI:</strong> Bila ada jawaban yang salah, sistem otomatis mengumpulkan ringkasan materi yang perlu kamu pelajari ulang di akhir kuis.</li>
-                        <li>Perbaikan UI dan performa stabilitas.</li>
+                        <li><strong>Filter Kategori Literasi:</strong> Pojok Literasi sekarang dilengkapi dengan tombol filter per mata pelajaran agar tidak perlu scroll terlalu panjang saat mencari materi.</li>
+                        <li><strong>Rekomendasi Belajar:</strong> Bila ada jawaban yang salah, sistem otomatis mengumpulkan ringkasan materi yang perlu kamu pelajari ulang di akhir kuis.</li>
+                        <li>Perbaikan UI dan performa stabilitas scroll pada HP.</li>
                     </ul>
                 </div>
             </div>
@@ -592,11 +587,42 @@
 
         // --- SISTEM ASISTEN LITERASI & REKOMENDASI ---
         window.currentWrongQuestions = [];
+        window.currentLiterasiFilter = 'all'; // State untuk melacak filter mapel
 
         window.openLiterasi = () => {
             switchScreen('screen-literasi');
             document.getElementById('bottom-controls').classList.add('opacity-0', 'pointer-events-none');
+            window.renderLiterasiCategories();
             window.renderLiterasi();
+        };
+
+        window.renderLiterasiCategories = () => {
+            const catContainer = document.getElementById('literasi-categories');
+            catContainer.innerHTML = '';
+            
+            // Tombol "Semua"
+            const allBtn = document.createElement('button');
+            allBtn.className = `px-4 py-2 rounded-full text-xs md:text-sm font-bold flex-shrink-0 transition-all snap-start ${window.currentLiterasiFilter === 'all' ? 'bg-indigo-500 text-white shadow-md shadow-indigo-500/30' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'}`;
+            allBtn.innerText = 'Semua Mapel';
+            allBtn.onclick = () => { 
+                window.currentLiterasiFilter = 'all'; 
+                window.renderLiterasiCategories(); 
+                window.renderLiterasi(document.getElementById('search-literasi').value); 
+            };
+            catContainer.appendChild(allBtn);
+
+            // Tombol Masing-masing Mapel
+            window.subjects.forEach(sub => {
+                const btn = document.createElement('button');
+                btn.className = `px-4 py-2 rounded-full text-xs md:text-sm font-bold flex-shrink-0 transition-all snap-start flex items-center gap-1.5 ${window.currentLiterasiFilter === sub.id ? 'bg-indigo-500 text-white shadow-md shadow-indigo-500/30' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'}`;
+                btn.innerHTML = `<i class="ph-fill ${sub.icon}"></i> ${sub.name}`;
+                btn.onclick = () => { 
+                    window.currentLiterasiFilter = sub.id; 
+                    window.renderLiterasiCategories(); 
+                    window.renderLiterasi(document.getElementById('search-literasi').value); 
+                };
+                catContainer.appendChild(btn);
+            });
         };
 
         window.renderLiterasi = (query = '') => {
@@ -606,6 +632,9 @@
             let hasResults = false;
             
             window.subjects.forEach(sub => {
+                // Lewati mapel jika tidak sesuai dengan filter yang dipilih
+                if(window.currentLiterasiFilter !== 'all' && window.currentLiterasiFilter !== sub.id) return;
+
                 const data = window.quizData[sub.id] || [];
                 data.forEach((item) => {
                     const qText = item.question.replace(/<[^>]*>?/gm, '').toLowerCase();
