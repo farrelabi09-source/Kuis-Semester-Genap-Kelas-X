@@ -86,13 +86,15 @@
         .grid-number { transition: all 0.2s; }
         .grid-number.active { transform: scale(1.1); box-shadow: 0 0 0 2px var(--bg-main), 0 0 10px #2dd4bf; }
 
-        /* Kustomisasi Range Slider */
+        .rotate-spin { animation: spinOnce 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spinOnce { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(0.8); } 100% { transform: rotate(360deg) scale(1); } }
+
+        /* Kustomisasi Range Slider (Progress Bar Musik) */
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: #2dd4bf; cursor: pointer; margin-top: -4.5px; box-shadow: 0 0 5px rgba(45, 212, 191, 0.5); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 3px; cursor: pointer; background: rgba(148, 163, 184, 0.4); border-radius: 2px; }
         .dark input[type=range]::-webkit-slider-runnable-track { background: rgba(255, 255, 255, 0.2); }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 10px; }
@@ -107,14 +109,21 @@
         .mobile-dvh-fix { height: calc(100dvh - 6rem); }
         @media (min-width: 768px) { .mobile-dvh-fix { height: 80vh; max-height: 750px; } }
 
-        /* CSS KHUSUS DYNAMIC ISLAND (Animasi linear/kalem tanpa bouncy, tidak kepanjangan) */
+        /* --- CSS KHUSUS DYNAMIC ISLAND --- */
         .dynamic-island {
             transition: width 0.4s ease-in-out, border-radius 0.4s ease-in-out, background-color 0.3s ease;
             height: 48px; overflow: hidden; display: flex; align-items: center; white-space: nowrap; 
         }
         .di-collapsed { width: 48px; border-radius: 24px; cursor: pointer; }
-        .di-expanded { width: calc(100vw - 120px); max-width: 260px; border-radius: 24px; cursor: default; }
-        .di-content-wrapper { width: calc(100vw - 120px); max-width: 260px; transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
+        
+        /* Lebar responsif: sisa ruang di HP, tapi mentok di 320px untuk Desktop agar tidak memanjang penuhi layar */
+        .di-expanded { width: calc(100vw - 130px); border-radius: 24px; cursor: default; }
+        .di-content-wrapper { width: calc(100vw - 130px); transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
+        
+        @media (min-width: 768px) {
+            .di-expanded { width: 320px; }
+            .di-content-wrapper { width: 320px; }
+        }
 
         .cinematic-title { font-family: 'Archivo Black', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.03em; }
 
@@ -133,15 +142,13 @@
         body[data-text-size="md"] .o-text-dynamic { font-size: 1rem; }
         body[data-text-size="lg"] .o-text-dynamic { font-size: 1.125rem; }
 
-        /* Animasi Transisi Area Kuis */
         #quiz-content-area { transition: opacity 0.2s ease, transform 0.2s ease; }
 
         .confetti { position: absolute; width: 10px; height: 10px; background-color: #f00; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
-        
         .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-        /* ANIMASI ROTASI LOGO MUSIK */
+        /* ANIMASI ROTASI VINYL MUSIK */
         @keyframes spin-record { 100% { transform: rotate(360deg); } }
         .spin-record { animation: spin-record 3s linear infinite; }
     </style>
@@ -176,32 +183,60 @@
     <!-- DYNAMIC ISLAND MUSIC PLAYER WIDGET -->
     <div id="dynamic-island" class="fixed top-3 left-3 md:top-6 md:left-8 z-[70] bg-white/80 dark:bg-slate-800/90 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dynamic-island di-collapsed" onclick="togglePlayerState(event)">
         
-        <!-- Logo Musik: Volume (Merah: Pause/Mute, Hijau: Play) -->
-        <div id="music-icon-container" class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300 spin-record" style="animation-play-state: paused;">
-            <i id="music-state-icon" class="ph-fill ph-speaker-slash text-xl"></i>
+        <!-- Piringan Hitam Nyata & Jarum (Tonearm) -->
+        <div class="absolute left-[3px] top-[3px] w-[40px] h-[40px] flex-shrink-0 z-20 pointer-events-none">
+            <!-- Piringan -->
+            <div id="record-disk" class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center border border-slate-700 shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)] spin-record transition-all" style="animation-play-state: paused;">
+                <!-- Guratan vinyl -->
+                <div class="w-[28px] h-[28px] rounded-full border border-slate-700/80 absolute"></div>
+                <div class="w-[16px] h-[16px] rounded-full border border-slate-600/60 absolute"></div>
+                <!-- Label Tengah Dinamis -->
+                <div id="record-label" class="w-[12px] h-[12px] bg-red-500 rounded-full absolute shadow-sm flex items-center justify-center transition-colors duration-300">
+                    <div class="w-[2px] h-[2px] bg-white rounded-full"></div>
+                </div>
+            </div>
+            <!-- Tonearm (Jarum) -->
+            <div id="tonearm" class="absolute top-[6px] -right-[2px] w-[4px] h-[20px] bg-slate-300 rounded-full origin-top transform rotate-[-40deg] transition-transform duration-500 ease-in-out z-30 shadow-[1px_2px_3px_rgba(0,0,0,0.5)]">
+                <div class="absolute bottom-0 -left-[2px] w-[8px] h-[10px] bg-slate-400 rounded-[2px]"></div>
+                <div class="absolute top-0 -left-[2px] w-[8px] h-[8px] bg-slate-500 rounded-full"></div>
+            </div>
         </div>
         
-        <div id="di-content" class="di-content-wrapper pl-[3.25rem] pr-2 opacity-0 invisible">
-            <div class="flex-1 min-w-0 flex flex-col justify-center translate-y-[1px]">
+        <!-- Kontainer Text & Tombol -->
+        <div id="di-content" class="di-content-wrapper pl-[50px] pr-[8px] opacity-0 invisible transition-opacity duration-300 flex items-center justify-between">
+            <div class="flex-1 min-w-0 flex flex-col justify-center">
                 <div class="truncate text-[12px] md:text-[14px] font-bold text-slate-800 dark:text-white leading-none" id="track-title">Lofi Production</div>
-                <div class="truncate text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-[2px]" id="track-artist">Pulsebox</div>
-                <div class="flex items-center gap-1.5 w-full mt-[2px]">
-                    <input type="range" id="track-progress" value="0" max="100" class="flex-1 h-1 pointer-events-auto" onclick="event.stopPropagation()">
+                <div class="truncate text-[9px] md:text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-[2px]" id="track-artist">Pulsebox</div>
+                <div class="flex items-center gap-1 md:gap-1.5 w-full mt-[4px] min-w-0">
+                    <span class="text-[8px] md:text-[9px] text-slate-500 dark:text-slate-400 font-mono w-6 text-right shrink-0" id="track-current">0:00</span>
+                    <input type="range" id="track-progress" value="0" max="100" class="flex-1 w-full h-[4px]" onclick="event.stopPropagation()">
+                    <span class="text-[8px] md:text-[9px] text-slate-500 dark:text-slate-400 font-mono w-6 shrink-0" id="track-total">0:00</span>
                 </div>
             </div>
 
-            <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0 ml-1.5 md:ml-3 pointer-events-auto" onclick="event.stopPropagation()">
-                <button onclick="prevTrack()" class="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform"><i class="ph-fill ph-skip-back text-[14px] md:text-[16px]"></i></button>
-                <button onclick="togglePlay()" class="w-7 h-7 md:w-9 md:h-9 flex items-center justify-center text-teal-500 dark:text-teal-400 hover:text-teal-600 active:scale-95 transition-transform"><i class="ph-fill ph-play text-xl md:text-2xl" id="play-icon"></i></button>
-                <button onclick="nextTrack()" class="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform"><i class="ph-fill ph-skip-forward text-[14px] md:text-[16px]"></i></button>
+            <!-- Kontrol Audio -->
+            <div class="flex items-center gap-[6px] md:gap-[8px] flex-shrink-0 ml-[8px]" onclick="event.stopPropagation()">
+                <button onclick="prevTrack()" class="w-[24px] h-[24px] md:w-[28px] md:h-[28px] flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
+                    <i class="ph-fill ph-skip-back text-[14px] md:text-[16px]"></i>
+                </button>
+                <button onclick="togglePlay()" class="w-[28px] h-[28px] md:w-[36px] md:h-[36px] flex items-center justify-center text-teal-500 dark:text-teal-400 hover:text-teal-600 active:scale-95 transition-transform">
+                    <i class="ph-fill ph-play text-[20px] md:text-[24px]" id="play-icon"></i>
+                </button>
+                <button onclick="nextTrack()" class="w-[24px] h-[24px] md:w-[28px] md:h-[28px] flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
+                    <i class="ph-fill ph-skip-forward text-[14px] md:text-[16px]"></i>
+                </button>
             </div>
         </div>
     </div>
 
     <!-- TOP RIGHT CONTROLS -->
     <div class="fixed top-3 right-3 md:top-6 md:right-8 z-50 flex gap-2 md:gap-3 items-center">
-        <button onclick="openSettings()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg"><i class="ph-fill ph-gear text-xl md:text-2xl text-slate-600 dark:text-slate-300 hover:rotate-90 transition-transform duration-500"></i></button>
-        <button onclick="toggleTheme()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg"><i id="theme-icon" class="ph-fill ph-moon text-xl md:text-2xl text-teal-500 dark:text-teal-400"></i></button>
+        <button onclick="openSettings()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
+            <i class="ph-fill ph-gear text-xl md:text-2xl text-slate-600 dark:text-slate-300 group-hover:rotate-90 transition-transform duration-500"></i>
+        </button>
+        <button onclick="toggleTheme()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
+            <i id="theme-icon" class="ph-fill ph-moon text-xl md:text-2xl text-teal-500 dark:text-teal-400"></i>
+        </button>
     </div>
 
     <!-- BOTTOM CONTROLS (Pengumuman, Literasi, Akun) -->
@@ -209,12 +244,12 @@
         
         <button onclick="window.openLiterasi()" class="h-10 md:h-12 px-3 md:px-4 rounded-full glass-panel flex items-center justify-center hover:scale-105 active:scale-95 transition-transform outline-none shadow-lg text-indigo-500 dark:text-indigo-400 border-indigo-200 dark:border-indigo-900/50 gap-1.5 md:gap-2">
             <i class="ph-fill ph-books text-lg md:text-xl"></i>
-            <span id="lbl-literasi" class="text-[10px] md:text-xs font-bold uppercase cinematic-title hidden sm:block">Literasi</span>
+            <span class="text-[10px] md:text-xs font-bold uppercase cinematic-title hidden sm:block">Literasi</span>
         </button>
 
         <button onclick="openAnnouncement()" class="h-10 md:h-12 px-3 md:px-4 rounded-full glass-panel flex items-center justify-center hover:scale-105 active:scale-95 transition-transform outline-none shadow-lg text-blue-500 dark:text-blue-400 border-blue-200 dark:border-blue-900/50 gap-1.5 md:gap-2">
             <i class="ph-fill ph-megaphone text-lg md:text-xl"></i>
-            <span id="lbl-update" class="text-[10px] md:text-xs font-bold uppercase cinematic-title hidden sm:block">Update</span>
+            <span class="text-[10px] md:text-xs font-bold uppercase cinematic-title hidden sm:block">Update</span>
         </button>
 
         <div id="user-info" class="hidden glass-panel h-10 md:h-12 px-2.5 py-1.5 md:py-2 md:px-3 rounded-full flex items-center gap-2 shadow-lg border-teal-500/30 fade-in hover:scale-105 transition-transform bg-white/80 dark:bg-slate-800/90">
@@ -232,10 +267,10 @@
         <!-- SCREEN 1: HOME -->
         <div id="screen-home" class="w-full max-w-5xl fade-in hidden px-2 md:px-0 opacity-0 transition-opacity duration-500">
             <div class="text-center mb-8 md:mb-10 mt-10 md:mt-4">
-                <h1 id="main-title" class="text-3xl md:text-5xl mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-teal-400 to-emerald-400 dark:from-blue-400 dark:via-teal-300 dark:to-emerald-300 cinematic-title" style="line-height: 1.2;">
+                <h1 class="text-3xl md:text-5xl mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-teal-400 to-emerald-400 dark:from-blue-400 dark:via-teal-300 dark:to-emerald-300 cinematic-title" style="line-height: 1.2;">
                     Kuis Semester Genap
                 </h1>
-                <p id="main-subtitle" class="text-slate-600 dark:text-slate-400 text-sm md:text-lg mt-2">Pilih mata pelajaran untuk memulai ujian.</p>
+                <p class="text-slate-600 dark:text-slate-400 text-sm md:text-lg mt-2">Pilih mata pelajaran untuk memulai ujian.</p>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6" id="subject-grid"></div>
         </div>
@@ -247,20 +282,26 @@
                     <i class="ph-bold ph-arrow-left text-xl"></i>
                 </button>
                 <div>
-                    <h2 id="literasi-title" class="text-2xl md:text-4xl font-bold cinematic-title text-slate-800 dark:text-white flex items-center gap-2">
+                    <h2 class="text-2xl md:text-4xl font-bold cinematic-title text-slate-800 dark:text-white flex items-center gap-2">
                         <i class="ph-fill ph-books text-indigo-500"></i> Pojok Literasi
                     </h2>
-                    <p id="literasi-desc" class="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-1">Cari dan pelajari rangkuman materi dari seluruh mata pelajaran.</p>
+                    <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-1">Cari dan pelajari rangkuman materi dari seluruh mata pelajaran.</p>
                 </div>
             </div>
             
             <div class="glass-panel p-2 md:p-3 rounded-2xl mb-4 flex items-center gap-3 sticky top-20 z-40 shadow-lg border border-indigo-500/20">
                 <i class="ph-bold ph-magnifying-glass text-xl md:text-2xl text-indigo-500 ml-3"></i>
-                <input type="text" id="search-placeholder" onkeyup="window.renderLiterasi(this.value)" placeholder="Cari materi..." class="w-full bg-transparent border-none outline-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 py-2 h-10 md:h-12 text-sm md:text-base">
+                <input type="text" id="search-literasi" onkeyup="window.renderLiterasi(this.value)" placeholder="Cari materi... (contoh: inflasi, redoks, trigonometri)" class="w-full bg-transparent border-none outline-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 py-2 h-10 md:h-12 text-sm md:text-base">
             </div>
 
-            <div id="literasi-categories" class="flex overflow-x-auto gap-2 md:gap-3 mb-6 pb-2 hide-scrollbar snap-x"></div>
-            <div id="literasi-container" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"></div>
+            <!-- Filter Kategori Mapel -->
+            <div id="literasi-categories" class="flex overflow-x-auto gap-2 md:gap-3 mb-6 pb-2 hide-scrollbar snap-x">
+                <!-- Diisi oleh JS -->
+            </div>
+
+            <div id="literasi-container" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <!-- Kartu literasi dimuat di sini oleh JS -->
+            </div>
         </div>
 
         <!-- SCREEN 2: QUIZ / REVIEW INTERFACE -->
@@ -268,7 +309,7 @@
             <div class="glass-panel rounded-2xl overflow-hidden flex flex-col md:flex-row mobile-dvh-fix w-full relative">
 
                 <div id="review-badge" class="hidden absolute top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-950 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg z-20 cinematic-title">
-                    <span id="review-badge-text1">Mode</span> <span id="review-badge-text2">Pembahasan</span>
+                    Mode Pembahasan
                 </div>
 
                 <div class="flex-1 min-w-0 flex flex-col relative h-full">
@@ -276,12 +317,12 @@
                     <div class="flex justify-between items-start p-4 md:p-8 pb-3 md:pb-4 flex-shrink-0 border-b md:border-none border-slate-200/50 dark:border-white/5">
                         <div>
                             <h2 id="quiz-subject-title" class="text-xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 dark:from-blue-400 dark:to-teal-300 cinematic-title mb-1 leading-tight">MAPEL</h2>
-                            <div class="text-sm md:text-base font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1"><span id="lbl-soal">Soal</span> <span id="current-question-num" class="text-slate-800 dark:text-white">1</span> / <span id="total-question-num">40</span></div>
+                            <div class="text-sm md:text-base font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">Soal <span id="current-question-num" class="text-slate-800 dark:text-white">1</span> / <span id="total-question-num">40</span></div>
                         </div>
 
                         <div class="flex flex-col items-end gap-2 md:gap-3 mt-1">
                             <button onclick="backToMenu()" class="text-xs md:text-sm font-bold text-red-500 hover:text-red-600 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 md:px-4 md:py-2 rounded-lg active:scale-95 transition-all flex items-center gap-1.5 shadow-sm border border-red-500/20">
-                                <i class="ph-bold ph-sign-out text-sm md:text-lg"></i> <span id="btn-exit-text">Keluar</span>
+                                <i class="ph-bold ph-sign-out text-sm md:text-lg"></i> Keluar
                             </button>
                             <div class="flex items-center gap-2">
                                 <button onclick="openMobileNav()" class="md:hidden glass-panel p-2 rounded-lg flex items-center justify-center text-slate-700 dark:text-slate-200 border-slate-300 dark:border-white/10 active:scale-95 transition-transform"><i class="ph ph-squares-four text-xl"></i></button>
@@ -304,21 +345,21 @@
 
                         <div id="options-container" class="flex flex-col gap-3 pb-2"></div>
                         
-                        <div id="explanation-box" class="hidden mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-5 fade-in shadow-inner">
-                            <h4 class="text-blue-700 dark:text-blue-400 font-bold mb-2 flex items-center gap-2"><i class="ph-fill ph-info"></i> Penjelasan Materi:</h4>
-                            <p id="explanation-text" class="text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed"></p>
+                        <div id="explanation-box" class="hidden mt-6 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-5 fade-in shadow-inner">
+                            <h4 class="text-teal-600 dark:text-teal-400 font-bold mb-2 flex items-center gap-2"><i class="ph-fill ph-info"></i> Penjelasan Materi:</h4>
+                            <p id="explanation-text" class="text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-medium"></p>
                         </div>
                     </div>
 
                     <div class="flex justify-between items-center p-3 md:p-6 border-t border-slate-200 dark:border-white/10 flex-shrink-0 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md z-10">
-                        <button onclick="prevQuestion()" id="btn-prev" class="px-3 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold text-slate-600 dark:text-slate-300 bg-slate-200 hover:bg-slate-300 dark:bg-white/5 dark:hover:bg-white/10 transition-colors flex items-center gap-1 md:gap-2 text-sm md:text-base active:scale-95"><i class="ph ph-caret-left text-lg"></i> <span id="btn-prev-text" class="hidden sm:inline">Sebelumnya</span></button>
+                        <button onclick="prevQuestion()" id="btn-prev" class="px-3 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold text-slate-600 dark:text-slate-300 bg-slate-200 hover:bg-slate-300 dark:bg-white/5 dark:hover:bg-white/10 transition-colors flex items-center gap-1 md:gap-2 text-sm md:text-base active:scale-95"><i class="ph ph-caret-left text-lg"></i> <span class="hidden sm:inline">Sebelumnya</span></button>
                         <button onclick="handleCenterAction()" id="btn-center-action" class="px-5 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-emerald-950 dark:text-white bg-emerald-400 hover:bg-emerald-500 dark:bg-emerald-500/30 dark:hover:bg-emerald-500/50 border border-emerald-500 transition-colors text-sm md:text-base shadow-sm active:scale-95 hover:scale-105">Selesai</button>
-                        <button onclick="nextQuestion()" id="btn-next" class="px-3 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold text-white bg-blue-500 hover:bg-blue-600 transition-colors flex items-center gap-1 md:gap-2 shadow-lg shadow-blue-500/30 text-sm md:text-base active:scale-95"><span id="btn-next-text" class="hidden sm:inline">Berikutnya</span> <i class="ph ph-caret-right text-lg"></i></button>
+                        <button onclick="nextQuestion()" id="btn-next" class="px-3 py-2.5 md:px-6 md:py-3 rounded-xl font-semibold text-white bg-blue-500 hover:bg-blue-600 transition-colors flex items-center gap-1 md:gap-2 shadow-lg shadow-blue-500/30 text-sm md:text-base active:scale-95"><span class="hidden sm:inline">Berikutnya</span> <i class="ph ph-caret-right text-lg"></i></button>
                     </div>
                 </div>
 
                 <div class="hidden md:flex w-80 flex-shrink-0 flex-col glass-nav border-l border-slate-200 dark:border-white/10">
-                    <div class="flex items-center justify-between p-6 pb-4 border-b border-slate-200/50 dark:border-white/5 flex-shrink-0"><h3 id="nav-title-desktop" class="font-bold text-lg text-slate-800 dark:text-white cinematic-title">Navigasi Soal</h3></div>
+                    <div class="flex items-center justify-between p-6 pb-4 border-b border-slate-200/50 dark:border-white/5 flex-shrink-0"><h3 class="font-bold text-lg text-slate-800 dark:text-white cinematic-title">Navigasi Soal</h3></div>
                     <div class="flex-1 overflow-y-auto p-6 pt-5"><div class="grid grid-cols-5 gap-3 content-start" id="question-grid-desktop"></div></div>
                     <div class="p-5 pt-4 border-t border-slate-200 dark:border-white/10 flex-shrink-0 bg-slate-50/50 dark:bg-slate-900/50" id="legend-desktop"></div>
                 </div>
@@ -331,27 +372,28 @@
             <div class="glass-panel p-8 md:p-12 rounded-3xl relative overflow-hidden">
                 <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-teal-500/20 rounded-full blur-3xl -z-10"></div>
                 <i class="ph-fill ph-check-circle text-6xl md:text-7xl text-emerald-500 dark:text-emerald-400 mb-4 md:mb-6 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]"></i>
-                <h2 id="result-title" class="text-3xl md:text-4xl mb-2 text-slate-800 dark:text-white cinematic-title">Kuis Selesai!</h2>
+                <h2 class="text-3xl md:text-4xl mb-2 text-slate-800 dark:text-white cinematic-title">Kuis Selesai!</h2>
                 <p class="text-slate-600 dark:text-slate-400 mb-6 text-sm md:text-base font-medium" id="result-subject-name">Mata Pelajaran</p>
                 
                 <div class="bg-slate-100 dark:bg-slate-900/50 rounded-2xl p-6 md:p-8 mb-4 inline-block border border-slate-200 dark:border-white/10 w-full max-w-xs hover:scale-105 transition-transform duration-300">
-                    <p id="result-score-label" class="text-slate-500 dark:text-slate-400 text-xs md:text-sm font-semibold uppercase tracking-widest mb-2">Skor Akhir Anda</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs md:text-sm font-semibold uppercase tracking-widest mb-2">Skor Akhir Anda</p>
                     <div class="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-600 via-teal-500 to-emerald-400 cinematic-title" id="final-score">0</div>
                 </div>
 
                 <div class="mb-6 text-sm text-slate-500 dark:text-slate-400 font-medium bg-white/50 dark:bg-black/20 py-2 px-4 rounded-lg inline-block border border-slate-200 dark:border-white/5">
-                    <i class="ph-fill ph-clock text-teal-500"></i> <span id="time-analysis-label">Rata-rata waktu:</span> <span id="time-analysis" class="font-bold text-slate-700 dark:text-white">0 detik/soal</span>
+                    <i class="ph-fill ph-clock text-teal-500"></i> Rata-rata waktu: <span id="time-analysis" class="font-bold text-slate-700 dark:text-white">0 detik/soal</span>
                 </div>
 
                 <div class="flex flex-col sm:flex-row justify-center gap-3 w-full">
                     <button onclick="startReview()" class="flex-1 py-3.5 md:py-4 rounded-xl font-bold text-teal-900 bg-teal-300 hover:bg-teal-400 transition-colors shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2 active:scale-95">
-                        <i class="ph-bold ph-book-open text-lg"></i> <span id="btn-review-text">Lihat Pembahasan</span>
+                        <i class="ph-bold ph-book-open text-lg"></i> Lihat Pembahasan
                     </button>
+                    <!-- Tombol Rekomendasi Belajar (Muncul jika ada salah) -->
                     <button id="btn-rekomendasi" onclick="window.openRekomendasi()" class="hidden flex-1 py-3.5 md:py-4 rounded-xl font-bold text-indigo-950 bg-indigo-300 hover:bg-indigo-400 transition-colors shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 active:scale-95">
-                        <i class="ph-bold ph-lightbulb text-lg"></i> <span id="lbl-rekomendasi">Rekomendasi Belajar</span>
+                        <i class="ph-bold ph-lightbulb text-lg"></i> Rekomendasi Belajar
                     </button>
                     <button onclick="backToMenu()" class="flex-1 py-3.5 md:py-4 rounded-xl font-bold text-white bg-slate-700 hover:bg-slate-600 transition-colors flex items-center justify-center gap-2 shadow-lg active:scale-95">
-                        <i class="ph-bold ph-house text-lg"></i> <span id="btn-home-text">Menu Utama</span>
+                        <i class="ph-bold ph-house text-lg"></i> Menu Utama
                     </button>
                 </div>
             </div>
@@ -363,14 +405,16 @@
         <div class="absolute inset-0 modal-overlay" onclick="window.closeRekomendasi()"></div>
         <div class="glass-panel p-6 md:p-8 rounded-2xl w-[95%] max-w-2xl max-h-[85vh] relative z-10 transform scale-95 transition-all duration-300 flex flex-col" id="rekomendasi-content">
             <div class="flex justify-between items-center mb-6 flex-shrink-0">
-                <h3 id="rekomendasi-title" class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title">
+                <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title">
                     <i class="ph-fill ph-lightbulb text-indigo-500"></i> Rekomendasi Belajar
                 </h3>
                 <button onclick="window.closeRekomendasi()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white active:scale-95"><i class="ph ph-x text-2xl"></i></button>
             </div>
-            <p id="rekomendasi-desc" class="text-sm text-slate-600 dark:text-slate-400 mb-4 font-medium flex-shrink-0">Kamu menjawab salah pada beberapa soal. Berikut adalah konsep materi yang perlu kamu pelajari ulang:</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 font-medium flex-shrink-0">Kamu menjawab salah pada beberapa soal. Berikut adalah konsep materi yang perlu kamu pelajari ulang:</p>
             
-            <div id="rekomendasi-list" class="flex-1 overflow-y-auto space-y-3 pr-2"></div>
+            <div id="rekomendasi-list" class="flex-1 overflow-y-auto space-y-3 pr-2">
+                <!-- List Rekomendasi diisi oleh JS -->
+            </div>
         </div>
     </div>
 
@@ -380,7 +424,7 @@
         <div class="glass-panel w-full h-[75vh] max-h-[85vh] rounded-t-3xl relative z-10 transform translate-y-full transition-transform duration-300 flex flex-col shadow-[0_-10px_40px_rgba(0,0,0,0.3)]" id="mobile-nav-content">
             <div id="mobile-nav-header" class="w-full flex-shrink-0 rounded-t-3xl touch-none bg-white/5 dark:bg-black/5">
                 <div class="flex justify-center pt-4 pb-2"><div class="w-12 h-1.5 bg-slate-400/50 dark:bg-slate-500/50 rounded-full"></div></div>
-                <div class="flex justify-center items-center px-6 py-3 border-b border-slate-200/50 dark:border-white/5"><h3 id="nav-title-mobile" class="font-bold text-lg text-slate-800 dark:text-white cinematic-title">Navigasi Soal</h3></div>
+                <div class="flex justify-center items-center px-6 py-3 border-b border-slate-200/50 dark:border-white/5"><h3 class="font-bold text-lg text-slate-800 dark:text-white cinematic-title">Navigasi Soal</h3></div>
             </div>
             <div class="p-6 overflow-y-auto flex-1 overscroll-contain"><div class="grid grid-cols-5 sm:grid-cols-7 gap-3 content-start" id="question-grid-mobile"></div></div>
             <div class="p-5 border-t border-slate-200 dark:border-white/10 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md rounded-t-none flex justify-around flex-shrink-0" id="legend-mobile"></div>
@@ -391,11 +435,11 @@
     <div id="confirm-modal" class="fixed inset-0 z-[80] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="absolute inset-0 modal-overlay" onclick="hideConfirmModal()"></div>
         <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="modal-content">
-            <h3 id="modal-confirm-title" class="text-xl md:text-2xl mb-2 text-slate-800 dark:text-white cinematic-title">Yakin selesai?</h3>
+            <h3 class="text-xl md:text-2xl mb-2 text-slate-800 dark:text-white cinematic-title">Yakin selesai?</h3>
             <p class="text-sm md:text-base text-slate-600 dark:text-slate-300 mb-6 md:mb-8 font-medium" id="unanswered-warning">Masih ada beberapa soal yang belum kamu jawab. Coba dicek lagi deh.</p>
             <div class="flex justify-end gap-3">
-                <button id="btn-confirm-cancel" onclick="hideConfirmModal()" class="px-4 py-2 md:px-5 md:py-2.5 rounded-lg font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white text-sm md:text-base active:scale-95">Batal</button>
-                <button id="btn-confirm-yes" onclick="finishQuiz()" class="px-4 py-2 md:px-5 md:py-2.5 rounded-lg font-semibold bg-emerald-400 hover:bg-emerald-500 text-emerald-950 shadow-lg shadow-emerald-500/20 text-sm md:text-base active:scale-95">Ya, Selesai</button>
+                <button onclick="hideConfirmModal()" class="px-4 py-2 md:px-5 md:py-2.5 rounded-lg font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white text-sm md:text-base active:scale-95">Batal</button>
+                <button onclick="finishQuiz()" class="px-4 py-2 md:px-5 md:py-2.5 rounded-lg font-semibold bg-emerald-400 hover:bg-emerald-500 text-emerald-950 shadow-lg shadow-emerald-500/20 text-sm md:text-base active:scale-95">Ya, Selesai</button>
             </div>
         </div>
     </div>
@@ -404,21 +448,10 @@
     <div id="settings-modal" class="fixed inset-0 z-[80] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="absolute inset-0 modal-overlay" onclick="closeSettings()"></div>
         <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="settings-content">
-            <div class="flex justify-between items-center mb-6">
-                <h3 id="setting-title" class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title"><i class="ph-fill ph-gear text-teal-500"></i> Pengaturan</h3>
-                <button onclick="closeSettings()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white active:scale-95"><i class="ph ph-x text-2xl"></i></button>
-            </div>
-            
-            <div class="mb-4">
-                <label id="label-lang" class="block text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 mb-3">Bahasa / Language</label>
-                <div class="flex gap-2 bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-xl border border-slate-200 dark:border-white/5">
-                    <button onclick="setLanguage('id')" id="btn-lang-id" class="flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold transition-all">🇮🇩 ID</button>
-                    <button onclick="setLanguage('en')" id="btn-lang-en" class="flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold transition-all">🇬🇧 EN</button>
-                </div>
-            </div>
-            <div class="mb-4"><label id="label-music" class="block text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">Volume Musik</label><div class="flex items-center gap-3"><i class="ph-fill ph-music-notes text-slate-400 text-lg"></i><input type="range" id="music-volume" min="0" max="1" step="0.05" value="0.5" class="flex-1 h-1" oninput="updateMusicVolume(this.value)"></div></div>
-            <div class="mb-6 pb-6 border-b border-slate-200 dark:border-white/10"><label id="label-sfx" class="block text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">Volume Efek Suara (SFX)</label><div class="flex items-center gap-3"><i class="ph-fill ph-speaker-high text-slate-400 text-lg"></i><input type="range" id="sfx-volume" min="0" max="1" step="0.05" value="0.5" class="flex-1 h-1" oninput="updateSfxVolume(this.value)"></div></div>
-            <div class="mb-2"><label id="label-text-size" class="block text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 mb-3">Ukuran Teks Soal</label><div class="flex gap-2 bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-xl border border-slate-200 dark:border-white/5"><button onclick="setTextSize('sm')" id="btn-size-sm" class="flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold transition-all active:scale-95"><span id="txt-sm">Kecil</span></button><button onclick="setTextSize('md')" id="btn-size-md" class="flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold transition-all active:scale-95"><span id="txt-md">Normal</span></button><button onclick="setTextSize('lg')" id="btn-size-lg" class="flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold transition-all active:scale-95"><span id="txt-lg">Besar</span></button></div></div>
+            <div class="flex justify-between items-center mb-6"><h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title"><i class="ph-fill ph-gear text-teal-500"></i> Pengaturan</h3><button onclick="closeSettings()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white active:scale-95"><i class="ph ph-x text-2xl"></i></button></div>
+            <div class="mb-4"><label class="block text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">Volume Musik</label><div class="flex items-center gap-3"><i class="ph-fill ph-music-notes text-slate-400 text-lg"></i><input type="range" id="music-volume" min="0" max="1" step="0.05" value="0.5" class="flex-1 h-1" oninput="updateMusicVolume(this.value)"></div></div>
+            <div class="mb-6 pb-6 border-b border-slate-200 dark:border-white/10"><label class="block text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">Volume Efek Suara (SFX)</label><div class="flex items-center gap-3"><i class="ph-fill ph-speaker-high text-slate-400 text-lg"></i><input type="range" id="sfx-volume" min="0" max="1" step="0.05" value="0.5" class="flex-1 h-1" oninput="updateSfxVolume(this.value)"></div></div>
+            <div class="mb-2"><label class="block text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 mb-3">Ukuran Teks Soal</label><div class="flex gap-2 bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-xl border border-slate-200 dark:border-white/5"><button onclick="setTextSize('sm')" id="btn-size-sm" class="flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-500 transition-all active:scale-95">Kecil</button><button onclick="setTextSize('md')" id="btn-size-md" class="flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-500 transition-all active:scale-95">Normal</button><button onclick="setTextSize('lg')" id="btn-size-lg" class="flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-500 transition-all active:scale-95">Besar</button></div></div>
         </div>
     </div>
 
@@ -429,11 +462,11 @@
             <div class="flex justify-between items-center mb-6"><h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title"><i class="ph-fill ph-megaphone text-blue-500"></i> Pengumuman</h3><button onclick="closeAnnouncement()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white active:scale-95"><i class="ph ph-x text-2xl"></i></button></div>
             <div class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50">
-                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.2.4.0 - Ekosistem Cerdas 🎉</h4>
+                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.2.1.0 - The Perfect UI 🎉</h4>
                     <ul class="list-disc pl-4 text-xs md:text-sm text-slate-600 dark:text-slate-300 space-y-1.5 font-medium">
-                        <li><strong>Dukungan Bahasa:</strong> Pilihan ID/EN di Pengaturan.</li>
-                        <li><strong>Pojok Literasi Terintegrasi:</strong> Baca dan cari rangkuman seluruh mata pelajaran langsung di aplikasi.</li>
-                        <li><strong>Rekomendasi AI:</strong> Bila salah menjawab, sistem akan menyusun rekomendasi belajar sesuai topik yang kamu lewatkan.</li>
+                        <li><strong>Reposisi Cerdas:</strong> Tombol Pengumuman & Info Akun kini dipindahkan ke pojok kanan bawah agar lebih rapi. Saat kuis dimulai, menu ini akan otomatis sembunyi.</li>
+                        <li><strong>Animasi Restored:</strong> Efek animasi saat pergantian soal diaktifkan kembali.</li>
+                        <li><strong>Music Player Clean:</strong> Animasi dibuat tidak bouncy, fungsi loop dihapus, dan warna lampu musik mengikuti indikator (Merah mati / Hijau nyala).</li>
                     </ul>
                 </div>
             </div>
@@ -446,6 +479,7 @@
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // Konfigurasi Database Firebase kamu
         const firebaseConfig = {
             apiKey: "AIzaSyAPeZ0rPMStVHpBX8D0MMBJ2437b_wsFF4",
             authDomain: "kuis-semester-genap-kelas-x.firebaseapp.com",
@@ -463,28 +497,41 @@
         window.currentUser = null;
         window.userScores = {};
 
+        // Fungsi Tombol Login
         document.getElementById('btn-google-login').onclick = async () => {
             const btnText = document.getElementById('login-btn-text');
             const originalText = btnText.innerText;
             btnText.innerHTML = "Memuat... <div class='spinner inline-block ml-2 w-4 h-4'></div>";
-            try { await signInWithPopup(auth, provider); } 
-            catch (error) { alert("Gagal masuk: " + error.message); btnText.innerText = originalText; }
+            try { 
+                await signInWithPopup(auth, provider); 
+            } catch (error) { 
+                alert("Gagal masuk: " + error.message); 
+                btnText.innerText = originalText;
+            }
         };
 
-        window.handleLogout = () => { signOut(auth); };
+        // Fungsi Global untuk Keluar
+        window.handleLogout = () => { 
+            signOut(auth); 
+        };
 
+        // Fungsi Menyimpan Skor ke Firestore Awan
         window.saveScoreToCloud = async (subjectId, newScore) => {
             if (!window.currentUser) return;
             const oldScore = window.userScores[subjectId] || 0;
+            
             if (newScore > oldScore) {
                 window.userScores[subjectId] = newScore;
                 try {
                     const docRef = doc(db, 'users', window.currentUser.uid, 'scores', subjectId);
                     await setDoc(docRef, { score: newScore, updatedAt: new Date() }, { merge: true });
-                } catch (e) { console.error("Gagal menyimpan ke Cloud:", e); }
+                } catch (e) {
+                    console.error("Gagal menyimpan ke Cloud:", e);
+                }
             }
         };
 
+        // Pantau Status Login
         onAuthStateChanged(auth, async (user) => {
             const loginScreen = document.getElementById('login-screen');
             const userInfo = document.getElementById('user-info');
@@ -499,6 +546,7 @@
                 userName.innerText = user.displayName.split(' ')[0];
                 userPhoto.src = user.photoURL || 'https://via.placeholder.com/150';
                 
+                // Ambil skor dari cloud setiap kali berhasil login
                 try {
                     const scoresRef = collection(db, 'users', user.uid, 'scores');
                     const snapshot = await getDocs(scoresRef);
@@ -507,36 +555,42 @@
                         window.userScores[doc.id] = doc.data().score;
                         localStorage.setItem('hs_' + doc.id, doc.data().score);
                     });
-                } catch (e) { console.log("Database belum siap atau error:", e); }
+                } catch (e) {
+                    console.log("Database belum siap atau error:", e);
+                }
                 
                 screenHome.classList.remove('hidden', 'opacity-0');
                 if(typeof window.renderHome === "function") window.renderHome(); 
             } else {
-                window.currentUser = null; window.userScores = {};
+                window.currentUser = null;
+                window.userScores = {};
                 loginScreen.classList.remove('opacity-0', 'pointer-events-none');
                 userInfo.classList.add('hidden');
                 screenHome.classList.add('hidden', 'opacity-0');
+                
                 const btnText = document.getElementById('login-btn-text');
                 if(btnText) btnText.innerText = "Masuk dengan Google";
             }
         });
     </script>
 
-    <!-- WADAH DATA GLOBAL UNTUK MENCEGAH ERROR IDENTIFIER REDECLARATION -->
+    <!-- WADAH DATA GLOBAL UNTUK MENCEGAH ERROR -->
     <script>
-        var subjects = []; 
-        var quizData = {}; 
+        window.subjects = [];
+        window.quizData = {};
         window.failedScripts = []; 
-        
-        function scriptError(scriptName) { window.failedScripts.push(scriptName); }
-        
-        function shuffleArray(array) { 
-            let shuffled = [...array]; 
-            for (let i = shuffled.length - 1; i > 0; i--) { 
-                const j = Math.floor(Math.random() * (i + 1)); 
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; 
-            } 
-            return shuffled; 
+
+        function scriptError(scriptName) {
+            window.failedScripts.push(scriptName);
+        }
+
+        function shuffleArray(array) {
+            let shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
         }
     </script>
 
@@ -546,326 +600,253 @@
     <script src="PendidikanPancasila.js" onerror="scriptError('PendidikanPancasila.js')"></script>
     <script src="Ekonomi.js" onerror="scriptError('Ekonomi.js')"></script>
     <script src="Kimia.js" onerror="scriptError('Kimia.js')"></script>
-    <script src="Matematika.js" onerror="scriptError('Matematika.js')"></script>
 
     <!-- SCRIPT LOGIKA UTAMA -->
     <script>
-        // --- 🌍 SISTEM BAHASA (LANGUAGE DICTIONARY) ---
-        const langDict = {
-            'id': {
-                'main-title': 'Kuis Semester Genap<br>Kelas X',
-                'main-subtitle': 'Pilih mata pelajaran untuk memulai ujian.',
-                'setting-title': '<i class="ph-fill ph-gear text-teal-500"></i> Pengaturan',
-                'label-lang': 'Bahasa / Language',
-                'label-music': 'Volume Musik',
-                'label-sfx': 'Volume Efek Suara (SFX)',
-                'label-text-size': 'Ukuran Teks Soal',
-                'txt-sm': 'Kecil', 'txt-md': 'Normal', 'txt-lg': 'Besar',
-                'btn-exit-text': 'Keluar',
-                'nav-title-desktop': 'Navigasi Soal',
-                'nav-title-mobile': 'Navigasi Soal',
-                'btn-prev-text': 'Sebelumnya',
-                'btn-next-text': 'Berikutnya',
-                'btn-finish-text': 'Selesai',
-                'btn-review-text': 'Tutup Review',
-                'review-badge-text1': 'Mode',
-                'review-badge-text2': 'Pembahasan',
-                'modal-confirm-title': 'Yakin selesai?',
-                'btn-confirm-cancel': 'Batal',
-                'btn-confirm-yes': 'Ya, Selesai',
-                'result-title': 'Kuis Selesai!',
-                'result-score-label': 'Skor Akhir Anda',
-                'time-analysis-label': 'Rata-rata waktu:',
-                'lbl-review': 'Lihat Pembahasan',
-                'lbl-home': 'Menu Utama',
-                'lbl-soal': 'Soal',
-                'lbl-literasi': 'Literasi',
-                'lbl-update': 'Update',
-                'lbl-rekomendasi': 'Rekomendasi Belajar',
-                'literasi-title': '<i class="ph-fill ph-books text-indigo-500"></i> Pojok Literasi',
-                'literasi-desc': 'Cari dan pelajari rangkuman materi dari seluruh mata pelajaran.',
-                'search-placeholder': 'Cari materi... (contoh: inflasi, redoks, trigonometri)',
-                'btn-all-mapel': 'Semua Mapel',
-                'empty-literasi': 'Tidak ada rangkuman materi yang cocok.',
-                'rekomendasi-title': '<i class="ph-fill ph-lightbulb text-indigo-500"></i> Rekomendasi Belajar',
-                'rekomendasi-desc': 'Kamu menjawab salah pada beberapa soal. Berikut adalah konsep materi yang perlu kamu pelajari ulang:',
-                'lbl-materi-terlewat': 'Materi Terlewat:'
-            },
-            'en': {
-                'main-title': 'Even Semester Quiz<br>Grade X',
-                'main-subtitle': 'Select a subject to start the exam.',
-                'setting-title': '<i class="ph-fill ph-gear text-teal-500"></i> Settings',
-                'label-lang': 'Language / Bahasa',
-                'label-music': 'Music Volume',
-                'label-sfx': 'Sound Effects (SFX)',
-                'label-text-size': 'Question Text Size',
-                'txt-sm': 'Small', 'txt-md': 'Normal', 'txt-lg': 'Large',
-                'btn-exit-text': 'Exit',
-                'nav-title-desktop': 'Question Nav',
-                'nav-title-mobile': 'Question Nav',
-                'btn-prev-text': 'Previous',
-                'btn-next-text': 'Next',
-                'btn-finish-text': 'Finish',
-                'btn-review-text': 'Close Review',
-                'review-badge-text1': 'Review',
-                'review-badge-text2': 'Mode',
-                'modal-confirm-title': 'Are you sure?',
-                'btn-confirm-cancel': 'Cancel',
-                'btn-confirm-yes': 'Yes, Finish',
-                'result-title': 'Quiz Finished!',
-                'result-score-label': 'Your Final Score',
-                'time-analysis-label': 'Average time:',
-                'lbl-review': 'Review Answers',
-                'lbl-home': 'Main Menu',
-                'lbl-soal': 'Question',
-                'lbl-literasi': 'Library',
-                'lbl-update': 'Update',
-                'lbl-rekomendasi': 'Study Recommendation',
-                'literasi-title': '<i class="ph-fill ph-books text-indigo-500"></i> Literacy Corner',
-                'literasi-desc': 'Search and learn summary materials from all subjects.',
-                'search-placeholder': 'Search materials... (e.g., inflation, redox, trigonometry)',
-                'btn-all-mapel': 'All Subjects',
-                'empty-literasi': 'No summary materials match your search.',
-                'rekomendasi-title': '<i class="ph-fill ph-lightbulb text-indigo-500"></i> Study Recommendation',
-                'rekomendasi-desc': 'You answered several questions incorrectly. Here are the concepts you need to review:',
-                'lbl-materi-terlewat': 'Missed Concept:'
-            }
-        };
-
-        let currentLang = 'id';
-
-        function setLanguage(lang, save = true) {
-            currentLang = lang;
-            if(save) setStorage('language', lang);
-
-            ['id', 'en'].forEach(l => {
-                const btn = document.getElementById(`btn-lang-${l}`);
-                if (btn) btn.className = `flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold transition-all ${l === lang ? 'bg-white dark:bg-slate-700 shadow text-teal-600 dark:text-white' : 'text-slate-500 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'}`;
-            });
-
-            const keys = Object.keys(langDict[lang]);
-            keys.forEach(key => {
-                const el = document.getElementById(key);
-                if(el) {
-                    if (el.tagName === 'INPUT' && el.type === 'text') {
-                        el.placeholder = langDict[lang][key];
-                    } else {
-                        el.innerHTML = langDict[lang][key];
-                    }
-                }
-            });
-
-            const centerBtn = document.getElementById('btn-center-action');
-            if (centerBtn) {
-                centerBtn.innerText = isReviewMode ? langDict[lang]['btn-review-text'] : langDict[lang]['btn-finish-text'];
-            }
-            
-            updateGridLegend();
-            if(typeof window.renderHome === "function") window.renderHome(); 
-        }
-
         if(!window.userScores) window.userScores = {};
-        function getStorage(key, defaultVal) { try { const subjectId = key.replace('hs_', ''); if(window.userScores && window.userScores[subjectId] !== undefined) { return window.userScores[subjectId]; } return localStorage.getItem(key) || defaultVal; } catch(e) { return defaultVal; } }
-        function setStorage(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
+
+        function getStorage(key, defaultVal) { 
+            try { 
+                const subjectId = key.replace('hs_', '');
+                if(window.userScores && window.userScores[subjectId] !== undefined) {
+                    return window.userScores[subjectId];
+                }
+                return localStorage.getItem(key) || defaultVal; 
+            } catch(e) { return defaultVal; } 
+        }
+        
+        function setStorage(key, val) { 
+            try { localStorage.setItem(key, val); } catch(e) {} 
+        }
+        
         function stopTTS() { try { if ('speechSynthesis' in window && window.speechSynthesis) window.speechSynthesis.cancel(); } catch(e) {} }
 
-        let globalSfxVolume = 0.5; let timeStart = 0; let timeEnd = 0; let audioCtx;
-        function getAudioCtx() { try { if(typeof window === 'undefined') return null; const AudioContext = window.AudioContext || window.webkitAudioContext; if(!AudioContext) return null; if(!audioCtx) audioCtx = new AudioContext(); if(audioCtx.state === 'suspended') audioCtx.resume(); return audioCtx; } catch(e) { return null; } }
-        function playTone(freq, startTimeOffset, duration, type='sine') { const ctx = getAudioCtx(); if(!ctx) return; try { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.type = type; osc.frequency.value = freq; gain.gain.setValueAtTime(0, ctx.currentTime + startTimeOffset); gain.gain.linearRampToValueAtTime(0.4 * globalSfxVolume, ctx.currentTime + startTimeOffset + 0.05); gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startTimeOffset + duration); osc.start(ctx.currentTime + startTimeOffset); osc.stop(ctx.currentTime + startTimeOffset + duration); } catch(e) {} }
-        function playTingSound() { if(globalSfxVolume <= 0) return; playTone(1200, 0, 0.3, 'sine'); }
-        function playPopSound() { if(globalSfxVolume <= 0) return; playTone(600, 0, 0.1, 'sine'); }
+        let globalSfxVolume = 0.5; let timeStart = 0; let timeEnd = 0;
+        let audioCtx;
+        function getAudioCtx() {
+            try {
+                if(typeof window === 'undefined') return null;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if(!AudioContext) return null;
+                if(!audioCtx) audioCtx = new AudioContext();
+                if(audioCtx.state === 'suspended') audioCtx.resume();
+                return audioCtx;
+            } catch(e) { return null; }
+        }
+
+        function playTingSound() {
+            if(globalSfxVolume <= 0) return;
+            const ctx = getAudioCtx(); if(!ctx) return;
+            try {
+                const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'sine'; osc.frequency.setValueAtTime(1200, ctx.currentTime); 
+                gain.gain.setValueAtTime(0.6 * globalSfxVolume, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+                osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.3);
+            } catch(e) {}
+        }
+
+        function playPopSound() {
+            if(globalSfxVolume <= 0) return;
+            const ctx = getAudioCtx(); if(!ctx) return;
+            try {
+                const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'sine'; osc.frequency.setValueAtTime(600, ctx.currentTime); 
+                osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1); 
+                gain.gain.setValueAtTime(0.6 * globalSfxVolume, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+                osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.1);
+            } catch(e) {}
+        }
+
+        function playTone(freq, startTimeOffset, duration, type='sine') {
+            const ctx = getAudioCtx(); if(!ctx) return;
+            try {
+                const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = type; osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0, ctx.currentTime + startTimeOffset);
+                gain.gain.linearRampToValueAtTime(0.4 * globalSfxVolume, ctx.currentTime + startTimeOffset + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startTimeOffset + duration);
+                osc.start(ctx.currentTime + startTimeOffset);
+                osc.stop(ctx.currentTime + startTimeOffset + duration);
+            } catch(e) {}
+        }
+
         function playStartSound() { if(globalSfxVolume <= 0) return; playTone(880, 0, 0.15, 'triangle'); playTone(587.33, 0.15, 0.3, 'sine'); }
         function playExitSound() { if(globalSfxVolume <= 0) return; playTone(587.33, 0, 0.15, 'sine'); playTone(880, 0.15, 0.3, 'triangle'); }
         function playFanfare() { if(globalSfxVolume <= 0) return; const notes = [523.25, 659.25, 783.99, 1046.50]; notes.forEach((freq, i) => { playTone(freq, i * 0.15, 0.4, 'square'); }); }
 
         document.addEventListener('click', (e) => {
-            getAudioCtx(); const isButton = e.target.closest('button'); const isRange = e.target.closest('input[type="range"]'); const isCard = e.target.closest('.subject-card'); const isOption = e.target.closest('.option-btn'); const isIsland = e.target.closest('#dynamic-island');
-            if (isCard) { playStartSound(); } else if (isOption && !isReviewMode) { playTingSound(); } else if (isButton || isIsland) { if (isRange) return; if (!e.target.closest('button[onclick="backToMenu()"]') && !e.target.closest('button[onclick="readQuestionText()"]') && !e.target.closest('#btn-google-login')) { playPopSound(); } }
+            getAudioCtx(); 
+            const isButton = e.target.closest('button'); const isRange = e.target.closest('input[type="range"]');
+            const isCard = e.target.closest('.subject-card'); const isOption = e.target.closest('.option-btn');
+            const isIsland = e.target.closest('#dynamic-island');
+            
+            if (isCard) { playStartSound(); } 
+            else if (isOption && !isReviewMode) { playTingSound(); } 
+            else if (isButton || isIsland) {
+                if (isRange) return;
+                if (!e.target.closest('button[onclick="backToMenu()"]') && !e.target.closest('button[onclick="readQuestionText()"]') && !e.target.closest('#btn-google-login')) {
+                    playPopSound();
+                }
+            }
         });
 
-        function readQuestionText() { playPopSound(); try { if (!('speechSynthesis' in window) || !window.speechSynthesis) return; stopTTS(); const text = document.getElementById('question-text').innerText; const utterance = new SpeechSynthesisUtterance(text); utterance.lang = currentLang === 'en' ? 'en-US' : 'id-ID'; utterance.rate = 0.9; window.speechSynthesis.speak(utterance); } catch(e) {} }
-        function shootConfetti() { const container = document.getElementById('confetti-container'); container.classList.remove('hidden'); container.innerHTML = ''; const colors = ['#f87171', '#34d399', '#60a5fa', '#fbbf24', '#c084fc']; for(let i=0; i<100; i++) { const conf = document.createElement('div'); conf.className = 'confetti'; conf.style.left = Math.random() * 100 + 'vw'; conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; if (Math.random() > 0.5) conf.style.borderRadius = '50%'; conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; conf.style.animationDelay = (Math.random() * 0.5) + 's'; container.appendChild(conf); } setTimeout(() => { container.classList.add('hidden'); container.innerHTML = ''; }, 4500); }
-
-        const playlist = [{ title: 'Lofi Production', artist: 'Pulsebox', src: './Lofi Production - Pulsebox.mp3' }, { title: 'Lofi Night', artist: 'Pulsebox', src: './Lofi Night - Pulsebox.mp3' }, { title: 'Lofi Mood', artist: 'Pulsebox', src: './Lofi Mood - Pulsebox.mp3' }, { title: 'Lofi Melody', artist: 'Pulsebox', src: './Lofi Melody - Pulsebox.mp3' }];
-        let currentTrackIndex = 0; let isPlaying = false; let isPlayerExpanded = false; const audioEl = document.getElementById('audio-player'); if(audioEl) audioEl.loop = false; 
-
-        function togglePlayerState(e) { if(e && (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.closest('button'))) return; isPlayerExpanded = !isPlayerExpanded; const island = document.getElementById('dynamic-island'); const contentWrapper = document.getElementById('di-content'); if(isPlayerExpanded) { island.classList.remove('di-collapsed'); island.classList.add('di-expanded'); contentWrapper.classList.remove('invisible', 'opacity-0'); contentWrapper.classList.add('opacity-100'); if(!isPlaying && audioEl && audioEl.currentTime === 0) togglePlay(); } else { island.classList.remove('di-expanded'); island.classList.add('di-collapsed'); contentWrapper.classList.remove('opacity-100'); contentWrapper.classList.add('opacity-0'); setTimeout(() => { if(!isPlayerExpanded) contentWrapper.classList.add('invisible'); }, 300); } }
-        function formatTime(seconds) { if (isNaN(seconds)) return "0:00"; const min = Math.floor(seconds / 60); const sec = Math.floor(seconds % 60); return `${min}:${sec.toString().padStart(2, '0')}`; }
-        
-        function initMusicPlayer() { 
-            if(!audioEl) return; 
-            loadTrack(currentTrackIndex); 
-            audioEl.addEventListener('loadedmetadata', () => { const timeTotal = document.getElementById('track-total'); if(timeTotal) timeTotal.innerText = formatTime(audioEl.duration); }); 
-            audioEl.addEventListener('timeupdate', () => { if (!audioEl.duration) return; const progressBar = document.getElementById('track-progress'); const timeCurrent = document.getElementById('track-current'); if(progressBar) progressBar.value = (audioEl.currentTime / audioEl.duration) * 100; if(timeCurrent) timeCurrent.innerText = formatTime(audioEl.currentTime); }); 
-            audioEl.addEventListener('ended', () => { nextTrack(); }); 
-            const progressBar = document.getElementById('track-progress'); if(progressBar) progressBar.addEventListener('input', (e) => { audioEl.currentTime = (audioEl.duration * (e.target.value / 100)); }); 
+        function readQuestionText() {
+            playPopSound();
+            try {
+                if (!('speechSynthesis' in window) || !window.speechSynthesis) return;
+                stopTTS(); 
+                const text = document.getElementById('question-text').innerText;
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID'; utterance.rate = 0.9; 
+                window.speechSynthesis.speak(utterance);
+            } catch(e) {}
         }
-        
-        function loadTrack(index) { 
-            if(!audioEl) return; 
-            currentTrackIndex = index; const track = playlist[index]; audioEl.src = track.src; 
-            const titleEl = document.getElementById('track-title'); const artistEl = document.getElementById('track-artist'); 
-            if (titleEl) titleEl.innerText = track.title; if (artistEl) artistEl.innerText = track.artist; 
-            const progressBar = document.getElementById('track-progress'); const timeCurrent = document.getElementById('track-current'); const timeTotal = document.getElementById('track-total'); 
-            if (progressBar) progressBar.value = 0; if (timeCurrent) timeCurrent.innerText = "0:00"; if (timeTotal) timeTotal.innerText = "0:00"; 
-            if (isPlaying) { const p = audioEl.play(); if(p !== undefined) p.catch(e=>{}); } 
+
+        function shootConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.classList.remove('hidden'); container.innerHTML = ''; 
+            const colors = ['#f87171', '#34d399', '#60a5fa', '#fbbf24', '#c084fc'];
+            for(let i=0; i<100; i++) {
+                const conf = document.createElement('div'); conf.className = 'confetti';
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                if (Math.random() > 0.5) conf.style.borderRadius = '50%';
+                conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; conf.style.animationDelay = (Math.random() * 0.5) + 's';
+                container.appendChild(conf);
+            }
+            setTimeout(() => { container.classList.add('hidden'); container.innerHTML = ''; }, 4500);
         }
+
+        const playlist = [
+            { title: 'Lofi Production', artist: 'Pulsebox', src: './Lofi Production - Pulsebox.mp3' },
+            { title: 'Lofi Night', artist: 'Pulsebox', src: './Lofi Night - Pulsebox.mp3' },
+            { title: 'Lofi Mood', artist: 'Pulsebox', src: './Lofi Mood - Pulsebox.mp3' },
+            { title: 'Lofi Melody', artist: 'Pulsebox', src: './Lofi Melody - Pulsebox.mp3' }
+        ];
         
-        function togglePlay() { 
-            if(!audioEl) return; 
-            const playIcon = document.getElementById('play-icon'); 
-            const musicIconContainer = document.getElementById('music-icon-container');
-            const musicStateIcon = document.getElementById('music-state-icon');
+        let currentTrackIndex = 0; let isPlaying = false; let isPlayerExpanded = false;
+        const audioEl = document.getElementById('audio-player'); 
+        if(audioEl) audioEl.loop = false; 
+
+        const playIcon = document.getElementById('play-icon'); 
+        const musicIconContainer = document.getElementById('music-icon-container');
+        const musicStateIcon = document.getElementById('music-state-icon'); 
+        const progressBar = document.getElementById('track-progress');
+        const island = document.getElementById('dynamic-island'); 
+        const contentWrapper = document.getElementById('di-content');
+        const timeCurrent = document.getElementById('track-current'); 
+        const timeTotal = document.getElementById('track-total');
+
+        function togglePlayerState(e) {
+            if(e && (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.closest('button'))) return;
+            isPlayerExpanded = !isPlayerExpanded;
+            if(isPlayerExpanded) {
+                island.classList.remove('di-collapsed'); island.classList.add('di-expanded');
+                contentWrapper.classList.remove('invisible', 'opacity-0'); contentWrapper.classList.add('opacity-100');
+                if(!isPlaying && audioEl && audioEl.currentTime === 0) togglePlay();
+            } else {
+                island.classList.remove('di-expanded'); island.classList.add('di-collapsed');
+                contentWrapper.classList.remove('opacity-100'); contentWrapper.classList.add('opacity-0');
+                setTimeout(() => { if(!isPlayerExpanded) contentWrapper.classList.add('invisible'); }, 300); 
+            }
+        }
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "0:00";
+            const min = Math.floor(seconds / 60); const sec = Math.floor(seconds % 60);
+            return `${min}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        function initMusicPlayer() {
+            if(!audioEl) return;
+            loadTrack(currentTrackIndex);
+            audioEl.addEventListener('loadedmetadata', () => { if(timeTotal) timeTotal.innerText = formatTime(audioEl.duration); });
+            audioEl.addEventListener('timeupdate', () => {
+                if (!audioEl.duration) return;
+                if(progressBar) progressBar.value = (audioEl.currentTime / audioEl.duration) * 100;
+                if(timeCurrent) timeCurrent.innerText = formatTime(audioEl.currentTime);
+            });
+            audioEl.addEventListener('ended', () => {
+                nextTrack(); // Otomatis next track tanpa loop
+            });
+            if(progressBar) progressBar.addEventListener('input', (e) => { audioEl.currentTime = (audioEl.duration * (e.target.value / 100)); });
+        }
+
+        function loadTrack(index) {
+            if(!audioEl) return;
+            currentTrackIndex = index; const track = playlist[index]; audioEl.src = track.src;
+            const titleEl = document.getElementById('track-title');
+            const artistEl = document.getElementById('track-artist');
+            if (titleEl) titleEl.innerText = track.title; 
+            if (artistEl) artistEl.innerText = track.artist;
+            if (progressBar) progressBar.value = 0; 
+            if (timeCurrent) timeCurrent.innerText = "0:00"; 
+            if (timeTotal) timeTotal.innerText = "0:00";
+            if (isPlaying) { const p = audioEl.play(); if(p !== undefined) p.catch(e=>{}); }
+        }
+
+        function togglePlay() {
+            if(!audioEl) return;
+            const recordDisk = document.getElementById('record-disk');
+            const recordLabel = document.getElementById('record-label');
+            const tonearm = document.getElementById('tonearm');
             
-            if (isPlaying) { 
+            if (isPlaying) {
                 audioEl.pause(); isPlaying = false; 
-                if (playIcon) playIcon.classList.replace('ph-pause', 'ph-play'); 
-                if (musicIconContainer) {
-                    musicIconContainer.className = "w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300 spin-record";
-                    musicIconContainer.style.animationPlayState = 'paused';
+                if (playIcon) playIcon.classList.replace('ph-pause', 'ph-play');
+                if (recordDisk) recordDisk.style.animationPlayState = 'paused';
+                if (tonearm) tonearm.style.transform = 'rotate(-40deg)';
+                if (recordLabel) {
+                    recordLabel.classList.remove('bg-teal-400');
+                    recordLabel.classList.add('bg-red-500');
                 }
-                if (musicStateIcon) musicStateIcon.className = "ph-fill ph-speaker-slash text-xl";
-            } else { 
-                const p = audioEl.play(); if(p !== undefined) p.catch(e=>{}); isPlaying = true; 
-                if (playIcon) playIcon.classList.replace('ph-play', 'ph-pause'); 
-                if (musicIconContainer) {
-                    musicIconContainer.className = "w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-500/20 text-teal-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300 spin-record";
-                    musicIconContainer.style.animationPlayState = 'running';
+            } else {
+                const p = audioEl.play(); if(p !== undefined) p.catch(e=>{}); isPlaying = true;
+                if (playIcon) playIcon.classList.replace('ph-play', 'ph-pause');
+                if (recordDisk) recordDisk.style.animationPlayState = 'running';
+                if (tonearm) tonearm.style.transform = 'rotate(15deg)';
+                if (recordLabel) {
+                    recordLabel.classList.remove('bg-red-500');
+                    recordLabel.classList.add('bg-teal-400');
                 }
-                if (musicStateIcon) musicStateIcon.className = "ph-fill ph-speaker-high text-xl";
-            } 
+            }
         }
-        
+
         function nextTrack() { currentTrackIndex = (currentTrackIndex + 1) % playlist.length; loadTrack(currentTrackIndex); if (!isPlaying) togglePlay(); }
         function prevTrack() { currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length; loadTrack(currentTrackIndex); if (!isPlaying) togglePlay(); }
-        
-        function updateMusicVolume(val) { if(audioEl) audioEl.volume = val; setStorage('musicVol', val); } function updateSfxVolume(val) { globalSfxVolume = parseFloat(val); setStorage('sfxVol', val); playPopSound(); }
-        function openSettings() { document.getElementById('settings-modal').classList.remove('opacity-0', 'pointer-events-none'); document.getElementById('settings-content').classList.remove('scale-95'); } function closeSettings() { document.getElementById('settings-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('settings-content').classList.add('scale-95'); }
-        function openAnnouncement() { document.getElementById('announcement-modal').classList.remove('opacity-0', 'pointer-events-none'); document.getElementById('announcement-content').classList.remove('scale-95'); } function closeAnnouncement() { document.getElementById('announcement-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('announcement-content').classList.add('scale-95'); }
 
-        // --- SISTEM ASISTEN LITERASI & REKOMENDASI ---
-        window.currentWrongQuestions = [];
-        window.currentLiterasiFilter = 'all'; 
+        function updateMusicVolume(val) { if(audioEl) audioEl.volume = val; setStorage('musicVol', val); }
+        function updateSfxVolume(val) { globalSfxVolume = parseFloat(val); setStorage('sfxVol', val); playPopSound(); }
 
-        window.openLiterasi = () => {
-            switchScreen('screen-literasi');
-            document.getElementById('bottom-controls').classList.add('opacity-0', 'pointer-events-none');
-            window.renderLiterasiCategories();
-            window.renderLiterasi();
-        };
+        function openSettings() { document.getElementById('settings-modal').classList.remove('opacity-0', 'pointer-events-none'); document.getElementById('settings-content').classList.remove('scale-95'); }
+        function closeSettings() { document.getElementById('settings-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('settings-content').classList.add('scale-95'); }
 
-        window.renderLiterasiCategories = () => {
-            const catContainer = document.getElementById('literasi-categories');
-            if(!catContainer) return;
-            catContainer.innerHTML = '';
-            
-            const txtAll = currentLang === 'en' ? langDict['en']['btn-all-mapel'] : langDict['id']['btn-all-mapel'];
+        function openAnnouncement() { document.getElementById('announcement-modal').classList.remove('opacity-0', 'pointer-events-none'); document.getElementById('announcement-content').classList.remove('scale-95'); }
+        function closeAnnouncement() { document.getElementById('announcement-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('announcement-content').classList.add('scale-95'); }
 
-            const allBtn = document.createElement('button');
-            allBtn.className = `px-4 py-2 rounded-full text-xs md:text-sm font-bold flex-shrink-0 transition-all snap-start ${window.currentLiterasiFilter === 'all' ? 'bg-indigo-500 text-white shadow-md shadow-indigo-500/30' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'}`;
-            allBtn.innerText = txtAll;
-            allBtn.onclick = () => { 
-                window.currentLiterasiFilter = 'all'; 
-                window.renderLiterasiCategories(); 
-                window.renderLiterasi(document.getElementById('search-placeholder') ? document.getElementById('search-placeholder').value : ''); 
-            };
-            catContainer.appendChild(allBtn);
+        let currentSubject = null; let currentQuestions = []; let currentIndex = 0;
+        let userAnswers = {}; let timerInterval = null; let timeLeft = 90 * 60; 
+        let isReviewMode = false; 
 
-            if(window.subjects && window.subjects.length > 0) {
-                window.subjects.forEach(sub => {
-                    const btn = document.createElement('button');
-                    btn.className = `px-4 py-2 rounded-full text-xs md:text-sm font-bold flex-shrink-0 transition-all snap-start flex items-center gap-1.5 ${window.currentLiterasiFilter === sub.id ? 'bg-indigo-500 text-white shadow-md shadow-indigo-500/30' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'}`;
-                    btn.innerHTML = `<i class="ph-fill ${sub.icon}"></i> ${sub.name}`;
-                    btn.onclick = () => { 
-                        window.currentLiterasiFilter = sub.id; 
-                        window.renderLiterasiCategories(); 
-                        window.renderLiterasi(document.getElementById('search-placeholder') ? document.getElementById('search-placeholder').value : ''); 
-                    };
-                    catContainer.appendChild(btn);
-                });
-            }
-        };
-
-        window.renderLiterasi = (query = '') => {
-            const container = document.getElementById('literasi-container');
-            if(!container) return;
-            container.innerHTML = '';
-            const q = query.toLowerCase();
-            let hasResults = false;
-            
-            if(window.subjects && window.subjects.length > 0) {
-                window.subjects.forEach(sub => {
-                    if(window.currentLiterasiFilter !== 'all' && window.currentLiterasiFilter !== sub.id) return;
-
-                    const data = window.quizData[sub.id] || [];
-                    data.forEach((item) => {
-                        const explanation = item.explanation || '';
-                        const question = item.question || '';
-                        
-                        const qText = question.replace(/<[^>]*>?/gm, '').toLowerCase();
-                        const eText = explanation.replace(/<[^>]*>?/gm, '').toLowerCase();
-                        
-                        if (q === '' || qText.includes(q) || eText.includes(q)) {
-                            hasResults = true;
-                            const card = document.createElement('div');
-                            card.className = 'glass-panel p-5 rounded-2xl border border-slate-200 dark:border-white/5 hover:-translate-y-1 transition-transform';
-                            card.innerHTML = `
-                                <div class="flex items-center gap-2 mb-3">
-                                    <i class="ph ${sub.icon} text-xl ${sub.color}"></i>
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">${sub.name}</span>
-                                </div>
-                                <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-3 line-clamp-3">${item.question}</p>
-                                <div class="bg-indigo-50 dark:bg-indigo-900/20 p-3.5 rounded-xl border border-indigo-100 dark:border-indigo-800/50">
-                                    <p class="text-xs md:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-medium"><i class="ph-fill ph-lightbulb text-indigo-500 mr-1.5"></i> ${explanation}</p>
-                                </div>
-                            `;
-                            container.appendChild(card);
-                        }
-                    });
-                });
-            }
-            if(!hasResults) {
-                const txtEmpty = currentLang === 'en' ? langDict['en']['empty-literasi'] : langDict['id']['empty-literasi'];
-                container.innerHTML = `<div class="col-span-full text-center text-slate-500 dark:text-slate-400 py-12 font-medium">${txtEmpty}</div>`;
-            }
-        };
-
-        window.openRekomendasi = () => {
-            const container = document.getElementById('rekomendasi-list');
-            if(!container) return;
-            container.innerHTML = '';
-            const txtLabel = currentLang === 'en' ? langDict['en']['lbl-materi-terlewat'] : langDict['id']['lbl-materi-terlewat'];
-            
-            if(window.currentWrongQuestions && window.currentWrongQuestions.length > 0) {
-                window.currentWrongQuestions.forEach((q) => {
-                    const explanation = q.explanation || '';
-                    const card = document.createElement('div');
-                    card.className = 'bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 mb-3 text-left';
-                    card.innerHTML = `
-                        <div class="text-xs text-indigo-500 dark:text-indigo-400 font-bold mb-1 uppercase tracking-widest">${txtLabel}</div>
-                        <div class="text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed">${explanation}</div>
-                    `;
-                    container.appendChild(card);
-                });
-            }
-            document.getElementById('rekomendasi-modal').classList.remove('opacity-0', 'pointer-events-none');
-            document.getElementById('rekomendasi-content').classList.remove('scale-95');
-        };
-
-        window.closeRekomendasi = () => {
-            document.getElementById('rekomendasi-modal').classList.add('opacity-0', 'pointer-events-none');
-            document.getElementById('rekomendasi-content').classList.add('scale-95');
-        };
-
-        let currentSubject = null; let currentQuestions = []; let currentIndex = 0; let userAnswers = {}; let timerInterval = null; let timeLeft = 90 * 60; let isReviewMode = false; 
-
+        // --- INIT STATE ---
         window.onload = () => { 
             initTheme(); initSettings(); initMusicPlayer(); 
-            const savedLang = getStorage('language', 'id');
-            setLanguage(savedLang, false);
             
             if (window.failedScripts && window.failedScripts.length > 0) {
-                document.getElementById('subject-grid').innerHTML = `<div class="col-span-full glass-panel p-6 rounded-2xl text-center border-red-500/30 w-full max-w-lg mx-auto"><i class="ph-fill ph-warning-circle text-5xl text-red-500 mb-3"></i><h3 class="font-bold text-slate-800 dark:text-white mb-2 text-xl">File JS Gagal Dimuat!</h3><p class="text-sm text-slate-600 dark:text-slate-400 mb-3">Browser tidak dapat menemukan atau memuat file berikut:</p><div class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-mono text-sm py-2 px-4 rounded-lg inline-block mb-3 border border-red-200 dark:border-red-800/50">${window.failedScripts.join('<br>')}</div></div>`;
+                document.getElementById('subject-grid').innerHTML = `
+                <div class="col-span-full glass-panel p-6 rounded-2xl text-center border-red-500/30 w-full max-w-lg mx-auto">
+                    <i class="ph-fill ph-warning-circle text-5xl text-red-500 mb-3"></i>
+                    <h3 class="font-bold text-slate-800 dark:text-white mb-2 text-xl">File JS Gagal Dimuat!</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">Browser tidak dapat menemukan atau memuat file berikut:</p>
+                    <div class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-mono text-sm py-2 px-4 rounded-lg inline-block mb-3 border border-red-200 dark:border-red-800/50">
+                        ${window.failedScripts.join('<br>')}
+                    </div>
+                </div>`;
             } else {
                 if(typeof window.renderHome === "function") window.renderHome();
             }
@@ -910,36 +891,42 @@
             const legendDesk = document.getElementById('legend-desktop');
             const legendMob = document.getElementById('legend-mobile');
             
-            const txtBenar = currentLang === 'en' ? 'Correct' : 'Benar';
-            const txtSalah = currentLang === 'en' ? 'Wrong' : 'Salah';
-            const txtKosong = currentLang === 'en' ? 'Empty' : 'Kosong';
-            const txtDijawab = currentLang === 'en' ? 'Answered' : 'Dijawab';
-
             const legendHTML = isReviewMode 
-                ? `<div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-emerald-400"></div> ${txtBenar}</div>
-                   <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-red-400"></div> ${txtSalah}</div>
-                   <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700"></div> ${txtKosong}</div>`
-                : `<div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-teal-400"></div> ${txtDijawab}</div>
-                   <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700"></div> ${txtKosong}</div>`;
+                ? `<div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-emerald-400"></div> Benar</div>
+                   <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-red-400"></div> Salah</div>
+                   <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700"></div> Kosong</div>`
+                : `<div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-teal-400"></div> Dijawab</div>
+                   <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400"><div class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700"></div> Kosong</div>`;
             
             if (legendDesk) legendDesk.innerHTML = `<div class="flex gap-3 justify-center md:justify-start flex-wrap">${legendHTML}</div>`;
             if (legendMob) legendMob.innerHTML = legendHTML;
         }
 
         window.renderHome = function() {
-            const grid = document.getElementById('subject-grid'); if(!grid) return; grid.innerHTML = '';
+            const grid = document.getElementById('subject-grid'); 
+            if(!grid) return;
+            grid.innerHTML = '';
             
             if(window.subjects && window.subjects.length > 0) {
                 window.subjects.forEach(sub => {
-                    const hs = getStorage('hs_' + sub.id, 0); let badgeHTML = '';
-                    if(hs !== null && hs !== 0 && hs !== "0") badgeHTML = `<div class="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-[10px] md:text-xs font-bold px-1.5 py-0.5 rounded shadow-sm border border-yellow-200 cinematic-title">⭐ ${hs}</div>`;
-                    const soalCount = window.quizData[sub.id] ? window.quizData[sub.id].length : 0;
+                    const hs = getStorage('hs_' + sub.id, null); 
                     
-                    const txtSoal = currentLang === 'en' ? 'Questions' : 'Soal';
-                    const txtMenit = currentLang === 'en' ? 'Minutes' : 'Menit';
+                    let badgeHTML = '';
+                    if(hs !== null) {
+                        badgeHTML = `
+                        <div class="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-[10px] md:text-xs font-bold px-1.5 py-0.5 rounded shadow-sm border border-yellow-200 cinematic-title">
+                            ⭐ ${hs}
+                        </div>`;
+                    }
 
-                    const card = document.createElement('div'); card.className = 'glass-panel p-5 md:p-6 rounded-2xl cursor-pointer subject-card flex flex-col items-center text-center w-full relative h-full justify-between';
-                    card.onclick = () => { if(soalCount > 0) startQuiz(sub.id); else alert("Soal belum tersedia!"); };
+                    const soalCount = window.quizData[sub.id] ? window.quizData[sub.id].length : 0;
+
+                    const card = document.createElement('div'); 
+                    card.className = 'glass-panel p-5 md:p-6 rounded-2xl cursor-pointer subject-card flex flex-col items-center text-center max-w-sm mx-auto w-full relative';
+                    card.onclick = () => {
+                        if(soalCount > 0) startQuiz(sub.id);
+                        else alert("Soal untuk " + sub.name + " belum tersedia!");
+                    };
                     card.innerHTML = `
                         <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center mb-3 md:mb-4 border border-slate-200 dark:border-slate-700/50 shadow-sm mt-3 relative">
                             <i class="ph ${sub.icon} text-3xl md:text-4xl ${sub.color}"></i>
@@ -947,21 +934,31 @@
                         </div>
                         <div class="flex flex-col flex-1 justify-center">
                             <h3 class="font-bold text-base md:text-lg text-slate-800 dark:text-white mb-1 cinematic-title leading-tight">${sub.name}</h3>
-                            <p class="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400 mt-auto">${soalCount} ${txtSoal} • 90 ${txtMenit}</p>
+                            <p class="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400 mt-auto">${soalCount} Soal • 90 Menit</p>
                         </div>
                     `;
                     grid.appendChild(card);
                 });
-            } else {
-                grid.innerHTML = `<div class="col-span-full glass-panel p-6 rounded-2xl text-center border-amber-500/30 w-full max-w-md mx-auto"><i class="ph-fill ph-warning text-5xl text-amber-500 mb-3"></i><h3 class="font-bold text-slate-800 dark:text-white mb-2 text-xl">Belum Ada Soal</h3><p class="text-sm text-slate-600 dark:text-slate-400">Semua file berhasil dimuat, tapi data mata pelajaran masih kosong. Silakan isi data di dalam file JS-mu.</p></div>`;
             }
         }
 
         function startQuiz(subjectId) {
             try {
-                isReviewMode = false; currentSubject = window.subjects.find(s => s.id === subjectId); 
+                isReviewMode = false;
+                currentSubject = window.subjects.find(s => s.id === subjectId); 
+                
                 let rawQuestions = window.quizData[subjectId] || [];
-                currentQuestions = shuffleArray(rawQuestions).map(q => { let newQ = JSON.parse(JSON.stringify(q)); if (newQ.options && newQ.options.length > 2) { let optsWithIndex = newQ.options.map((text, idx) => ({text, idx})); optsWithIndex = shuffleArray(optsWithIndex); newQ.options = optsWithIndex.map(o => o.text); newQ.answer = optsWithIndex.findIndex(o => o.idx === q.answer); } return newQ; });
+                currentQuestions = shuffleArray(rawQuestions).map(q => {
+                    let newQ = JSON.parse(JSON.stringify(q)); 
+                    if (newQ.options && newQ.options.length > 2) {
+                        let optsWithIndex = newQ.options.map((text, idx) => ({text, idx}));
+                        optsWithIndex = shuffleArray(optsWithIndex);
+                        newQ.options = optsWithIndex.map(o => o.text);
+                        newQ.answer = optsWithIndex.findIndex(o => o.idx === q.answer);
+                    }
+                    return newQ;
+                });
+
                 currentIndex = 0; userAnswers = {}; timeLeft = 90 * 60; timeStart = Date.now(); stopTTS(); 
                 
                 const parts = currentSubject.name.split(' ');
@@ -975,60 +972,174 @@
                 document.getElementById('review-badge').classList.add('hidden'); document.getElementById('review-badge').classList.remove('flex');
                 document.getElementById('explanation-box').classList.add('hidden');
                 
-                const centerBtn = document.getElementById('btn-center-action'); 
-                centerBtn.innerText = currentLang === 'en' ? "Finish" : "Selesai"; 
-                centerBtn.className = "px-5 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-emerald-950 dark:text-white bg-emerald-400 hover:bg-emerald-500 dark:bg-emerald-500/30 dark:hover:bg-emerald-500/50 border border-emerald-500 transition-colors text-sm md:text-base shadow-sm hover:scale-105 active:scale-95"; 
+                const centerBtn = document.getElementById('btn-center-action');
+                centerBtn.innerText = "Selesai";
+                centerBtn.className = "px-5 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-emerald-950 dark:text-white bg-emerald-400 hover:bg-emerald-500 dark:bg-emerald-500/30 dark:hover:bg-emerald-500/50 border border-emerald-500 transition-colors text-sm md:text-base shadow-sm hover:scale-105 active:scale-95";
                 centerBtn.onclick = showConfirmModal;
-                
-                const bottomControls = document.getElementById('bottom-controls');
-                if(bottomControls) bottomControls.classList.add('opacity-0', 'pointer-events-none');
-                
+
+                // Sembunyikan kontrol bawah (akun & update) saat kuis berlangsung
+                document.getElementById('bottom-controls').classList.add('opacity-0', 'pointer-events-none');
+
                 switchScreen('screen-quiz'); renderQuestion(); renderGrid(); startTimer();
-            } catch (e) { alert("Ada kesalahan pada file " + (currentSubject ? currentSubject.name : 'mapel') + ".js kamu! (Error: " + e.message + ")"); }
+            } catch (e) {
+                alert("Ada kesalahan pada file " + (currentSubject ? currentSubject.name : 'mapel') + ".js kamu! (Error: " + e.message + ")");
+            }
         }
 
         function startReview() {
             isReviewMode = true; currentIndex = 0; stopTTS();
+            
             document.getElementById('timer-container').classList.add('hidden'); document.getElementById('timer-container').classList.remove('flex');
             document.getElementById('review-badge').classList.remove('hidden'); document.getElementById('review-badge').classList.add('flex');
             
-            const centerBtn = document.getElementById('btn-center-action'); 
-            centerBtn.innerText = currentLang === 'en' ? "Close Review" : "Tutup Review"; 
-            centerBtn.className = "px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-white bg-slate-700 hover:bg-slate-600 transition-colors text-sm md:text-base shadow-sm hover:scale-105 active:scale-95"; 
+            const centerBtn = document.getElementById('btn-center-action');
+            centerBtn.innerText = "Tutup Review";
+            centerBtn.className = "px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-white bg-slate-700 hover:bg-slate-600 transition-colors text-sm md:text-base shadow-sm hover:scale-105 active:scale-95";
             centerBtn.onclick = () => switchScreen('screen-result');
-            
+
             switchScreen('screen-quiz'); renderQuestion(); renderGrid();
         }
 
         function renderQuestion() {
             try {
-                if(currentQuestions.length === 0) return; const q = currentQuestions[currentIndex] || {}; document.getElementById('current-question-num').innerText = currentIndex + 1; document.getElementById('question-text').innerHTML = q.question || "<i>(Teks pertanyaan tidak tersedia)</i>";
-                const storyBox = document.getElementById('story-box'); if(storyBox) { if(q.story) { document.getElementById('story-text').innerHTML = q.story.replace(/\n/g, '<br>'); storyBox.classList.remove('hidden'); } else { storyBox.classList.add('hidden'); document.getElementById('story-text').innerHTML = ''; } }
-                const optionsContainer = document.getElementById('options-container'); optionsContainer.innerHTML = ''; const abcd = ['A', 'B', 'C', 'D', 'E']; const opts = q.options || []; const isTF = opts.length === 2; 
+                if(currentQuestions.length === 0) return; 
+                const q = currentQuestions[currentIndex] || {}; 
+                document.getElementById('current-question-num').innerText = currentIndex + 1; 
+                
+                document.getElementById('question-text').innerHTML = q.question || "<i>(Teks pertanyaan tidak tersedia)</i>";
+                
+                const storyBox = document.getElementById('story-box');
+                if(storyBox) {
+                    if(q.story) {
+                        document.getElementById('story-text').innerHTML = q.story.replace(/\n/g, '<br>');
+                        storyBox.classList.remove('hidden');
+                    } else {
+                        storyBox.classList.add('hidden');
+                        document.getElementById('story-text').innerHTML = '';
+                    }
+                }
+
+                const optionsContainer = document.getElementById('options-container'); 
+                optionsContainer.innerHTML = ''; 
+                const abcd = ['A', 'B', 'C', 'D', 'E'];
+                
+                const opts = q.options || [];
+                const isTF = opts.length === 2; 
+                
                 opts.forEach((opt, index) => {
-                    const isSelected = userAnswers[currentIndex] === index; const isCorrect = index === q.answer; const btn = document.createElement('button'); let btnClass = `option-btn w-full text-left p-3.5 md:p-4 rounded-xl border flex items-start gap-3 md:gap-4 transition-all duration-300 `; let badgeClass = `w-7 h-7 md:w-8 md:h-8 rounded-lg shadow-sm flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0 border cinematic-title `; let badgeText = isTF ? (index === 0 ? 'B' : 'S') : abcd[index];
-                    if (isReviewMode) { btn.disabled = true; if (isCorrect) { btnClass += `bg-emerald-50 dark:bg-emerald-900/30 border-emerald-400 text-emerald-800 dark:text-emerald-100 ring-2 ring-emerald-500/50`; badgeClass += `bg-emerald-500 text-white border-transparent`; } else if (isSelected && !isCorrect) { btnClass += `bg-red-50 dark:bg-red-900/30 border-red-400 text-red-800 dark:text-red-100 ring-2 ring-red-500/50`; badgeClass += `bg-red-500 text-white border-transparent`; } else { btnClass += `bg-slate-50/50 dark:bg-slate-800/30 border-slate-200 dark:border-white/5 text-slate-400 dark:text-slate-500 opacity-60`; badgeClass += `bg-slate-200 dark:bg-white/5 text-slate-500 dark:text-slate-400 border-transparent`; } } else { if (isSelected) { btnClass += `bg-teal-50 dark:bg-teal-900/30 border-teal-400 dark:border-teal-500 text-teal-800 dark:text-teal-100 ring-2 ring-teal-500/50`; badgeClass += `bg-white dark:bg-white/10 text-slate-800 dark:text-white border-slate-100 dark:border-transparent`; } else { btnClass += `bg-white/50 md:hover:bg-white dark:bg-slate-800/50 dark:hover:bg-slate-700/80 border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 shadow-sm`; badgeClass += `bg-white dark:bg-white/10 text-slate-800 dark:text-white border-slate-100 dark:border-transparent dark:shadow-none`; } btn.onclick = () => selectOption(index); }
-                    btn.className = btnClass; btn.innerHTML = `<span class="${badgeClass}">${badgeText}</span><span class="pt-0.5 md:pt-1 o-text-dynamic leading-snug font-medium">${opt}</span>`; optionsContainer.appendChild(btn);
+                    const isSelected = userAnswers[currentIndex] === index; const isCorrect = index === q.answer;
+                    const btn = document.createElement('button');
+                    
+                    let btnClass = `option-btn w-full text-left p-3.5 md:p-4 rounded-xl border flex items-start gap-3 md:gap-4 transition-all duration-300 `;
+                    let badgeClass = `w-7 h-7 md:w-8 md:h-8 rounded-lg shadow-sm flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0 border cinematic-title `; 
+                    let badgeText = isTF ? (index === 0 ? 'B' : 'S') : abcd[index];
+
+                    if (isReviewMode) {
+                        btn.disabled = true;
+                        if (isCorrect) {
+                            btnClass += `bg-emerald-50 dark:bg-emerald-900/30 border-emerald-400 text-emerald-800 dark:text-emerald-100 ring-2 ring-emerald-500/50`;
+                            badgeClass += `bg-emerald-500 text-white border-transparent`;
+                        } else if (isSelected && !isCorrect) {
+                            btnClass += `bg-red-50 dark:bg-red-900/30 border-red-400 text-red-800 dark:text-red-100 ring-2 ring-red-500/50`;
+                            badgeClass += `bg-red-500 text-white border-transparent`;
+                        } else {
+                            btnClass += `bg-slate-50/50 dark:bg-slate-800/30 border-slate-200 dark:border-white/5 text-slate-400 dark:text-slate-500 opacity-60`;
+                            badgeClass += `bg-slate-200 dark:bg-white/5 text-slate-500 dark:text-slate-400 border-transparent`;
+                        }
+                    } else {
+                        if (isSelected) {
+                            btnClass += `bg-teal-50 dark:bg-teal-900/30 border-teal-400 dark:border-teal-500 text-teal-800 dark:text-teal-100 ring-2 ring-teal-500/50`;
+                            badgeClass += `bg-white dark:bg-white/10 text-slate-800 dark:text-white border-slate-100 dark:border-transparent`;
+                        } else {
+                            btnClass += `bg-white/50 md:hover:bg-white dark:bg-slate-800/50 dark:hover:bg-slate-700/80 border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 shadow-sm`;
+                            badgeClass += `bg-white dark:bg-white/10 text-slate-800 dark:text-white border-slate-100 dark:border-transparent dark:shadow-none`;
+                        }
+                        btn.onclick = () => selectOption(index);
+                    }
+                    btn.className = btnClass;
+                    btn.innerHTML = `<span class="${badgeClass}">${badgeText}</span><span class="pt-0.5 md:pt-1 o-text-dynamic leading-snug font-medium">${opt}</span>`;
+                    optionsContainer.appendChild(btn);
                 });
-                const expBox = document.getElementById('explanation-box'); if (expBox) { if (isReviewMode) { expBox.classList.remove('hidden'); const txtL = currentLang === 'en' ? 'Explanation' : 'Penjelasan Materi'; document.getElementById('explanation-text').innerHTML = q.explanation || "-"; document.getElementById('lbl-explanation').innerHTML = `<i class="ph-fill ph-lightbulb"></i> ${txtL}:`; } else { expBox.classList.add('hidden'); } }
-                document.getElementById('btn-prev').style.visibility = currentIndex === 0 ? 'hidden' : 'visible'; document.getElementById('btn-next').style.visibility = currentIndex === currentQuestions.length - 1 ? 'hidden' : 'visible';
-            } catch (e) { console.error(e); }
+
+                const expBox = document.getElementById('explanation-box');
+                if (expBox) {
+                    if (isReviewMode) {
+                        expBox.classList.remove('hidden'); 
+                        document.getElementById('explanation-text').innerHTML = q.explanation || "Tidak ada penjelasan yang tersedia.";
+                    } else { 
+                        expBox.classList.add('hidden'); 
+                    }
+                }
+
+                document.getElementById('btn-prev').style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
+                document.getElementById('btn-next').style.visibility = currentIndex === currentQuestions.length - 1 ? 'hidden' : 'visible';
+            } catch (e) {
+                console.error(e);
+            }
         }
 
-        function selectOption(optIndex) { userAnswers[currentIndex] = optIndex; renderQuestion(); renderGrid(); if(currentIndex < currentQuestions.length - 1) setTimeout(nextQuestion, 300); }
+        function selectOption(optIndex) { 
+            userAnswers[currentIndex] = optIndex; 
+            renderQuestion(); 
+            renderGrid(); 
+            if(currentIndex < currentQuestions.length - 1) setTimeout(nextQuestion, 300); 
+        }
+
         function handleCenterAction() { if(isReviewMode) switchScreen('screen-result'); else showConfirmModal(); }
 
         function triggerFadeAnimation(callback) {
-            const area = document.getElementById('quiz-content-area'); area.style.opacity = '0'; area.style.transform = 'translateY(15px)';
-            setTimeout(() => { callback(); area.style.opacity = '1'; area.style.transform = 'translateY(0)'; }, 200);
+            const area = document.getElementById('quiz-content-area');
+            // Menurunkan opacity dan menggeser layar sedikit ke bawah
+            area.style.opacity = '0';
+            area.style.transform = 'translateY(15px)';
+            
+            setTimeout(() => {
+                callback();
+                // Mengembalikan opacity dan layar ke posisi semula dengan mulus
+                area.style.opacity = '1';
+                area.style.transform = 'translateY(0)';
+            }, 200);
         }
 
-        function nextQuestion() { stopTTS(); if (currentIndex < currentQuestions.length - 1) { triggerFadeAnimation(() => { currentIndex++; renderQuestion(); updateGridActive(); }); } }
-        function prevQuestion() { stopTTS(); if (currentIndex > 0) { triggerFadeAnimation(() => { currentIndex--; renderQuestion(); updateGridActive(); }); } }
-        function jumpToQuestion(index) { stopTTS(); triggerFadeAnimation(() => { currentIndex = index; renderQuestion(); updateGridActive(); closeMobileNav(); }); }
+        function nextQuestion() { 
+            stopTTS();
+            if (currentIndex < currentQuestions.length - 1) { 
+                triggerFadeAnimation(() => {
+                    currentIndex++; 
+                    renderQuestion(); 
+                    updateGridActive();
+                });
+            } 
+        }
 
-        const modalContent = document.getElementById('mobile-nav-content'); const dragHeader = document.getElementById('mobile-nav-header'); let startY = 0; let currentY = 0; let isDragging = false;
-        if(dragHeader && modalContent) { dragHeader.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; isDragging = true; modalContent.style.transition = 'none'; }, {passive: true}); dragHeader.addEventListener('touchmove', (e) => { if (!isDragging) return; const y = e.touches[0].clientY; const deltaY = y - startY; if (deltaY > 0) { currentY = deltaY; modalContent.style.transform = `translateY(${deltaY}px)`; } }, {passive: true}); dragHeader.addEventListener('touchend', (e) => { if (!isDragging) return; isDragging = false; modalContent.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'; if (currentY > 80) closeMobileNav(); else modalContent.style.transform = 'translateY(0)'; currentY = 0; }); }
+        function prevQuestion() { 
+            stopTTS();
+            if (currentIndex > 0) { 
+                triggerFadeAnimation(() => {
+                    currentIndex--; 
+                    renderQuestion(); 
+                    updateGridActive();
+                });
+            } 
+        }
+
+        function jumpToQuestion(index) { 
+            stopTTS(); 
+            triggerFadeAnimation(() => {
+                currentIndex = index; 
+                renderQuestion(); 
+                updateGridActive(); 
+                closeMobileNav();
+            });
+        }
+
+        const modalContent = document.getElementById('mobile-nav-content'); const dragHeader = document.getElementById('mobile-nav-header');
+        let startY = 0; let currentY = 0; let isDragging = false;
+        if(dragHeader && modalContent) {
+            dragHeader.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; isDragging = true; modalContent.style.transition = 'none'; }, {passive: true});
+            dragHeader.addEventListener('touchmove', (e) => { if (!isDragging) return; const y = e.touches[0].clientY; const deltaY = y - startY; if (deltaY > 0) { currentY = deltaY; modalContent.style.transform = `translateY(${deltaY}px)`; } }, {passive: true});
+            dragHeader.addEventListener('touchend', (e) => { if (!isDragging) return; isDragging = false; modalContent.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'; if (currentY > 80) closeMobileNav(); else modalContent.style.transform = 'translateY(0)'; currentY = 0; });
+        }
         function openMobileNav() { document.getElementById('mobile-nav-modal').classList.remove('opacity-0', 'pointer-events-none'); modalContent.style.transform = 'translateY(0)'; modalContent.classList.remove('translate-y-full'); document.body.classList.add('modal-open'); }
         function closeMobileNav() { document.getElementById('mobile-nav-modal').classList.add('opacity-0', 'pointer-events-none'); modalContent.style.transform = ''; modalContent.classList.add('translate-y-full'); document.body.classList.remove('modal-open'); }
 
@@ -1040,64 +1151,81 @@
                 ['question-grid-desktop', 'question-grid-mobile'].forEach(gridId => {
                     const grid = document.getElementById(gridId); if(!grid) return; grid.innerHTML = '';
                     currentQuestions.forEach((q, i) => {
-                        const isAnswered = userAnswers[i] !== undefined; const isCorrect = userAnswers[i] === q.answer; const btn = document.createElement('button');
+                        const isAnswered = userAnswers[i] !== undefined; const isCorrect = userAnswers[i] === q.answer;
+                        const btn = document.createElement('button');
                         let classes = `grid-number w-full aspect-square rounded-lg cinematic-title text-base flex items-center justify-center transition-all border `;
-                        if (isReviewMode) { if (isAnswered) classes += isCorrect ? 'bg-emerald-400 text-emerald-950 border-emerald-500 shadow-sm' : 'bg-red-400 text-red-950 border-red-500 shadow-sm'; else classes += 'bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'; } else { classes += isAnswered ? 'bg-teal-400 text-teal-950 border-teal-500 shadow-sm' : 'bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'; }
-                        if (i === currentIndex) classes += ' active z-10 border-none'; btn.className = classes; btn.innerText = i + 1; btn.onclick = () => jumpToQuestion(i); grid.appendChild(btn);
+                        if (isReviewMode) {
+                            if (isAnswered) classes += isCorrect ? 'bg-emerald-400 text-emerald-950 border-emerald-500 shadow-sm' : 'bg-red-400 text-red-950 border-red-500 shadow-sm';
+                            else classes += 'bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700';
+                        } else {
+                            classes += isAnswered ? 'bg-teal-400 text-teal-950 border-teal-500 shadow-sm' : 'bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700';
+                        }
+                        if (i === currentIndex) classes += ' active z-10 border-none';
+                        btn.className = classes; btn.innerText = i + 1; btn.onclick = () => jumpToQuestion(i);
+                        grid.appendChild(btn);
                     });
                 });
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                console.error(e);
+            }
         }
         function updateGridActive() { renderGrid(); }
         
         function startTimer() { clearInterval(timerInterval); updateTimerDisplay(); timerInterval = setInterval(() => { timeLeft--; updateTimerDisplay(); if (timeLeft <= 0) { clearInterval(timerInterval); finishQuiz(); } }, 1000); }
         function updateTimerDisplay() { document.getElementById('timer-display').innerText = `${Math.floor(timeLeft / 60).toString().padStart(2, '0')}:${(timeLeft % 60).toString().padStart(2, '0')}`; }
 
-        function showConfirmModal() { const warningText = document.getElementById('unanswered-warning'); const answeredCount = Object.keys(userAnswers).length; if (answeredCount < currentQuestions.length) { warningText.innerText = currentLang === 'en' ? `You have answered ${answeredCount} of ${currentQuestions.length} questions. Are you sure you want to finish?` : `Kamu baru menjawab ${answeredCount} dari ${currentQuestions.length} soal. Yakin diselesaikan sekarang?`; warningText.className = "text-sm md:text-base text-amber-600 dark:text-amber-400 mb-6 md:mb-8 font-medium"; } else { warningText.innerText = currentLang === 'en' ? "Great! You have answered all questions. Click Yes to see your score." : "Keren! Kamu sudah menjawab semua soal. Klik Ya untuk melihat skor."; warningText.className = "text-sm md:text-base text-slate-600 dark:text-slate-300 mb-6 md:mb-8"; } document.getElementById('confirm-modal').classList.remove('opacity-0', 'pointer-events-none'); document.getElementById('modal-content').classList.remove('scale-95'); }
+        function showConfirmModal() {
+            const warningText = document.getElementById('unanswered-warning'); const answeredCount = Object.keys(userAnswers).length;
+            if (answeredCount < currentQuestions.length) { warningText.innerText = `Kamu baru menjawab ${answeredCount} dari ${currentQuestions.length} soal. Yakin diselesaikan sekarang?`; warningText.className = "text-sm md:text-base text-amber-600 dark:text-amber-400 mb-6 md:mb-8 font-medium"; } 
+            else { warningText.innerText = "Keren! Kamu sudah menjawab semua soal. Klik Ya untuk melihat skor."; warningText.className = "text-sm md:text-base text-slate-600 dark:text-slate-300 mb-6 md:mb-8"; }
+            document.getElementById('confirm-modal').classList.remove('opacity-0', 'pointer-events-none'); document.getElementById('modal-content').classList.remove('scale-95');
+        }
         function hideConfirmModal() { document.getElementById('confirm-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('modal-content').classList.add('scale-95'); }
 
         async function finishQuiz() {
             timeEnd = Date.now(); stopTTS(); hideConfirmModal(); closeMobileNav(); clearInterval(timerInterval);
-            let correct = 0; window.currentWrongQuestions = [];
-            currentQuestions.forEach((q, i) => { 
-                if (userAnswers[i] === q.answer) correct++; 
-                else window.currentWrongQuestions.push(q);
-            });
+            let correct = 0; currentQuestions.forEach((q, i) => { if (userAnswers[i] === q.answer) correct++; });
             const finalScore = Math.round((correct / currentQuestions.length) * 100);
             
-            // Rekomendasi Belajar Logic
-            const btnRekomendasi = document.getElementById('btn-rekomendasi');
-            if(window.currentWrongQuestions.length > 0 && btnRekomendasi) btnRekomendasi.classList.remove('hidden');
-            else if(btnRekomendasi) btnRekomendasi.classList.add('hidden');
-
+            // SIMPAN KE CLOUD FIREBASE
             if (typeof window.saveScoreToCloud === 'function') {
-                window.saveScoreToCloud(currentSubject.id, finalScore);
-            }
+                await window.saveScoreToCloud(currentSubject.id, finalScore);
+            } 
+            
+            // SIMPAN KE LOCAL SEBAGAI BACKUP ATAU JIKA OFFLINE/BELUM LOGIN
             const oldHs = parseInt(getStorage('hs_' + currentSubject.id, 0));
             if (finalScore > oldHs) setStorage('hs_' + currentSubject.id, finalScore);
 
-            const totalSeconds = Math.floor((timeEnd - timeStart) / 1000); const avgSeconds = (totalSeconds / currentQuestions.length).toFixed(1);
-            document.getElementById('time-analysis').innerText = `${avgSeconds} ${currentLang === 'en' ? 'sec/question' : 'detik/soal'}`; document.getElementById('result-subject-name').innerText = currentSubject.name; 
+            const totalSeconds = Math.floor((timeEnd - timeStart) / 1000);
+            const avgSeconds = (totalSeconds / currentQuestions.length).toFixed(1);
+            document.getElementById('time-analysis').innerText = `${avgSeconds} detik/soal`;
+            document.getElementById('result-subject-name').innerText = currentSubject.name; 
             
-            const scoreEl = document.getElementById('final-score'); let currentDisplay = 0; const step = finalScore / 30; 
-            const counterInterval = setInterval(() => { currentDisplay += step; if(currentDisplay >= finalScore) { currentDisplay = finalScore; clearInterval(counterInterval); if(finalScore >= 70) { playFanfare(); shootConfetti(); } } scoreEl.innerText = Math.round(currentDisplay); }, 30);
+            const scoreEl = document.getElementById('final-score');
+            let currentDisplay = 0; const step = finalScore / 30; 
+            const counterInterval = setInterval(() => {
+                currentDisplay += step;
+                if(currentDisplay >= finalScore) { 
+                    currentDisplay = finalScore; clearInterval(counterInterval); 
+                    if(finalScore >= 70) { playFanfare(); shootConfetti(); }
+                }
+                scoreEl.innerText = Math.round(currentDisplay);
+            }, 30);
             switchScreen('screen-result');
         }
 
         function switchScreen(screenId) {
-            ['screen-home', 'screen-quiz', 'screen-result', 'screen-literasi'].forEach(id => {
+            ['screen-home', 'screen-quiz', 'screen-result'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el) {
-                    if (id === screenId) { el.classList.remove('hidden'); el.classList.add('block', 'fade-in'); } 
-                    else { el.classList.add('hidden'); el.classList.remove('block', 'fade-in'); }
-                }
+                if (id === screenId) { el.classList.remove('hidden'); el.classList.add('block', 'fade-in'); } 
+                else { el.classList.add('hidden'); el.classList.remove('block', 'fade-in'); }
             });
         }
         
         function backToMenu() { 
             stopTTS(); playExitSound(); clearInterval(timerInterval); closeMobileNav(); 
-            const bc = document.getElementById('bottom-controls');
-            if(bc) bc.classList.remove('opacity-0', 'pointer-events-none');
+            // Munculkan kembali tombol akun & pengumuman di pojok bawah
+            document.getElementById('bottom-controls').classList.remove('opacity-0', 'pointer-events-none');
             switchScreen('screen-home'); 
             if(typeof window.renderHome === "function") window.renderHome(); 
         }
