@@ -62,6 +62,7 @@
             min-height: 100dvh; 
             transition: background-color 0.5s ease, color 0.5s ease;
             -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
         }
 
         .glass-panel {
@@ -85,9 +86,6 @@
         .grid-number { transition: all 0.2s; }
         .grid-number.active { transform: scale(1.1); box-shadow: 0 0 0 2px var(--bg-main), 0 0 10px #2dd4bf; }
 
-        .rotate-spin { animation: spinOnce 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes spinOnce { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(0.8); } 100% { transform: rotate(360deg) scale(1); } }
-
         /* Kustomisasi Range Slider */
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: #2dd4bf; cursor: pointer; margin-top: -4.5px; box-shadow: 0 0 5px rgba(45, 212, 191, 0.5); }
@@ -109,7 +107,7 @@
         .mobile-dvh-fix { height: calc(100dvh - 6rem); }
         @media (min-width: 768px) { .mobile-dvh-fix { height: 80vh; max-height: 750px; } }
 
-        /* CSS KHUSUS DYNAMIC ISLAND (Animasi linear/kalem tanpa bouncy) */
+        /* CSS KHUSUS DYNAMIC ISLAND (Animasi linear/kalem tanpa bouncy, tidak kepanjangan) */
         .dynamic-island {
             transition: width 0.4s ease-in-out, border-radius 0.4s ease-in-out, background-color 0.3s ease;
             height: 48px; overflow: hidden; display: flex; align-items: center; white-space: nowrap; 
@@ -143,9 +141,9 @@
         
         .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-        /* ANIMASI PIRINGAN HITAM */
+        /* ANIMASI ROTASI LOGO MUSIK */
         @keyframes spin-record { 100% { transform: rotate(360deg); } }
-        .spin-record { animation: spin-record 4s linear infinite; }
+        .spin-record { animation: spin-record 3s linear infinite; }
     </style>
 </head>
 <body class="p-2 md:p-8 flex flex-col items-center justify-center relative overflow-x-hidden pt-20 md:pt-10" data-text-size="md">
@@ -183,26 +181,26 @@
             <i id="music-state-icon" class="ph-fill ph-speaker-slash text-xl"></i>
         </div>
         
-        <!-- Kontainer Text & Tombol (Sizing PX Presisi) -->
-        <div id="di-content" class="w-full h-full pl-[50px] pr-[8px] opacity-0 invisible transition-opacity duration-300 flex items-center justify-between">
-            <div class="flex-1 min-w-0 flex flex-col justify-center">
+        <div id="di-content" class="di-content-wrapper pl-[3.25rem] pr-2 opacity-0 invisible">
+            <div class="flex-1 min-w-0 flex flex-col justify-center translate-y-[1px]">
                 <div class="truncate text-[12px] md:text-[14px] font-bold text-slate-800 dark:text-white leading-none" id="track-title">Lofi Production</div>
-                <div class="truncate text-[9px] md:text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-[2px]" id="track-artist">Pulsebox</div>
-                    <input type="range" id="track-progress" value="0" max="100" class="flex-1 h-1" onclick="event.stopPropagation()">
+                <div class="truncate text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-[2px]" id="track-artist">Pulsebox</div>
+                <div class="flex items-center gap-1.5 w-full mt-[2px]">
+                    <input type="range" id="track-progress" value="0" max="100" class="flex-1 h-1 pointer-events-auto" onclick="event.stopPropagation()">
                 </div>
             </div>
 
-            <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0 ml-1.5 md:ml-3" onclick="event.stopPropagation()">
-                <button onclick="prevTrack()" class="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform"><i class="ph-fill ph-skip-back text-lg"></i></button>
-                <button onclick="togglePlay()" class="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center text-teal-500 dark:text-teal-400 hover:text-teal-600 active:scale-95 transition-transform"><i class="ph-fill ph-play text-2xl" id="play-icon"></i></button>
-                <button onclick="nextTrack()" class="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform"><i class="ph-fill ph-skip-forward text-lg"></i></button>
+            <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0 ml-1.5 md:ml-3 pointer-events-auto" onclick="event.stopPropagation()">
+                <button onclick="prevTrack()" class="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform"><i class="ph-fill ph-skip-back text-[14px] md:text-[16px]"></i></button>
+                <button onclick="togglePlay()" class="w-7 h-7 md:w-9 md:h-9 flex items-center justify-center text-teal-500 dark:text-teal-400 hover:text-teal-600 active:scale-95 transition-transform"><i class="ph-fill ph-play text-xl md:text-2xl" id="play-icon"></i></button>
+                <button onclick="nextTrack()" class="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform"><i class="ph-fill ph-skip-forward text-[14px] md:text-[16px]"></i></button>
             </div>
         </div>
     </div>
 
     <!-- TOP RIGHT CONTROLS -->
     <div class="fixed top-3 right-3 md:top-6 md:right-8 z-50 flex gap-2 md:gap-3 items-center">
-        <button onclick="openSettings()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg"><i class="ph-fill ph-gear text-xl md:text-2xl text-slate-600 dark:text-slate-300 transition-transform duration-500 hover:rotate-90"></i></button>
+        <button onclick="openSettings()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg"><i class="ph-fill ph-gear text-xl md:text-2xl text-slate-600 dark:text-slate-300 hover:rotate-90 transition-transform duration-500"></i></button>
         <button onclick="toggleTheme()" class="w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg"><i id="theme-icon" class="ph-fill ph-moon text-xl md:text-2xl text-teal-500 dark:text-teal-400"></i></button>
     </div>
 
@@ -239,8 +237,7 @@
                 </h1>
                 <p id="main-subtitle" class="text-slate-600 dark:text-slate-400 text-sm md:text-lg mt-2">Pilih mata pelajaran untuk memulai ujian.</p>
             </div>
-            <!-- GRID DIPERBAIKI: Menggunakan css Grid sesungguhnya agar tampil sempurna -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 w-full" id="subject-grid"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6" id="subject-grid"></div>
         </div>
 
         <!-- SCREEN LITERASI -->
@@ -262,14 +259,8 @@
                 <input type="text" id="search-placeholder" onkeyup="window.renderLiterasi(this.value)" placeholder="Cari materi..." class="w-full bg-transparent border-none outline-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 py-2 h-10 md:h-12 text-sm md:text-base">
             </div>
 
-            <!-- Filter Kategori Mapel -->
-            <div id="literasi-categories" class="flex overflow-x-auto gap-2 md:gap-3 mb-6 pb-2 hide-scrollbar snap-x">
-                <!-- Diisi oleh JS -->
-            </div>
-
-            <div id="literasi-container" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <!-- Kartu literasi dimuat di sini oleh JS -->
-            </div>
+            <div id="literasi-categories" class="flex overflow-x-auto gap-2 md:gap-3 mb-6 pb-2 hide-scrollbar snap-x"></div>
+            <div id="literasi-container" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"></div>
         </div>
 
         <!-- SCREEN 2: QUIZ / REVIEW INTERFACE -->
@@ -356,7 +347,6 @@
                     <button onclick="startReview()" class="flex-1 py-3.5 md:py-4 rounded-xl font-bold text-teal-900 bg-teal-300 hover:bg-teal-400 transition-colors shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2 active:scale-95">
                         <i class="ph-bold ph-book-open text-lg"></i> <span id="btn-review-text">Lihat Pembahasan</span>
                     </button>
-                    <!-- Tombol Rekomendasi Belajar (Muncul jika ada salah) -->
                     <button id="btn-rekomendasi" onclick="window.openRekomendasi()" class="hidden flex-1 py-3.5 md:py-4 rounded-xl font-bold text-indigo-950 bg-indigo-300 hover:bg-indigo-400 transition-colors shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 active:scale-95">
                         <i class="ph-bold ph-lightbulb text-lg"></i> <span id="lbl-rekomendasi">Rekomendasi Belajar</span>
                     </button>
@@ -380,9 +370,7 @@
             </div>
             <p id="rekomendasi-desc" class="text-sm text-slate-600 dark:text-slate-400 mb-4 font-medium flex-shrink-0">Kamu menjawab salah pada beberapa soal. Berikut adalah konsep materi yang perlu kamu pelajari ulang:</p>
             
-            <div id="rekomendasi-list" class="flex-1 overflow-y-auto space-y-3 pr-2">
-                <!-- List Rekomendasi diisi oleh JS -->
-            </div>
+            <div id="rekomendasi-list" class="flex-1 overflow-y-auto space-y-3 pr-2"></div>
         </div>
     </div>
 
@@ -404,7 +392,7 @@
         <div class="absolute inset-0 modal-overlay" onclick="hideConfirmModal()"></div>
         <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="modal-content">
             <h3 id="modal-confirm-title" class="text-xl md:text-2xl mb-2 text-slate-800 dark:text-white cinematic-title">Yakin selesai?</h3>
-            <p class="text-sm md:text-base text-slate-600 dark:text-slate-300 mb-6 md:mb-8 font-medium" id="unanswered-warning">Masih ada beberapa soal yang belum kamu jawab.</p>
+            <p class="text-sm md:text-base text-slate-600 dark:text-slate-300 mb-6 md:mb-8 font-medium" id="unanswered-warning">Masih ada beberapa soal yang belum kamu jawab. Coba dicek lagi deh.</p>
             <div class="flex justify-end gap-3">
                 <button id="btn-confirm-cancel" onclick="hideConfirmModal()" class="px-4 py-2 md:px-5 md:py-2.5 rounded-lg font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white text-sm md:text-base active:scale-95">Batal</button>
                 <button id="btn-confirm-yes" onclick="finishQuiz()" class="px-4 py-2 md:px-5 md:py-2.5 rounded-lg font-semibold bg-emerald-400 hover:bg-emerald-500 text-emerald-950 shadow-lg shadow-emerald-500/20 text-sm md:text-base active:scale-95">Ya, Selesai</button>
@@ -438,7 +426,7 @@
     <div id="announcement-modal" class="fixed inset-0 z-[80] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="absolute inset-0 modal-overlay" onclick="closeAnnouncement()"></div>
         <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="announcement-content">
-            <div class="flex justify-between items-center mb-6"><h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title"><i class="ph-fill ph-megaphone text-blue-500"></i> Pengaturan</h3><button onclick="closeAnnouncement()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white active:scale-95"><i class="ph ph-x text-2xl"></i></button></div>
+            <div class="flex justify-between items-center mb-6"><h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title"><i class="ph-fill ph-megaphone text-blue-500"></i> Pengumuman</h3><button onclick="closeAnnouncement()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white active:scale-95"><i class="ph ph-x text-2xl"></i></button></div>
             <div class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50">
                     <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.2.4.0 - Ekosistem Cerdas 🎉</h4>
@@ -703,8 +691,26 @@
 
         function togglePlayerState(e) { if(e && (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.closest('button'))) return; isPlayerExpanded = !isPlayerExpanded; const island = document.getElementById('dynamic-island'); const contentWrapper = document.getElementById('di-content'); if(isPlayerExpanded) { island.classList.remove('di-collapsed'); island.classList.add('di-expanded'); contentWrapper.classList.remove('invisible', 'opacity-0'); contentWrapper.classList.add('opacity-100'); if(!isPlaying && audioEl && audioEl.currentTime === 0) togglePlay(); } else { island.classList.remove('di-expanded'); island.classList.add('di-collapsed'); contentWrapper.classList.remove('opacity-100'); contentWrapper.classList.add('opacity-0'); setTimeout(() => { if(!isPlayerExpanded) contentWrapper.classList.add('invisible'); }, 300); } }
         function formatTime(seconds) { if (isNaN(seconds)) return "0:00"; const min = Math.floor(seconds / 60); const sec = Math.floor(seconds % 60); return `${min}:${sec.toString().padStart(2, '0')}`; }
-        function initMusicPlayer() { if(!audioEl) return; loadTrack(currentTrackIndex); audioEl.addEventListener('loadedmetadata', () => { const timeTotal = document.getElementById('track-total'); if(timeTotal) timeTotal.innerText = formatTime(audioEl.duration); }); audioEl.addEventListener('timeupdate', () => { if (!audioEl.duration) return; const progressBar = document.getElementById('track-progress'); const timeCurrent = document.getElementById('track-current'); if(progressBar) progressBar.value = (audioEl.currentTime / audioEl.duration) * 100; if(timeCurrent) timeCurrent.innerText = formatTime(audioEl.currentTime); }); audioEl.addEventListener('ended', () => { nextTrack(); }); const progressBar = document.getElementById('track-progress'); if(progressBar) progressBar.addEventListener('input', (e) => { audioEl.currentTime = (audioEl.duration * (e.target.value / 100)); }); }
-        function loadTrack(index) { if(!audioEl) return; currentTrackIndex = index; const track = playlist[index]; audioEl.src = track.src; const titleEl = document.getElementById('track-title'); const artistEl = document.getElementById('track-artist'); if (titleEl) titleEl.innerText = track.title; if (artistEl) artistEl.innerText = track.artist; const progressBar = document.getElementById('track-progress'); const timeCurrent = document.getElementById('track-current'); const timeTotal = document.getElementById('track-total'); if (progressBar) progressBar.value = 0; if (timeCurrent) timeCurrent.innerText = "0:00"; if (timeTotal) timeTotal.innerText = "0:00"; if (isPlaying) { const p = audioEl.play(); if(p !== undefined) p.catch(e=>{}); } }
+        
+        function initMusicPlayer() { 
+            if(!audioEl) return; 
+            loadTrack(currentTrackIndex); 
+            audioEl.addEventListener('loadedmetadata', () => { const timeTotal = document.getElementById('track-total'); if(timeTotal) timeTotal.innerText = formatTime(audioEl.duration); }); 
+            audioEl.addEventListener('timeupdate', () => { if (!audioEl.duration) return; const progressBar = document.getElementById('track-progress'); const timeCurrent = document.getElementById('track-current'); if(progressBar) progressBar.value = (audioEl.currentTime / audioEl.duration) * 100; if(timeCurrent) timeCurrent.innerText = formatTime(audioEl.currentTime); }); 
+            audioEl.addEventListener('ended', () => { nextTrack(); }); 
+            const progressBar = document.getElementById('track-progress'); if(progressBar) progressBar.addEventListener('input', (e) => { audioEl.currentTime = (audioEl.duration * (e.target.value / 100)); }); 
+        }
+        
+        function loadTrack(index) { 
+            if(!audioEl) return; 
+            currentTrackIndex = index; const track = playlist[index]; audioEl.src = track.src; 
+            const titleEl = document.getElementById('track-title'); const artistEl = document.getElementById('track-artist'); 
+            if (titleEl) titleEl.innerText = track.title; if (artistEl) artistEl.innerText = track.artist; 
+            const progressBar = document.getElementById('track-progress'); const timeCurrent = document.getElementById('track-current'); const timeTotal = document.getElementById('track-total'); 
+            if (progressBar) progressBar.value = 0; if (timeCurrent) timeCurrent.innerText = "0:00"; if (timeTotal) timeTotal.innerText = "0:00"; 
+            if (isPlaying) { const p = audioEl.play(); if(p !== undefined) p.catch(e=>{}); } 
+        }
+        
         function togglePlay() { 
             if(!audioEl) return; 
             const playIcon = document.getElementById('play-icon'); 
@@ -729,8 +735,10 @@
                 if (musicStateIcon) musicStateIcon.className = "ph-fill ph-speaker-high text-xl";
             } 
         }
+        
         function nextTrack() { currentTrackIndex = (currentTrackIndex + 1) % playlist.length; loadTrack(currentTrackIndex); if (!isPlaying) togglePlay(); }
         function prevTrack() { currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length; loadTrack(currentTrackIndex); if (!isPlaying) togglePlay(); }
+        
         function updateMusicVolume(val) { if(audioEl) audioEl.volume = val; setStorage('musicVol', val); } function updateSfxVolume(val) { globalSfxVolume = parseFloat(val); setStorage('sfxVol', val); playPopSound(); }
         function openSettings() { document.getElementById('settings-modal').classList.remove('opacity-0', 'pointer-events-none'); document.getElementById('settings-content').classList.remove('scale-95'); } function closeSettings() { document.getElementById('settings-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('settings-content').classList.add('scale-95'); }
         function openAnnouncement() { document.getElementById('announcement-modal').classList.remove('opacity-0', 'pointer-events-none'); document.getElementById('announcement-content').classList.remove('scale-95'); } function closeAnnouncement() { document.getElementById('announcement-modal').classList.add('opacity-0', 'pointer-events-none'); document.getElementById('announcement-content').classList.add('scale-95'); }
@@ -787,7 +795,6 @@
             
             if(window.subjects && window.subjects.length > 0) {
                 window.subjects.forEach(sub => {
-                    // Lewati mapel jika tidak sesuai dengan filter yang dipilih
                     if(window.currentLiterasiFilter !== 'all' && window.currentLiterasiFilter !== sub.id) return;
 
                     const data = window.quizData[sub.id] || [];
@@ -931,7 +938,6 @@
                     const txtSoal = currentLang === 'en' ? 'Questions' : 'Soal';
                     const txtMenit = currentLang === 'en' ? 'Minutes' : 'Menit';
 
-                    // PENYESUAIAN GRID PADA CONTAINER KARTU AGAR TAMPILAN FULL
                     const card = document.createElement('div'); card.className = 'glass-panel p-5 md:p-6 rounded-2xl cursor-pointer subject-card flex flex-col items-center text-center w-full relative h-full justify-between';
                     card.onclick = () => { if(soalCount > 0) startQuiz(sub.id); else alert("Soal belum tersedia!"); };
                     card.innerHTML = `
