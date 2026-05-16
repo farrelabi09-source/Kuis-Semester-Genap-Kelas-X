@@ -1,7 +1,7 @@
 // --- 📚 DATA KUIS MATEMATIKA ---
 subjects.push({
     id: 'mtk',
-    name: 'Matematika Peminatan', 
+    name: 'Matematika', 
     icon: 'ph-math-operations', 
     color: 'text-blue-500 dark:text-blue-400'
 });
