@@ -89,7 +89,7 @@
         .rotate-spin { animation: spinOnce 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes spinOnce { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(0.8); } 100% { transform: rotate(360deg) scale(1); } }
 
-        /* Kustomisasi Range Slider (Progress Bar Musik) */
+        /* Kustomisasi Range Slider */
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: #2dd4bf; cursor: pointer; margin-top: -4.5px; box-shadow: 0 0 5px rgba(45, 212, 191, 0.5); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 3px; cursor: pointer; background: rgba(148, 163, 184, 0.4); border-radius: 2px; }
@@ -109,20 +109,54 @@
         .mobile-dvh-fix { height: calc(100dvh - 6rem); }
         @media (min-width: 768px) { .mobile-dvh-fix { height: 80vh; max-height: 750px; } }
 
-        /* --- CSS KHUSUS DYNAMIC ISLAND --- */
+        /* --- CSS KHUSUS DYNAMIC ISLAND & SEARCH --- */
         .dynamic-island {
-            transition: width 0.4s ease-in-out, border-radius 0.4s ease-in-out, background-color 0.3s ease;
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.4s ease, background-color 0.3s ease;
             height: 48px; overflow: hidden; display: flex; align-items: center; white-space: nowrap; 
         }
         .di-collapsed { width: 48px; border-radius: 24px; cursor: pointer; }
-        
-        /* Lebar responsif: sisa ruang di HP, tapi mentok di 320px untuk Desktop agar tidak memanjang penuhi layar */
         .di-expanded { width: calc(100vw - 130px); border-radius: 24px; cursor: default; }
         .di-content-wrapper { width: calc(100vw - 130px); transition: opacity 0.3s ease, visibility 0.3s; display: flex; align-items: center; }
         
         @media (min-width: 768px) {
             .di-expanded { width: 320px; }
             .di-content-wrapper { width: 320px; }
+        }
+
+        /* Animasi Search Popup Modern & Smooth */
+        .search-popup {
+            transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s;
+            transform-origin: top left;
+        }
+        
+        .search-popup-enter {
+            opacity: 0;
+            transform: translateY(-15px) scale(0.95);
+            pointer-events: none;
+            visibility: hidden;
+        }
+        
+        .search-popup-active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+            visibility: visible;
+        }
+
+        /* Skeleton Loading Animasi */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, rgba(148, 163, 184, 0.15) 25%, rgba(148, 163, 184, 0.3) 50%, rgba(148, 163, 184, 0.15) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+        }
+        .dark .skeleton {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.05) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
         }
 
         .cinematic-title { font-family: 'Archivo Black', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.03em; }
@@ -148,7 +182,6 @@
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
         .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-        /* ANIMASI ROTASI VINYL MUSIK */
         @keyframes spin-record { 100% { transform: rotate(360deg); } }
         .spin-record { animation: spin-record 3s linear infinite; }
     </style>
@@ -189,16 +222,15 @@
 
     <!-- YOUTUBE AUDIO PLAYER (HIDDEN) -->
     <div id="youtube-player-container" style="position: absolute; width: 0; height: 0; overflow: hidden; left: -9999px;"></div>
-    
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[100] overflow-hidden hidden"></div>
 
     <!-- WRAPPER DYNAMIC ISLAND & MUSIC SEARCH POPUP -->
-    <div class="fixed top-3 left-3 md:top-6 md:left-8 z-[70] flex flex-col gap-2 items-start">
+    <!-- Posisi fix di pojok kiri atas dan menyusun ke bawah (flex-col) -->
+    <div class="fixed top-3 left-3 md:top-6 md:left-8 z-[70] flex flex-col items-start gap-2 relative w-fit">
         
         <!-- DYNAMIC ISLAND MUSIC PLAYER WIDGET -->
-        <div id="dynamic-island" class="bg-white/80 dark:bg-slate-800/90 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dynamic-island di-collapsed relative" onclick="togglePlayerState(event)">
+        <div id="dynamic-island" class="bg-white/90 dark:bg-slate-800/95 backdrop-blur-3xl border border-white/40 dark:border-slate-700/60 shadow-[0_8px_30px_rgba(0,0,0,0.12)] dynamic-island di-collapsed relative z-20" onclick="togglePlayerState(event)">
             
-            <!-- Logo Musik: Volume (Merah: Pause/Mute, Hijau: Play) -->
             <div id="music-icon-container" class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300 spin-record" style="animation-play-state: paused;">
                 <i id="music-state-icon" class="ph-fill ph-speaker-slash text-xl"></i>
             </div>
@@ -212,18 +244,16 @@
                     </div>
                 </div>
 
-                <!-- Kontrol Audio & Search -->
                 <div class="flex items-center gap-1 md:gap-1.5 flex-shrink-0 ml-1.5 md:ml-2" onclick="event.stopPropagation()">
-                    <!-- Tombol Search Musik -->
-                    <button onclick="toggleMusicSearch(event)" class="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-slate-500 hover:text-blue-500 active:scale-95 transition-transform" title="Cari Lagu di YouTube">
-                        <i class="ph-bold ph-magnifying-glass text-lg md:text-xl"></i>
+                    <button onclick="toggleMusicSearch(event)" id="btn-search-toggle" class="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-full active:scale-95 transition-all" title="Cari Lagu di YouTube">
+                        <i class="ph-bold ph-magnifying-glass text-lg"></i>
                     </button>
                     
-                    <!-- Kontrol Navigasi Track -->
                     <button onclick="prevTrack()" class="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
                         <i class="ph-fill ph-skip-back text-lg"></i>
                     </button>
-                    <button onclick="togglePlay()" class="w-7 h-7 md:w-9 md:h-9 flex items-center justify-center text-teal-500 dark:text-teal-400 hover:text-teal-600 active:scale-95 transition-transform">
+                    <!-- Tombol Play/Pause (Bisa berubah jadi spinner) -->
+                    <button onclick="togglePlay()" id="btn-play-toggle" class="w-7 h-7 md:w-9 md:h-9 flex items-center justify-center text-teal-500 dark:text-teal-400 hover:text-teal-600 active:scale-95 transition-transform">
                         <i class="ph-fill ph-play text-2xl" id="play-icon"></i>
                     </button>
                     <button onclick="nextTrack()" class="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
@@ -233,25 +263,36 @@
             </div>
         </div>
 
-        <!-- YOUTUBE SEARCH POPUP -->
-        <div id="music-search-popup" class="hidden w-[calc(100vw-100px)] max-w-sm bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 shadow-2xl rounded-2xl p-3 flex-col gap-2 fade-in relative" onclick="event.stopPropagation()">
-            <div class="flex items-center gap-2 mb-1">
-                <i class="ph-fill ph-youtube-logo text-red-500 text-xl"></i>
+        <!-- YOUTUBE SEARCH POPUP (MODERN & TEPAT DI BAWAH DYNAMIC ISLAND) -->
+        <div id="music-search-popup" class="absolute top-[56px] left-0 w-[calc(100vw-24px)] md:w-[360px] bg-white/95 dark:bg-slate-800/95 backdrop-blur-3xl border border-white/50 dark:border-slate-700/50 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] rounded-[24px] p-5 flex flex-col gap-3 search-popup search-popup-enter z-10" onclick="event.stopPropagation()">
+            
+            <div class="flex items-center gap-3 mb-1">
+                <div class="w-7 h-7 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center text-red-500 shadow-sm border border-red-200 dark:border-red-900/50">
+                    <i class="ph-fill ph-youtube-logo text-sm"></i>
+                </div>
                 <span class="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-widest cinematic-title">Cari Musik</span>
-                <button onclick="toggleMusicSearch()" class="ml-auto text-slate-500 hover:text-slate-800 dark:hover:text-white"><i class="ph-bold ph-x"></i></button>
+                <button onclick="toggleMusicSearch()" class="ml-auto text-slate-400 hover:text-slate-800 dark:hover:text-white bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-full w-7 h-7 flex items-center justify-center transition-colors active:scale-90"><i class="ph-bold ph-x text-sm"></i></button>
             </div>
-            <div class="flex gap-2">
-                <input type="text" id="yt-search-input" placeholder="Cari lagu / artis..." class="flex-1 bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/50 text-xs md:text-sm rounded-xl px-3 py-2 outline-none text-slate-800 dark:text-white focus:ring-2 ring-blue-500/50" onkeydown="if(event.key === 'Enter') searchMusic()">
-                <button onclick="searchMusic()" class="bg-blue-500 text-white px-3 md:px-4 rounded-xl text-xs md:text-sm font-bold hover:bg-blue-600 active:scale-95 transition-all flex items-center justify-center shadow-lg shadow-blue-500/30">
-                    <i class="ph-bold ph-magnifying-glass"></i>
+            
+            <div class="relative group mt-1">
+                <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
+                    <i class="ph-bold ph-magnifying-glass text-lg"></i>
+                </div>
+                <input type="text" id="yt-search-input" placeholder="Cari lofi, jazz, pop..." class="w-full bg-slate-100/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 text-sm rounded-[16px] pl-10 pr-20 py-3 outline-none text-slate-800 dark:text-white focus:ring-4 ring-blue-500/20 focus:border-blue-500/60 transition-all shadow-inner" onkeydown="if(event.key === 'Enter') searchMusic()">
+                <button onclick="searchMusic()" class="absolute right-1.5 top-1.5 bottom-1.5 bg-blue-500 text-white px-4 rounded-xl text-xs font-bold hover:bg-blue-600 active:scale-95 transition-all shadow-md shadow-blue-500/20 flex items-center justify-center">
+                    Cari
                 </button>
             </div>
-            <div id="yt-search-results" class="flex flex-col gap-1 max-h-[200px] overflow-y-auto mt-1 pr-1 hide-scrollbar">
-                <!-- Hasil pencarian akan muncul di sini -->
-                <div class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 text-center py-4 font-medium italic">Ketik judul lagu untuk mencari di YouTube...</div>
+            
+            <div id="yt-search-results" class="flex flex-col gap-1.5 max-h-[260px] overflow-y-auto mt-2 pr-1 hide-scrollbar">
+                <div class="text-[11px] md:text-xs text-slate-400 dark:text-slate-500 text-center py-8 font-medium flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-1">
+                        <i class="ph-fill ph-music-notes-simple text-2xl opacity-50"></i>
+                    </div>
+                    Apa yang mau kamu dengar hari ini?
+                </div>
             </div>
         </div>
-
     </div>
 
     <!-- TOP RIGHT CONTROLS (Tema & Setting) -->
@@ -289,7 +330,6 @@
 
     <!-- MAIN WRAPPER -->
     <div class="w-full flex-1 flex flex-col items-center justify-center">
-        
         <!-- SCREEN 1: HOME -->
         <div id="screen-home" class="w-full max-w-5xl fade-in hidden px-2 md:px-0 opacity-0 transition-opacity duration-500">
             <div class="text-center mb-8 md:mb-10 mt-10 md:mt-4">
@@ -852,10 +892,10 @@
         
         let currentTrackIndex = 0; 
         let isPlaying = false; 
+        let isBuffering = false; // State untuk buffering / loading lagu
         let isPlayerExpanded = false;
         let isMusicSearchOpen = false;
         
-        const playIcon = document.getElementById('play-icon'); 
         const musicIconContainer = document.getElementById('music-icon-container');
         const musicStateIcon = document.getElementById('music-state-icon'); 
         const progressBar = document.getElementById('track-progress');
@@ -889,6 +929,7 @@
         function onPlayerReady(event) {
             isYtReady = true;
             updateTrackInfoUI(currentTrackIndex);
+            
             const savedMusicVol = getStorage('musicVol', 0.5);
             ytPlayer.setVolume(savedMusicVol * 100);
             
@@ -906,19 +947,23 @@
         function onPlayerStateChange(event) {
             if (event.data == YT.PlayerState.PLAYING) {
                 isPlaying = true;
+                isBuffering = false;
                 startProgressBar();
-                updatePlayUI(true);
+                updatePlayUI(true, false);
             } else if (event.data == YT.PlayerState.PAUSED) {
                 isPlaying = false;
+                isBuffering = false;
                 stopProgressBar();
-                updatePlayUI(false);
+                updatePlayUI(false, false);
+            } else if (event.data == YT.PlayerState.BUFFERING || event.data == YT.PlayerState.UNSTARTED) {
+                isBuffering = true;
+                updatePlayUI(isPlaying, true); // Tampilkan spinner loading
             } else if (event.data == YT.PlayerState.ENDED) {
                 nextTrack(); 
             }
         }
 
         function togglePlayerState(e) {
-            // Cegah klik tombol agar tidak memicu collapse/expand
             if(e && (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.closest('button'))) return;
             
             isPlayerExpanded = !isPlayerExpanded;
@@ -929,8 +974,7 @@
                 island.classList.remove('di-expanded'); island.classList.add('di-collapsed');
                 contentWrapper.classList.remove('opacity-100'); contentWrapper.classList.add('opacity-0');
                 
-                // Sembunyikan popup search kalau player dikecilkan
-                if(isMusicSearchOpen) toggleMusicSearch();
+                if(isMusicSearchOpen) toggleMusicSearch(); // Tutup otomatis pop up search bar
                 
                 setTimeout(() => { if(!isPlayerExpanded) contentWrapper.classList.add('invisible'); }, 300); 
             }
@@ -946,6 +990,11 @@
             currentTrackIndex = index;
             updateTrackInfoUI(index);
             if(progressBar) progressBar.value = 0;
+            
+            // Set mode loading di UI ketika lagu mulai di-fetch
+            isBuffering = true;
+            updatePlayUI(isPlaying, true);
+            
             if(isYtReady) {
                 if(isPlaying) ytPlayer.loadVideoById(ytPlaylist[index].videoId);
                 else ytPlayer.cueVideoById(ytPlaylist[index].videoId);
@@ -983,16 +1032,29 @@
             if (artistEl) artistEl.innerText = track.artist;
         }
 
-        function updatePlayUI(playing) {
-            if(playing) {
-                if (playIcon) playIcon.classList.replace('ph-play', 'ph-pause');
+        // Fungsi ini diupdate untuk mendukung Spinner Animasi Loading
+        function updatePlayUI(playing, buffering = false) {
+            const btnToggle = document.getElementById('btn-play-toggle');
+            
+            // Atur Icon Tombol Utama (Tengah)
+            if (btnToggle) {
+                if (buffering) {
+                    btnToggle.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-2xl text-teal-400"></i>`;
+                } else if (playing) {
+                    btnToggle.innerHTML = `<i class="ph-fill ph-pause text-2xl" id="play-icon"></i>`;
+                } else {
+                    btnToggle.innerHTML = `<i class="ph-fill ph-play text-2xl" id="play-icon"></i>`;
+                }
+            }
+
+            // Atur Piringan Hitam Kiri
+            if(playing && !buffering) {
                 if (musicIconContainer) {
                     musicIconContainer.className = "w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300 spin-record";
                     musicIconContainer.style.animationPlayState = "running";
                 }
                 if (musicStateIcon) musicStateIcon.className = "ph-fill ph-speaker-high text-xl";
             } else {
-                if (playIcon) playIcon.classList.replace('ph-pause', 'ph-play');
                 if (musicIconContainer) {
                     musicIconContainer.className = "w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 absolute left-1 top-1 z-20 pointer-events-none transition-colors duration-300 spin-record";
                     musicIconContainer.style.animationPlayState = "paused";
@@ -1004,7 +1066,7 @@
         function startProgressBar() {
             clearInterval(progressInterval);
             progressInterval = setInterval(() => {
-                if(isYtReady && isPlaying && progressBar) {
+                if(isYtReady && isPlaying && !isBuffering && progressBar) {
                     const duration = ytPlayer.getDuration();
                     const current = ytPlayer.getCurrentTime();
                     if(duration > 0) progressBar.value = (current / duration) * 100;
@@ -1019,20 +1081,25 @@
         }
 
         // ==========================================
-        // FUNGSI YOUTUBE MUSIC SEARCH API
+        // FUNGSI YOUTUBE MUSIC SEARCH API MODERN
         // ==========================================
         function toggleMusicSearch(e) {
             if(e) e.stopPropagation();
             const popup = document.getElementById('music-search-popup');
+            const btn = document.getElementById('btn-search-toggle');
             isMusicSearchOpen = !isMusicSearchOpen;
             
             if(isMusicSearchOpen) {
-                popup.classList.remove('hidden');
-                popup.classList.add('flex');
+                // Proses buka: Hapus class enter/sembunyi, pasang class active
+                popup.classList.remove('search-popup-enter');
+                popup.classList.add('search-popup-active');
+                if(btn) btn.classList.add('text-blue-500', 'bg-blue-50', 'dark:bg-blue-500/10');
                 setTimeout(() => document.getElementById('yt-search-input').focus(), 100);
             } else {
-                popup.classList.add('hidden');
-                popup.classList.remove('flex');
+                // Proses tutup: Hapus class active, pasang class enter
+                popup.classList.remove('search-popup-active');
+                popup.classList.add('search-popup-enter');
+                if(btn) btn.classList.remove('text-blue-500', 'bg-blue-50', 'dark:bg-blue-500/10');
             }
         }
 
@@ -1041,14 +1108,26 @@
             if(!query) return;
             
             const resultsContainer = document.getElementById('yt-search-results');
-            resultsContainer.innerHTML = '<div class="text-center text-xs text-slate-500 my-4 flex justify-center items-center gap-2">Mencari<div class="spinner w-3 h-3 border-[2px]"></div></div>';
             
-            // Mengambil API Key bawaan dari Firebase kamu
-            // PERHATIAN: Kamu harus mengaktifkan "YouTube Data API v3" di console.cloud.google.com!
+            // Render Skeleton Loader Halus
+            let skeletonHTML = '';
+            for(let i=0; i<3; i++){
+                skeletonHTML += `
+                <div class="flex items-center gap-3 p-2.5 my-1 bg-white/40 dark:bg-slate-800/40 rounded-xl">
+                    <div class="w-12 h-12 rounded-lg skeleton flex-shrink-0"></div>
+                    <div class="flex-1 w-full space-y-2.5">
+                        <div class="h-3 w-3/4 rounded-full skeleton"></div>
+                        <div class="h-2 w-1/2 rounded-full skeleton"></div>
+                    </div>
+                </div>`;
+            }
+            resultsContainer.innerHTML = skeletonHTML;
+            
             const apiKey = window.firebaseConfig.apiKey; 
             
-            // Parameter 'audio' ditambahkan ke pencarian agar hasil lebih mengarah ke lagu/musik
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(query + ' audio')}&type=video&videoCategoryId=10&key=${apiKey}`;
+            // OPTIMASI REQUEST API: Menggunakan parameter 'fields' agar data lebih ringan
+            const fieldsFilter = "items(id/videoId,snippet(title,channelTitle,thumbnails/default/url))";
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(query + ' audio lofi')}&type=video&videoCategoryId=10&fields=${fieldsFilter}&key=${apiKey}`;
             
             try {
                 const response = await fetch(url);
@@ -1056,66 +1135,68 @@
                 
                 if(data.error) {
                     resultsContainer.innerHTML = `
-                        <div class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-center">
-                            <i class="ph-fill ph-warning-circle text-red-500 text-lg mb-1"></i>
-                            <div class="text-[10px] md:text-xs text-red-500 font-medium">Gagal mengambil data. Pastikan <br><b>YouTube Data API v3</b> sudah diaktifkan <br>di Google Cloud Console kamu.</div>
+                        <div class="p-3 mt-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-center">
+                            <i class="ph-fill ph-warning-circle text-red-500 text-xl mb-1"></i>
+                            <div class="text-[10px] md:text-xs text-red-500 font-medium">Gagal mengambil data. Cek API Key.</div>
                         </div>`;
                     return;
                 }
                 
                 resultsContainer.innerHTML = '';
                 if(data.items.length === 0) {
-                    resultsContainer.innerHTML = '<div class="text-xs text-slate-500 text-center py-4">Tidak ada lagu yang ditemukan.</div>';
+                    resultsContainer.innerHTML = '<div class="text-xs text-slate-500 text-center py-6 font-medium">Tidak ada lagu yang ditemukan.</div>';
                     return;
                 }
                 
-                data.items.forEach(item => {
-                    const title = item.snippet.title;
-                    const artist = item.snippet.channelTitle;
-                    const videoId = item.id.videoId;
-                    const thumb = item.snippet.thumbnails.default.url;
-                    
-                    const div = document.createElement('div');
-                    div.className = "flex items-center gap-2.5 p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl cursor-pointer transition-colors active:scale-95";
-                    div.onclick = () => playSearchedSong(videoId, title, artist);
-                    
-                    div.innerHTML = `
-                        <div class="relative w-10 h-10 flex-shrink-0">
-                            <img src="${thumb}" class="w-full h-full object-cover rounded-lg shadow-sm" alt="Thumbnail">
-                            <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity rounded-lg">
-                                <i class="ph-fill ph-play text-white"></i>
+                // Sedikit visual delay (300ms) agar skeleton terlihat lebih mulus dan tidak flickering
+                setTimeout(() => {
+                    resultsContainer.innerHTML = '';
+                    data.items.forEach(item => {
+                        const title = item.snippet.title;
+                        const artist = item.snippet.channelTitle;
+                        const videoId = item.id.videoId;
+                        const thumb = item.snippet.thumbnails.default.url;
+                        
+                        const div = document.createElement('div');
+                        // Desain item modern dengan hover yang halus
+                        div.className = "flex items-center gap-3 p-2.5 hover:bg-white/60 dark:hover:bg-slate-700/60 rounded-xl cursor-pointer transition-all active:scale-95 group border border-transparent hover:border-slate-200/50 dark:hover:border-slate-600/50";
+                        div.onclick = () => playSearchedSong(videoId, title, artist);
+                        
+                        div.innerHTML = `
+                            <div class="relative w-12 h-12 flex-shrink-0">
+                                <img src="${thumb}" class="w-full h-full object-cover rounded-lg shadow-sm" alt="Thumbnail">
+                                <div class="absolute inset-0 bg-blue-500/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg backdrop-blur-[2px]">
+                                    <i class="ph-fill ph-play text-white drop-shadow-md text-lg"></i>
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-[11px] md:text-xs font-bold text-slate-800 dark:text-white truncate" title="${title}">${title}</div>
-                            <div class="text-[9px] md:text-[10px] text-slate-500 dark:text-slate-400 truncate"><i class="ph-fill ph-user-circle mr-1"></i>${artist}</div>
-                        </div>
-                    `;
-                    resultsContainer.appendChild(div);
-                });
+                            <div class="flex-1 min-w-0 flex flex-col justify-center">
+                                <div class="text-xs md:text-sm font-bold text-slate-800 dark:text-white truncate leading-tight mb-1" title="${title}">${title}</div>
+                                <div class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 truncate leading-tight font-medium"><i class="ph-fill ph-music-notes-simple mr-1 text-[10px]"></i>${artist}</div>
+                            </div>
+                        `;
+                        resultsContainer.appendChild(div);
+                    });
+                }, 300); 
+
             } catch (e) {
-                resultsContainer.innerHTML = `<div class="text-xs text-red-500 text-center py-4">Gagal mencari. Cek koneksi internet.</div>`;
+                resultsContainer.innerHTML = `<div class="text-xs text-red-500 text-center py-6 font-medium">Gagal mencari. Cek koneksi internetmu.</div>`;
             }
         }
 
         function playSearchedSong(videoId, title, artist) {
-            // Decode HTML entities (supaya karakter '&amp;' dsb tidak muncul jelek)
             const txt = document.createElement("textarea");
             txt.innerHTML = title;
             const decodedTitle = txt.value;
 
-            // Tambahkan ke playlist dinamis
             ytPlaylist.push({
                 title: decodedTitle,
                 artist: artist,
                 videoId: videoId
             });
             
-            // Langsung load & putar dari index paling terakhir
             loadTrack(ytPlaylist.length - 1);
             if(!isPlaying) togglePlay();
             
-            // Tutup popup search
             toggleMusicSearch();
         }
 
@@ -1280,13 +1361,12 @@
 
         function initSettings() { 
             setTextSize(getStorage('textSize', 'md'), false); 
-            
-            // Set slider dari storage (volume aslinya dihandle di onPlayerReady untuk Youtube API)
             const savedMusicVol = getStorage('musicVol', 0.5);
-            document.getElementById('music-volume').value = savedMusicVol;
-            
+            const musicVolInput = document.getElementById('music-volume');
+            if (musicVolInput) musicVolInput.value = savedMusicVol;
             const savedSfxVol = getStorage('sfxVol', 0.5);
-            document.getElementById('sfx-volume').value = savedSfxVol; 
+            const sfxVolInput = document.getElementById('sfx-volume');
+            if (sfxVolInput) sfxVolInput.value = savedSfxVol;
             globalSfxVolume = parseFloat(savedSfxVol);
         }
 
