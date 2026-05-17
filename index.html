@@ -12,6 +12,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script>
+        // Penanganan error global untuk menangkap unhandled promise dari Firebase Auth di dalam iframe sandboxed
+        window.addEventListener('unhandledrejection', function(event) {
+            if (event.reason && (event.reason.message && event.reason.message.includes('Pending promise') || event.reason.code && event.reason.code.includes('auth/'))) {
+                event.preventDefault(); // Mencegah crash merah di konsol browser
+                console.warn("Firebase Auth promise rejection ditangkap dengan aman:", event.reason);
+            }
+        });
+
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -213,7 +221,6 @@
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[100] overflow-hidden hidden"></div>
 
     <!-- WRAPPER DYNAMIC ISLAND & MUSIC SEARCH POPUP -->
-    <!-- Wadah ini pointer-events-none, tapi isinya (island & popup) punya pointer-events-auto -->
     <div class="fixed top-3 left-3 md:top-6 md:left-8 z-[70] flex flex-col items-start gap-2 pointer-events-none w-fit">
         
         <!-- DYNAMIC ISLAND MUSIC PLAYER WIDGET -->
@@ -227,21 +234,21 @@
                     <div class="truncate text-[12px] md:text-[14px] font-bold text-slate-800 dark:text-white leading-none" id="track-title">Loading...</div>
                     <div class="truncate text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-0.5" id="track-artist">Connecting to YouTube</div>
                     <div class="flex items-center gap-1.5 w-full mt-0.5">
-                        <input type="range" id="track-progress" value="0" max="100" class="flex-1 h-1" onclick="event.stopPropagation()">
+                        <input type="range" id="track-progress" value="0" max="100" class="flex-1 h-1 pointer-events-auto" onclick="event.stopPropagation()">
                     </div>
                 </div>
 
                 <div class="flex items-center gap-1 md:gap-1.5 flex-shrink-0 ml-1.5 md:ml-2" onclick="event.stopPropagation()">
-                    <button onclick="toggleMusicSearch(event)" id="btn-search-toggle" class="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-full active:scale-95 transition-all" title="Cari Lagu di YouTube">
+                    <button onclick="toggleMusicSearch(event)" id="btn-search-toggle" class="pointer-events-auto w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-full active:scale-95 transition-all" title="Cari Lagu di YouTube">
                         <i class="ph-bold ph-magnifying-glass text-lg"></i>
                     </button>
-                    <button onclick="prevTrack()" class="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
+                    <button onclick="prevTrack()" class="pointer-events-auto w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
                         <i class="ph-fill ph-skip-back text-lg"></i>
                     </button>
-                    <button onclick="togglePlay()" id="btn-play-toggle" class="w-7 h-7 md:w-9 md:h-9 flex items-center justify-center text-teal-500 dark:text-teal-400 hover:text-teal-600 active:scale-95 transition-transform">
+                    <button onclick="togglePlay()" id="btn-play-toggle" class="pointer-events-auto w-7 h-7 md:w-9 md:h-9 flex items-center justify-center text-teal-500 dark:text-teal-400 hover:text-teal-600 active:scale-95 transition-transform">
                         <i class="ph-fill ph-play text-2xl" id="play-icon"></i>
                     </button>
-                    <button onclick="nextTrack()" class="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
+                    <button onclick="nextTrack()" class="pointer-events-auto w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-slate-500 hover:text-teal-500 active:scale-95 transition-transform">
                         <i class="ph-fill ph-skip-forward text-lg"></i>
                     </button>
                 </div>
@@ -249,8 +256,7 @@
         </div>
 
         <!-- YOUTUBE SEARCH POPUP -->
-        <!-- Menambahkan class pointer-events-auto dikendalikan dari CSS .search-popup-active -->
-        <div id="music-search-popup" class="w-[calc(100vw-24px)] md:w-[360px] bg-white/80 dark:bg-slate-800/80 backdrop-blur-3xl border border-white/50 dark:border-slate-700/50 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] rounded-[24px] p-5 flex flex-col gap-3 search-popup search-popup-enter z-10" onclick="event.stopPropagation()">
+        <div id="music-search-popup" class="w-[calc(100vw-24px)] md:w-[360px] bg-white/80 dark:bg-slate-800/80 backdrop-blur-3xl border border-white/50 dark:border-slate-700/50 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] rounded-[24px] p-5 flex flex-col gap-3 search-popup search-popup-enter z-10 pointer-events-auto" onclick="event.stopPropagation()">
             
             <div class="flex items-center gap-3 mb-1">
                 <div class="w-7 h-7 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center text-red-500 shadow-sm border border-red-200 dark:border-red-900/50">
@@ -260,7 +266,7 @@
                 <button onclick="toggleMusicSearch()" class="ml-auto text-slate-400 hover:text-slate-800 dark:hover:text-white bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-full w-7 h-7 flex items-center justify-center transition-colors active:scale-90"><i class="ph-bold ph-x text-sm"></i></button>
             </div>
             
-            <div class="relative group mt-1">
+            <div class="relative group mt-1 pointer-events-auto">
                 <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
                     <i class="ph-bold ph-magnifying-glass text-lg"></i>
                 </div>
@@ -270,7 +276,7 @@
                 </button>
             </div>
             
-            <div id="yt-search-results" class="flex flex-col gap-1.5 max-h-[260px] overflow-y-auto mt-2 pr-1 hide-scrollbar">
+            <div id="yt-search-results" class="flex flex-col gap-1.5 max-h-[260px] overflow-y-auto mt-2 pr-1 hide-scrollbar pointer-events-auto">
                 <div class="text-[11px] md:text-xs text-slate-400 dark:text-slate-500 text-center py-8 font-medium flex flex-col items-center gap-2">
                     <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center mb-1 border border-white/20 dark:border-white/5">
                         <i class="ph-fill ph-music-notes-simple text-2xl opacity-50"></i>
@@ -284,10 +290,6 @@
     <!-- TOP RIGHT CONTROLS (Tema, Setting, Update) -->
     <div class="fixed top-3 right-3 md:top-6 md:right-8 z-50 flex gap-2 md:gap-3 items-center pointer-events-none">
         
-        <button onclick="window.backToMainMenu()" id="btn-global-home" class="pointer-events-auto w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg hidden">
-            <i class="ph-fill ph-house text-xl md:text-2xl text-blue-500 dark:text-blue-400"></i>
-        </button>
-
         <button onclick="openAnnouncement()" class="pointer-events-auto w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
             <i class="ph-fill ph-megaphone text-xl md:text-2xl text-blue-500 dark:text-blue-400"></i>
         </button>
@@ -301,7 +303,7 @@
         </button>
     </div>
 
-    <!-- USER INFO (Kanan Bawah) -->
+    <!-- USER INFO (Kanan Bawah) - Hanya muncul di Menu Utama -->
     <div id="user-info-container" class="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 hidden opacity-0 transition-opacity duration-300 pointer-events-none">
         <div id="user-info" class="pointer-events-auto glass-panel h-10 md:h-12 px-2.5 py-1.5 md:py-2 md:px-3 rounded-full flex items-center gap-2 shadow-lg border-teal-500/30 hover:scale-105 transition-transform">
             <img id="user-photo" src="" alt="User" class="w-7 h-7 md:w-8 md:h-8 rounded-full border-2 border-teal-400 object-cover" referrerpolicy="no-referrer">
@@ -502,7 +504,7 @@
                 <p class="text-slate-600 dark:text-slate-300 mb-6 text-sm md:text-base font-medium" id="result-subject-name">Mata Pelajaran</p>
                 
                 <div class="bg-white/60 dark:bg-slate-900/50 backdrop-blur-md rounded-2xl p-6 md:p-8 mb-4 inline-block border border-slate-200/80 dark:border-white/10 w-full max-w-xs hover:scale-105 transition-transform duration-300 shadow-sm">
-                    <p class="text-slate-500 dark:text-slate-400 text-xs md:text-sm font-semibold uppercase tracking-widest mb-2">Skor Akhir Anda</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs md:text-sm font-semibold uppercase tracking-test mb-2">Skor Akhir Anda</p>
                     <div class="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-600 via-teal-500 to-emerald-400 cinematic-title" id="final-score">0</div>
                 </div>
 
@@ -528,13 +530,11 @@
     </div>
 
     <!-- TOMBOL MENGAMBANG TUTOR AI (Hanya muncul di Pojok Literasi) -->
-    <!-- PERBAIKAN: Menambahkan pointer-events-auto agar tombol selalu bisa diklik saat tampil -->
     <button onclick="toggleAIChat()" id="btn-ai-chat" class="fixed bottom-10 right-4 md:bottom-10 md:right-10 z-[60] bg-gradient-to-r from-blue-500 to-purple-500 text-white w-14 h-14 md:w-16 md:h-16 rounded-full shadow-[0_10px_25px_rgba(59,130,246,0.5)] items-center justify-center hover:scale-110 active:scale-95 transition-all hidden group border border-white/20 pointer-events-auto cursor-pointer">
         <i class="ph-fill ph-sparkle text-2xl md:text-3xl animate-pulse group-hover:rotate-12 transition-transform"></i>
     </button>
 
     <!-- PANEL CHAT AI -->
-    <!-- Dihilangkan pointer-events-auto paksa pada inner child, kontrol hanya dari wrapper utama JS -->
     <div id="ai-chat-panel" class="fixed bottom-28 right-4 md:bottom-32 md:right-10 z-[60] w-[calc(100vw-32px)] md:w-[400px] h-[60vh] max-h-[500px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-3xl border border-blue-200/50 dark:border-blue-500/30 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] rounded-3xl flex flex-col overflow-hidden transition-all duration-300 transform scale-95 opacity-0 pointer-events-none translate-y-10 origin-bottom-right">
         <!-- Header Chat -->
         <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-4 flex justify-between items-center flex-shrink-0 relative overflow-hidden border-b border-white/10">
@@ -548,7 +548,7 @@
                     <p class="text-[10px] md:text-xs opacity-90 font-medium">Asisten Belajar Kelas X</p>
                 </div>
             </div>
-            <button onclick="toggleAIChat()" class="text-white hover:bg-white/20 w-8 h-8 rounded-full flex items-center justify-center transition-colors relative z-10 active:scale-90 cursor-pointer"><i class="ph-bold ph-x text-lg"></i></button>
+            <button onclick="toggleAIChat()" class="text-white hover:bg-white/20 w-8 h-8 rounded-full flex items-center justify-center transition-colors relative z-10 active:scale-90 pointer-events-auto cursor-pointer"><i class="ph-bold ph-x text-lg"></i></button>
         </div>
         
         <!-- Chat History -->
@@ -564,7 +564,7 @@
 
         <!-- Input Chat -->
         <div class="p-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-100 dark:border-slate-800 flex gap-2 flex-shrink-0 items-end">
-            <textarea id="chat-input" rows="1" placeholder="Ketik pertanyaanmu..." class="flex-1 max-h-24 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-2xl px-4 py-3 text-xs md:text-sm text-slate-800 dark:text-white outline-none focus:ring-2 ring-purple-500/50 resize-none hide-scrollbar transition-all shadow-inner" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(); }"></textarea>
+            <textarea id="chat-input" rows="1" placeholder="Ketik pertanyaanmu..." class="flex-1 max-h-24 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-2xl px-4 py-3 text-xs md:text-sm text-slate-800 dark:text-white outline-none focus:ring-2 ring-purple-500/50 resize-none hide-scrollbar pointer-events-auto" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(); }"></textarea>
             <button onclick="sendChatMessage()" class="w-11 h-11 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white flex items-center justify-center hover:opacity-90 active:scale-95 transition-all flex-shrink-0 shadow-md shadow-blue-500/30 border border-white/20 cursor-pointer">
                 <i class="ph-bold ph-paper-plane-right text-lg"></i>
             </button>
@@ -572,8 +572,7 @@
     </div>
 
     <!-- MODAL DETAIL MATERI LITERASI -->
-    <div id="materi-modal" class="fixed inset-0 z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-        <!-- PERBAIKAN: pointer-events-auto DIHAPUS DARI OVERLAY -->
+    <div id="materi-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="window.closeMateriModal()"></div>
         <div class="glass-panel p-6 md:p-8 rounded-3xl w-[90%] max-w-2xl max-h-[85vh] relative z-10 transform scale-95 transition-all duration-300 flex flex-col shadow-2xl" id="materi-content">
             <div class="flex justify-between items-center mb-5 flex-shrink-0 border-b border-slate-200/50 dark:border-white/10 pb-4">
@@ -593,8 +592,7 @@
     </div>
 
     <!-- MODAL REKOMENDASI BELAJAR (SMART REMINDER) -->
-    <div id="rekomendasi-modal" class="fixed inset-0 z-[80] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-        <!-- PERBAIKAN: pointer-events-auto DIHAPUS DARI OVERLAY -->
+    <div id="rekomendasi-modal" class="fixed inset-0 z-[80] flex items-center justify-center hidden">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="window.closeRekomendasi()"></div>
         <div class="glass-panel p-6 md:p-8 rounded-2xl w-[95%] max-w-2xl max-h-[85vh] relative z-10 transform scale-95 transition-all duration-300 flex flex-col" id="rekomendasi-content">
             <div class="flex justify-between items-center mb-6 flex-shrink-0">
@@ -610,8 +608,7 @@
     </div>
 
     <!-- MODAL MOBILE NAVIGASI -->
-    <div id="mobile-nav-modal" class="fixed inset-0 z-[60] flex items-end justify-center opacity-0 pointer-events-none transition-opacity duration-300 md:hidden">
-        <!-- PERBAIKAN: pointer-events-auto DIHAPUS DARI OVERLAY -->
+    <div id="mobile-nav-modal" class="fixed inset-0 z-[60] flex items-end justify-center hidden md:hidden">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="closeMobileNav()"></div>
         <div class="glass-panel w-full h-[75vh] max-h-[85vh] rounded-t-3xl relative z-10 transform translate-y-full transition-transform duration-300 flex flex-col shadow-[0_-10px_40px_rgba(0,0,0,0.3)]" id="mobile-nav-content">
             <div id="mobile-nav-header" class="w-full flex-shrink-0 rounded-t-3xl touch-none bg-white/5 dark:bg-black/5">
@@ -629,12 +626,11 @@
     </div>
 
     <!-- MODAL LOGIN -->
-    <div id="login-screen" class="fixed inset-0 flex items-center justify-center bg-slate-900/80 transition-opacity duration-300 z-[100] opacity-0 pointer-events-none">
-        <!-- PERBAIKAN: pointer-events-auto DIHAPUS DARI OVERLAY -->
-        <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none');"></div>
+    <div id="login-screen" class="fixed inset-0 flex items-center justify-center hidden z-[100]">
+        <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="document.getElementById('login-screen').classList.add('hidden');"></div>
         <div class="glass-panel p-8 rounded-3xl max-w-sm w-[90%] text-center fade-in relative z-10">
             <div class="absolute top-4 right-4">
-                <button onclick="document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none');" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors active:scale-90 cursor-pointer"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="document.getElementById('login-screen').classList.add('hidden');" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors active:scale-90 cursor-pointer"><i class="ph-bold ph-x text-xl"></i></button>
             </div>
             <div class="w-20 h-20 bg-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
                 <i class="ph-fill ph-cloud-arrow-up text-5xl text-blue-400"></i>
@@ -666,8 +662,7 @@
     </div>
 
     <!-- MODAL CONFIRMATION -->
-    <div id="confirm-modal" class="fixed inset-0 z-[80] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-        <!-- PERBAIKAN: pointer-events-auto DIHAPUS DARI OVERLAY -->
+    <div id="confirm-modal" class="fixed inset-0 z-[80] flex items-center justify-center hidden">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="hideConfirmModal()"></div>
         <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="modal-content">
             <h3 class="text-xl md:text-2xl mb-2 text-slate-800 dark:text-white cinematic-title">Yakin selesai?</h3>
@@ -680,8 +675,7 @@
     </div>
 
     <!-- MODAL SETTINGS -->
-    <div id="settings-modal" class="fixed inset-0 z-[80] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-        <!-- PERBAIKAN: pointer-events-auto DIHAPUS DARI OVERLAY -->
+    <div id="settings-modal" class="fixed inset-0 z-[80] flex items-center justify-center hidden">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="closeSettings()"></div>
         <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="settings-content">
             <div class="flex justify-between items-center mb-6">
@@ -717,8 +711,7 @@
     </div>
 
     <!-- MODAL ANNOUNCEMENT / PATCH NOTES -->
-    <div id="announcement-modal" class="fixed inset-0 z-[80] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-        <!-- PERBAIKAN: pointer-events-auto DIHAPUS DARI OVERLAY -->
+    <div id="announcement-modal" class="fixed inset-0 z-[80] flex items-center justify-center hidden">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="closeAnnouncement()"></div>
         <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="announcement-content">
             <div class="flex justify-between items-center mb-6">
@@ -743,7 +736,7 @@
     <!-- FIREBASE & GEMINI AI MODULE SCRIPTS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
@@ -776,14 +769,16 @@
             console.error("Gagal memuat AI:", e);
         }
 
+        // --- FUNGSI LOGIN / AKUN ---
         window.openLoginModal = () => {
-            if(window.currentUser && window.currentUser.uid !== 'guest_user') {
+            if(window.currentUser && window.currentUser.uid !== 'guest_user' && !window.currentUser.isAnonymous) {
                 alert("Kamu sudah masuk sebagai " + window.currentUser.displayName);
                 return;
             }
             const modal = document.getElementById('login-screen');
             if(modal) {
-                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
             }
         };
 
@@ -797,9 +792,13 @@
                     try { 
                         await signInWithPopup(auth, provider); 
                         const loginScreen = document.getElementById('login-screen');
-                        if (loginScreen) loginScreen.classList.add('opacity-0', 'pointer-events-none');
+                        if (loginScreen) {
+                            loginScreen.classList.add('hidden');
+                            loginScreen.classList.remove('flex');
+                        }
                     } catch (error) { 
-                        alert("Gagal masuk: " + error.message); 
+                        console.warn("Google Sign-In failed or blocked: ", error);
+                        alert("Gagal masuk dengan Google (mungkin diblokir oleh browser/iframe). Silakan gunakan masuk sebagai 'Tamu'.");
                         btnText.innerText = originalText;
                     }
                 };
@@ -807,18 +806,32 @@
 
             const btnGuest = document.getElementById('btn-guest-login');
             if (btnGuest) {
-                btnGuest.onclick = () => {
-                    window.currentUser = { uid: 'guest_user', displayName: 'Tamu' };
-                    window.userScores = {};
-                    if (typeof window.subjects !== 'undefined' && window.subjects) {
-                        window.subjects.forEach(sub => {
-                            const hs = localStorage.getItem('hs_' + sub.id);
-                            if(hs) window.userScores[sub.id] = parseInt(hs);
-                        });
+                btnGuest.onclick = async () => {
+                    try {
+                        // Memaksimalkan penanganan login tamu menggunakan sistem otentikasi anonim asli Firebase
+                        await signInAnonymously(auth);
+                        const loginScreen = document.getElementById('login-screen');
+                        if (loginScreen) {
+                            loginScreen.classList.add('hidden');
+                            loginScreen.classList.remove('flex');
+                        }
+                    } catch (error) {
+                        console.warn("Anonymous login failed, using local guest fallback:", error);
+                        window.currentUser = { uid: 'guest_user', displayName: 'Tamu' };
+                        window.userScores = {};
+                        if (typeof window.subjects !== 'undefined' && window.subjects) {
+                            window.subjects.forEach(sub => {
+                                const hs = localStorage.getItem('hs_' + sub.id);
+                                if(hs) window.userScores[sub.id] = parseInt(hs);
+                            });
+                        }
+                        const loginScreen = document.getElementById('login-screen');
+                        if (loginScreen) {
+                            loginScreen.classList.add('hidden');
+                            loginScreen.classList.remove('flex');
+                        }
+                        updateAccountButtonUI();
                     }
-                    const loginScreen = document.getElementById('login-screen');
-                    if (loginScreen) loginScreen.classList.add('opacity-0', 'pointer-events-none');
-                    updateAccountButtonUI();
                 };
             }
         };
@@ -830,7 +843,7 @@
         }
 
         window.handleLogout = () => { 
-            if (window.currentUser && window.currentUser.uid === 'guest_user') {
+            if (window.currentUser && (window.currentUser.uid === 'guest_user' || window.currentUser.isAnonymous)) {
                 window.currentUser = null;
                 window.userScores = {};
                 const uInfo = document.getElementById('user-info-container');
@@ -842,7 +855,7 @@
         };
 
         window.saveScoreToCloud = async (subjectId, newScore) => {
-            if (!window.currentUser || window.currentUser.uid === 'guest_user') return;
+            if (!window.currentUser || window.currentUser.uid === 'guest_user' || window.currentUser.isAnonymous) return;
             const oldScore = window.userScores[subjectId] || 0;
             
             if (newScore > oldScore) {
@@ -868,7 +881,9 @@
                 statusText.className = "text-xs font-bold text-emerald-500 dark:text-emerald-400";
                 statusBadge.className = "absolute top-0 right-0 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-800";
                 
-                if(userInfoContainer) {
+                // Kapsul info akun hanya ditampilkan saat berada di Menu Utama saja
+                const activeScreen = document.querySelector('div[id^="screen-"]:not(.hidden)');
+                if(userInfoContainer && activeScreen && activeScreen.id === 'screen-main-menu') {
                     userInfoContainer.classList.remove('hidden');
                     setTimeout(() => userInfoContainer.classList.remove('opacity-0'), 50);
                 }
@@ -888,6 +903,9 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 window.currentUser = user;
+                if (user.isAnonymous) {
+                    user.displayName = "Tamu";
+                }
                 try {
                     const scoresRef = collection(db, 'users', user.uid, 'scores');
                     const snapshot = await getDocs(scoresRef);
@@ -906,7 +924,10 @@
             updateAccountButtonUI();
             
             const loginScreen = document.getElementById('login-screen');
-            if (loginScreen) loginScreen.classList.add('opacity-0', 'pointer-events-none');
+            if (loginScreen) {
+                loginScreen.classList.add('hidden');
+                loginScreen.classList.remove('flex');
+            }
         });
     </script>
 
@@ -1202,6 +1223,20 @@
             }
         }
 
+        // Penyesuaian visibility info user agar tersembunyi selain di Menu Utama
+        function handleUserInfoVisibility(screenId) {
+            const container = document.getElementById('user-info-container');
+            if(container) {
+                if(screenId === 'screen-main-menu' && window.currentUser) {
+                    container.classList.remove('hidden');
+                    setTimeout(() => container.classList.remove('opacity-0'), 50);
+                } else {
+                    container.classList.add('opacity-0');
+                    setTimeout(() => container.classList.add('hidden'), 300);
+                }
+            }
+        }
+
         function togglePlay() {
             if(!isYtReady) return;
             if (isPlaying) ytPlayer.pauseVideo();
@@ -1221,6 +1256,12 @@
                 else ytPlayer.cueVideoById(ytPlaylist[index].videoId);
             }
         }
+
+        // Kembali ke menu utama
+        window.backToMainMenu = function() {
+            stopTTS(); playExitSound(); clearInterval(timerInterval); closeMobileNav(); 
+            switchScreen('screen-main-menu');
+        };
 
         function nextTrack() { 
             currentTrackIndex = (currentTrackIndex + 1) % ytPlaylist.length; 
@@ -1295,7 +1336,6 @@
         function stopProgressBar() { clearInterval(progressInterval); }
 
         function toggleMusicSearch(e) {
-            if(e) e.stopPropagation();
             const popup = document.getElementById('music-search-popup');
             const btn = document.getElementById('btn-search-toggle');
             if(!popup) return;
@@ -1306,7 +1346,10 @@
                 popup.classList.remove('search-popup-enter');
                 popup.classList.add('search-popup-active');
                 if(btn) btn.classList.add('text-blue-500', 'bg-blue-50', 'dark:bg-blue-500/10');
-                setTimeout(() => document.getElementById('yt-search-input').focus(), 100);
+                setTimeout(() => {
+                    const inp = document.getElementById('yt-search-input');
+                    if(inp) inp.focus();
+                }, 100);
             } else {
                 popup.classList.remove('search-popup-active');
                 popup.classList.add('search-popup-enter');
@@ -1424,7 +1467,10 @@
                 panel.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-10', 'scale-95');
                 panel.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0', 'scale-100');
                 if(btnIcon) btnIcon.classList.replace('ph-sparkle', 'ph-x');
-                setTimeout(() => document.getElementById('chat-input').focus(), 300);
+                setTimeout(() => {
+                    const ci = document.getElementById('chat-input');
+                    if(ci) ci.focus();
+                }, 300);
             } else {
                 panel.classList.add('opacity-0', 'pointer-events-none', 'translate-y-10', 'scale-95');
                 panel.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0', 'scale-100');
@@ -1501,35 +1547,31 @@
 
         function openSettings() { 
             const sm = document.getElementById('settings-modal');
-            const sc = document.getElementById('settings-content');
-            if(sm && sc) {
-                sm.classList.remove('opacity-0', 'pointer-events-none'); 
-                sc.classList.remove('scale-95'); 
+            if(sm) {
+                sm.classList.remove('hidden'); 
+                sm.classList.add('flex');
             }
         }
         function closeSettings() { 
             const sm = document.getElementById('settings-modal');
-            const sc = document.getElementById('settings-content');
-            if(sm && sc) {
-                sm.classList.add('opacity-0', 'pointer-events-none'); 
-                sc.classList.add('scale-95'); 
+            if(sm) {
+                sm.classList.remove('flex');
+                sm.classList.add('hidden'); 
             }
         }
 
         function openAnnouncement() { 
             const am = document.getElementById('announcement-modal');
-            const ac = document.getElementById('announcement-content');
-            if(am && ac) {
-                am.classList.remove('opacity-0', 'pointer-events-none'); 
-                ac.classList.remove('scale-95'); 
+            if(am) {
+                am.classList.remove('hidden'); 
+                am.classList.add('flex');
             }
         }
         function closeAnnouncement() { 
             const am = document.getElementById('announcement-modal');
-            const ac = document.getElementById('announcement-content');
-            if(am && ac) {
-                am.classList.add('opacity-0', 'pointer-events-none'); 
-                ac.classList.add('scale-95'); 
+            if(am) {
+                am.classList.remove('flex');
+                am.classList.add('hidden'); 
             }
         }
 
@@ -1549,7 +1591,7 @@
             catContainer.innerHTML = '';
             
             const allBtn = document.createElement('button');
-            allBtn.className = `px-4 py-2 rounded-full text-xs md:text-sm font-bold flex-shrink-0 transition-all snap-start shadow-sm border border-transparent cursor-pointer ${window.currentLiterasiFilter === 'all' ? 'bg-blue-500 text-white shadow-blue-500/30 border-blue-400' : 'bg-white/60 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700'}`;
+            allBtn.className = `px-4 py-2 rounded-full text-xs md:text-sm font-bold flex-shrink-0 transition-all snap-start shadow-sm border border-transparent cursor-pointer pointer-events-auto ${window.currentLiterasiFilter === 'all' ? 'bg-blue-500 text-white shadow-blue-500/30 border-blue-400' : 'bg-white/60 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700'}`;
             allBtn.innerText = 'Semua Mapel';
             allBtn.onclick = () => { 
                 window.currentLiterasiFilter = 'all'; 
@@ -1561,7 +1603,7 @@
             if(window.subjects && window.subjects.length > 0) {
                 window.subjects.forEach(sub => {
                     const btn = document.createElement('button');
-                    btn.className = `px-4 py-2 rounded-full text-xs md:text-sm font-bold flex-shrink-0 transition-all snap-start flex items-center gap-1.5 shadow-sm border border-transparent cursor-pointer ${window.currentLiterasiFilter === sub.id ? 'bg-blue-500 text-white shadow-blue-500/30 border-blue-400' : 'bg-white/60 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700'}`;
+                    btn.className = `px-4 py-2 rounded-full text-xs md:text-sm font-bold flex-shrink-0 transition-all snap-start flex items-center gap-1.5 shadow-sm border border-transparent cursor-pointer pointer-events-auto ${window.currentLiterasiFilter === sub.id ? 'bg-blue-500 text-white shadow-blue-500/30 border-blue-400' : 'bg-white/60 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700'}`;
                     btn.innerHTML = `<i class="ph-fill ${sub.icon}"></i> ${sub.name}`;
                     btn.onclick = () => { 
                         window.currentLiterasiFilter = sub.id; 
@@ -1582,20 +1624,18 @@
             if(me) me.innerHTML = explanation;
             
             const mm = document.getElementById('materi-modal');
-            const mc = document.getElementById('materi-content');
-            if(mm && mc) {
-                mm.classList.remove('opacity-0', 'pointer-events-none');
-                mc.classList.remove('scale-95');
+            if(mm) {
+                mm.classList.remove('hidden');
+                mm.classList.add('flex');
                 document.body.classList.add('modal-open');
             }
         };
 
         window.closeMateriModal = () => {
             const mm = document.getElementById('materi-modal');
-            const mc = document.getElementById('materi-content');
-            if(mm && mc) {
-                mm.classList.add('opacity-0', 'pointer-events-none');
-                mc.classList.add('scale-95');
+            if(mm) {
+                mm.classList.remove('flex');
+                mm.classList.add('hidden');
                 document.body.classList.remove('modal-open');
             }
         };
@@ -1622,7 +1662,7 @@
                         if (q === '' || qText.includes(q) || eText.includes(q)) {
                             hasResults = true;
                             const card = document.createElement('div');
-                            card.className = 'glass-panel p-5 rounded-2xl border border-slate-200/50 dark:border-white/5 hover:-translate-y-1 hover:shadow-lg hover:border-teal-400/50 transition-all cursor-pointer group flex flex-col h-full';
+                            card.className = 'glass-panel p-5 rounded-2xl border border-slate-200/50 dark:border-white/5 hover:-translate-y-1 hover:shadow-lg hover:border-teal-400/50 transition-all cursor-pointer group flex flex-col h-full pointer-events-auto';
                             
                             card.onclick = () => window.openMateriModal(sub.name, sub.icon, sub.color, item.question, explanation);
                             
@@ -1660,7 +1700,7 @@
                 window.currentWrongQuestions.forEach((q) => {
                     const explanation = q.explanation || '';
                     const card = document.createElement('div');
-                    card.className = 'bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 mb-3 text-left';
+                    card.className = 'bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200/40 mb-3 text-left';
                     card.innerHTML = `
                         <div class="text-xs text-blue-500 dark:text-blue-400 font-bold mb-1 uppercase tracking-widest">Materi Terlewat:</div>
                         <div class="text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed">${explanation}</div>
@@ -1669,19 +1709,17 @@
                 });
             }
             const rm = document.getElementById('rekomendasi-modal');
-            const rc = document.getElementById('rekomendasi-content');
-            if(rm && rc) {
-                rm.classList.remove('opacity-0', 'pointer-events-none');
-                rc.classList.remove('scale-95');
+            if(rm) {
+                rm.classList.remove('hidden');
+                rm.classList.add('flex');
             }
         };
 
         window.closeRekomendasi = () => {
             const rm = document.getElementById('rekomendasi-modal');
-            const rc = document.getElementById('rekomendasi-content');
-            if(rm && rc) {
-                rm.classList.add('opacity-0', 'pointer-events-none');
-                rc.classList.add('scale-95');
+            if(rm) {
+                rm.classList.remove('flex');
+                rm.classList.add('hidden');
             }
         };
 
@@ -1772,7 +1810,7 @@
                     const soalCount = window.quizData[sub.id] ? window.quizData[sub.id].length : 0;
 
                     const card = document.createElement('div'); 
-                    card.className = 'glass-panel p-5 md:p-6 rounded-2xl cursor-pointer subject-card flex flex-col items-center text-center max-w-sm mx-auto w-full relative';
+                    card.className = 'glass-panel p-5 md:p-6 rounded-2xl cursor-pointer subject-card flex flex-col items-center text-center max-w-sm mx-auto w-full relative pointer-events-auto';
                     card.onclick = () => {
                         if(soalCount > 0) startQuiz(sub.id);
                         else alert("Soal untuk " + sub.name + " belum tersedia!");
@@ -1846,7 +1884,7 @@
                 const centerBtn = document.getElementById('btn-center-action');
                 if (centerBtn) {
                     centerBtn.innerText = "Selesai";
-                    centerBtn.className = "px-5 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-emerald-950 dark:text-white bg-emerald-400 hover:bg-emerald-500 dark:bg-emerald-500/30 dark:hover:bg-emerald-500/50 border border-emerald-500 transition-colors text-sm md:text-base shadow-sm hover:scale-105 active:scale-95 cursor-pointer";
+                    centerBtn.className = "px-5 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-emerald-950 dark:text-white bg-emerald-400 hover:bg-emerald-500 dark:bg-emerald-500/30 dark:hover:bg-emerald-500/50 border border-emerald-500 transition-colors text-sm md:text-base shadow-sm hover:scale-105 active:scale-95 cursor-pointer pointer-events-auto";
                     centerBtn.onclick = showConfirmModal;
                 }
 
@@ -1868,7 +1906,7 @@
             const centerBtn = document.getElementById('btn-center-action');
             if (centerBtn) {
                 centerBtn.innerText = "Tutup Review";
-                centerBtn.className = "px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-white bg-slate-700 hover:bg-slate-600 transition-colors text-sm md:text-base shadow-sm hover:scale-105 active:scale-95 cursor-pointer";
+                centerBtn.className = "px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-white bg-slate-700 hover:bg-slate-600 transition-colors text-sm md:text-base shadow-sm hover:scale-105 active:scale-95 cursor-pointer pointer-events-auto";
                 centerBtn.onclick = () => switchScreen('screen-result');
             }
 
@@ -1907,7 +1945,7 @@
                     const isSelected = userAnswers[currentIndex] === index; const isCorrect = index === q.answer;
                     const btn = document.createElement('button');
                     
-                    let btnClass = `option-btn w-full text-left p-3.5 md:p-4 rounded-xl border flex items-start gap-3 md:gap-4 transition-all duration-300 `;
+                    let btnClass = `pointer-events-auto option-btn w-full text-left p-3.5 md:p-4 rounded-xl border flex items-start gap-3 md:gap-4 transition-all duration-300 `;
                     let badgeClass = `w-7 h-7 md:w-8 md:h-8 rounded-lg shadow-sm flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0 border cinematic-title `; 
                     let badgeText = isTF ? (index === 0 ? 'B' : 'S') : abcd[index];
 
@@ -2020,7 +2058,10 @@
         }
         function openMobileNav() { 
             const mod = document.getElementById('mobile-nav-modal');
-            if(mod) mod.classList.remove('opacity-0', 'pointer-events-none'); 
+            if(mod) {
+                mod.classList.remove('hidden'); 
+                mod.classList.add('flex');
+            }
             if(modalContent) {
                 modalContent.style.transform = 'translateY(0)'; 
                 modalContent.classList.remove('translate-y-full'); 
@@ -2029,7 +2070,10 @@
         }
         function closeMobileNav() { 
             const mod = document.getElementById('mobile-nav-modal');
-            if(mod) mod.classList.add('opacity-0', 'pointer-events-none'); 
+            if(mod) {
+                mod.classList.remove('flex');
+                mod.classList.add('hidden'); 
+            }
             if(modalContent) {
                 modalContent.style.transform = ''; 
                 modalContent.classList.add('translate-y-full'); 
@@ -2058,7 +2102,7 @@
                     currentQuestions.forEach((q, i) => {
                         const isAnswered = userAnswers[i] !== undefined; const isCorrect = userAnswers[i] === q.answer;
                         const btn = document.createElement('button');
-                        let classes = `grid-number w-full aspect-square rounded-lg cinematic-title text-base flex items-center justify-center transition-all border cursor-pointer `;
+                        let classes = `grid-number w-full aspect-square rounded-lg cinematic-title text-base flex items-center justify-center transition-all border pointer-events-auto cursor-pointer `;
                         if (isReviewMode) {
                             if (isAnswered) classes += isCorrect ? 'bg-emerald-400 text-emerald-950 border-emerald-500 shadow-sm' : 'bg-red-400 text-red-950 border-red-500 shadow-sm';
                             else classes += 'bg-white/60 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700';
@@ -2095,10 +2139,9 @@
                 }
             }
             const cm = document.getElementById('confirm-modal');
-            const mc = document.getElementById('modal-content');
-            if(cm && mc) {
-                cm.classList.remove('opacity-0', 'pointer-events-none'); 
-                mc.classList.remove('scale-95');
+            if(cm) {
+                cm.classList.remove('hidden'); 
+                cm.classList.add('flex');
             }
             const confirmFinishBtn = document.getElementById('btn-confirm-finish');
             if (confirmFinishBtn) {
@@ -2107,10 +2150,9 @@
         }
         function hideConfirmModal() { 
             const cm = document.getElementById('confirm-modal');
-            const mc = document.getElementById('modal-content');
-            if(cm && mc) {
-                cm.classList.add('opacity-0', 'pointer-events-none'); 
-                mc.classList.add('scale-95'); 
+            if(cm) {
+                cm.classList.remove('flex'); 
+                cm.classList.add('hidden'); 
             }
         }
 
@@ -2171,6 +2213,9 @@
                     }
                 }
             });
+
+            // Atur spesifik visibilitas informasi akun di kanan bawah
+            handleUserInfoVisibility(screenId);
             
             const btnAI = document.getElementById('btn-ai-chat');
             if (btnAI) {
