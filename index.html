@@ -188,7 +188,18 @@
         body[data-text-size="md"] .o-text-dynamic { font-size: 1rem; }
         body[data-text-size="lg"] .o-text-dynamic { font-size: 1.125rem; }
 
-        #quiz-content-area { transition: opacity 0.2s ease, transform 0.2s ease; }
+        /* Perbaikan & Optimalisasi Animasi Navigasi Soal */
+        #quiz-content-area { 
+            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+
+        /* SISTEM TRANSISI MODAL BUTTERY-SMOOTH */
+        .custom-modal {
+            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .custom-modal-content {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Efek spring/bouncy premium */
+        }
 
         .confetti { position: absolute; width: 10px; height: 10px; background-color: #f00; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
@@ -288,18 +299,19 @@
     </div>
 
     <!-- TOP RIGHT CONTROLS (Tema, Setting, Update) -->
+    <!-- Pengaturan animasi hover group untuk tombol gerigi dan megaphone -->
     <div class="fixed top-3 right-3 md:top-6 md:right-8 z-50 flex gap-2 md:gap-3 items-center pointer-events-none">
         
-        <button onclick="openAnnouncement()" class="pointer-events-auto w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
-            <i class="ph-fill ph-megaphone text-xl md:text-2xl text-blue-500 dark:text-blue-400"></i>
+        <button onclick="openAnnouncement()" class="pointer-events-auto w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 outline-none shadow-lg group">
+            <i class="ph-fill ph-megaphone text-xl md:text-2xl text-blue-500 dark:text-blue-400 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-12"></i>
         </button>
 
-        <button onclick="openSettings()" class="pointer-events-auto w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
-            <i class="ph-fill ph-gear text-xl md:text-2xl text-slate-600 dark:text-slate-300 group-hover:rotate-90 transition-transform duration-500"></i>
+        <button onclick="openSettings()" class="pointer-events-auto w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 outline-none shadow-lg group">
+            <i class="ph-fill ph-gear text-xl md:text-2xl text-slate-600 dark:text-slate-300 transition-all duration-500 group-hover:rotate-180"></i>
         </button>
         
-        <button onclick="toggleTheme()" class="pointer-events-auto w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-transform outline-none shadow-lg">
-            <i id="theme-icon" class="ph-fill ph-moon text-xl md:text-2xl text-teal-500 dark:text-teal-400"></i>
+        <button onclick="toggleTheme()" class="pointer-events-auto w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 outline-none shadow-lg group">
+            <i id="theme-icon" class="ph-fill ph-moon text-xl md:text-2xl text-teal-500 dark:text-teal-400 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"></i>
         </button>
     </div>
 
@@ -392,7 +404,7 @@
             
             <div class="glass-panel p-2 md:p-3 rounded-2xl mb-8 flex items-center gap-3 shadow-lg border border-teal-500/20">
                 <i class="ph-bold ph-magnifying-glass text-xl md:text-2xl text-teal-500 ml-3"></i>
-                <input type="text" id="search-literasi" onkeyup="window.renderLiterasi(this.value)" placeholder="Cari materi (contoh: inflasi, resensi, negosiasi)..." class="w-full bg-transparent border-none outline-none text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 py-2 h-10 md:h-12 text-sm md:text-base font-medium">
+                <input type="text" id="search-literasi" onkeyup="window.renderLiterasi(this.value)" placeholder="Cari materi (contoh: inflasi, resensi, negosiasi)..." class="w-full bg-transparent border-none outline-none text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 py-2 h-10 md:h-12 text-sm md:text-base font-medium font-semibold">
             </div>
 
             <!-- Filter Kategori Mapel (Scroll Kiri-Kanan) -->
@@ -564,7 +576,7 @@
 
         <!-- Input Chat -->
         <div class="p-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-100 dark:border-slate-800 flex gap-2 flex-shrink-0 items-end">
-            <textarea id="chat-input" rows="1" placeholder="Ketik pertanyaanmu..." class="flex-1 max-h-24 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-2xl px-4 py-3 text-xs md:text-sm text-slate-800 dark:text-white outline-none focus:ring-2 ring-purple-500/50 resize-none hide-scrollbar pointer-events-auto" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(); }"></textarea>
+            <textarea id="chat-input" rows="1" placeholder="Ketik pertanyaanmu..." class="flex-1 max-h-24 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-2xl px-4 py-3 text-xs md:text-sm text-slate-800 dark:text-white outline-none focus:ring-2 ring-purple-500/50 resize-none hide-scrollbar transition-all shadow-inner" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(); }"></textarea>
             <button onclick="sendChatMessage()" class="w-11 h-11 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white flex items-center justify-center hover:opacity-90 active:scale-95 transition-all flex-shrink-0 shadow-md shadow-blue-500/30 border border-white/20 cursor-pointer">
                 <i class="ph-bold ph-paper-plane-right text-lg"></i>
             </button>
@@ -572,9 +584,10 @@
     </div>
 
     <!-- MODAL DETAIL MATERI LITERASI -->
-    <div id="materi-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
+    <!-- Integrasi custom-modal & custom-modal-content dengan transparan awal -->
+    <div id="materi-modal" class="fixed inset-0 z-[100] items-center justify-center hidden custom-modal opacity-0">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="window.closeMateriModal()"></div>
-        <div class="glass-panel p-6 md:p-8 rounded-3xl w-[90%] max-w-2xl max-h-[85vh] relative z-10 transform scale-95 transition-all duration-300 flex flex-col shadow-2xl" id="materi-content">
+        <div class="glass-panel p-6 md:p-8 rounded-3xl w-[90%] max-w-2xl max-h-[85vh] relative z-10 transform scale-95 transition-all duration-300 flex flex-col shadow-2xl custom-modal-content" id="materi-content">
             <div class="flex justify-between items-center mb-5 flex-shrink-0 border-b border-slate-200/50 dark:border-white/10 pb-4">
                 <div class="flex items-center gap-2" id="materi-modal-header"></div>
                 <button onclick="window.closeMateriModal()" class="cursor-pointer text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 active:scale-90 transition-colors bg-slate-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-500/20 rounded-full p-1.5"><i class="ph-bold ph-x text-xl"></i></button>
@@ -591,10 +604,10 @@
         </div>
     </div>
 
-    <!-- MODAL REKOMENDASI BELAJAR (SMART REMINDER) -->
-    <div id="rekomendasi-modal" class="fixed inset-0 z-[80] flex items-center justify-center hidden">
+    <!-- MODAL REKOMENDASI BELAJAR -->
+    <div id="rekomendasi-modal" class="fixed inset-0 z-[80] items-center justify-center hidden custom-modal opacity-0">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="window.closeRekomendasi()"></div>
-        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[95%] max-w-2xl max-h-[85vh] relative z-10 transform scale-95 transition-all duration-300 flex flex-col" id="rekomendasi-content">
+        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[95%] max-w-2xl max-h-[85vh] relative z-10 transform scale-95 transition-all duration-300 flex flex-col custom-modal-content" id="rekomendasi-content">
             <div class="flex justify-between items-center mb-6 flex-shrink-0">
                 <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title">
                     <i class="ph-fill ph-lightbulb text-blue-500"></i> Rekomendasi Belajar
@@ -626,9 +639,9 @@
     </div>
 
     <!-- MODAL LOGIN -->
-    <div id="login-screen" class="fixed inset-0 flex items-center justify-center hidden z-[100]">
+    <div id="login-screen" class="fixed inset-0 items-center justify-center hidden z-[100] custom-modal opacity-0">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="document.getElementById('login-screen').classList.add('hidden');"></div>
-        <div class="glass-panel p-8 rounded-3xl max-w-sm w-[90%] text-center fade-in relative z-10">
+        <div class="glass-panel p-8 rounded-3xl max-w-sm w-[90%] text-center relative z-10 transform scale-95 transition-all duration-300 custom-modal-content" id="login-content">
             <div class="absolute top-4 right-4">
                 <button onclick="document.getElementById('login-screen').classList.add('hidden');" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors active:scale-90 cursor-pointer"><i class="ph-bold ph-x text-xl"></i></button>
             </div>
@@ -662,9 +675,9 @@
     </div>
 
     <!-- MODAL CONFIRMATION -->
-    <div id="confirm-modal" class="fixed inset-0 z-[80] flex items-center justify-center hidden">
+    <div id="confirm-modal" class="fixed inset-0 z-[80] items-center justify-center hidden custom-modal opacity-0">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="hideConfirmModal()"></div>
-        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="modal-content">
+        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300 custom-modal-content" id="modal-content">
             <h3 class="text-xl md:text-2xl mb-2 text-slate-800 dark:text-white cinematic-title">Yakin selesai?</h3>
             <p class="text-sm md:text-base text-slate-600 dark:text-slate-300 mb-6 md:mb-8 font-medium" id="unanswered-warning">Masih ada beberapa soal yang belum kamu jawab. Coba dicek lagi deh.</p>
             <div class="flex justify-end gap-3">
@@ -675,9 +688,9 @@
     </div>
 
     <!-- MODAL SETTINGS -->
-    <div id="settings-modal" class="fixed inset-0 z-[80] flex items-center justify-center hidden">
+    <div id="settings-modal" class="fixed inset-0 z-[80] items-center justify-center hidden custom-modal opacity-0">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="closeSettings()"></div>
-        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="settings-content">
+        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300 custom-modal-content" id="settings-content">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title"><i class="ph-fill ph-gear text-teal-500"></i> Pengaturan</h3>
                 <button onclick="closeSettings()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white active:scale-95 cursor-pointer"><i class="ph ph-x text-2xl"></i></button>
@@ -711,9 +724,9 @@
     </div>
 
     <!-- MODAL ANNOUNCEMENT / PATCH NOTES -->
-    <div id="announcement-modal" class="fixed inset-0 z-[80] flex items-center justify-center hidden">
+    <div id="announcement-modal" class="fixed inset-0 z-[80] items-center justify-center hidden custom-modal opacity-0">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="closeAnnouncement()"></div>
-        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="announcement-content">
+        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300 custom-modal-content" id="announcement-content">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title">
                     <i class="ph-fill ph-megaphone text-blue-500"></i> Pengumuman
@@ -775,11 +788,7 @@
                 alert("Kamu sudah masuk sebagai " + window.currentUser.displayName);
                 return;
             }
-            const modal = document.getElementById('login-screen');
-            if(modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            }
+            window.showModal('login-screen', 'login-content');
         };
 
         const initAuthButtons = () => {
@@ -791,11 +800,7 @@
                     btnText.innerHTML = "Memuat... <div class='spinner inline-block ml-2 w-4 h-4'></div>";
                     try { 
                         await signInWithPopup(auth, provider); 
-                        const loginScreen = document.getElementById('login-screen');
-                        if (loginScreen) {
-                            loginScreen.classList.add('hidden');
-                            loginScreen.classList.remove('flex');
-                        }
+                        window.hideModal('login-screen', 'login-content');
                     } catch (error) { 
                         console.warn("Google Sign-In failed or blocked: ", error);
                         alert("Gagal masuk dengan Google (mungkin diblokir oleh browser/iframe). Silakan gunakan masuk sebagai 'Tamu'.");
@@ -810,11 +815,7 @@
                     try {
                         // Memaksimalkan penanganan login tamu menggunakan sistem otentikasi anonim asli Firebase
                         await signInAnonymously(auth);
-                        const loginScreen = document.getElementById('login-screen');
-                        if (loginScreen) {
-                            loginScreen.classList.add('hidden');
-                            loginScreen.classList.remove('flex');
-                        }
+                        window.hideModal('login-screen', 'login-content');
                     } catch (error) {
                         console.warn("Anonymous login failed, using local guest fallback:", error);
                         window.currentUser = { uid: 'guest_user', displayName: 'Tamu' };
@@ -825,11 +826,7 @@
                                 if(hs) window.userScores[sub.id] = parseInt(hs);
                             });
                         }
-                        const loginScreen = document.getElementById('login-screen');
-                        if (loginScreen) {
-                            loginScreen.classList.add('hidden');
-                            loginScreen.classList.remove('flex');
-                        }
+                        window.hideModal('login-screen', 'login-content');
                         updateAccountButtonUI();
                     }
                 };
@@ -1544,35 +1541,51 @@
         }
 
         // ==========================================
+        // --- ANIMASI MODAL UTAMA DENGAN PROTEKSI ---
+        // ==========================================
+        window.showModal = function(modalId, contentId) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(contentId);
+            if(modal && content) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                // Paksa pemetaan ulang render oleh browser agar transisinya dapat tertangkap
+                void modal.offsetWidth;
+                modal.classList.add('opacity-100');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+                document.body.classList.add('modal-open');
+            }
+        };
+
+        window.hideModal = function(modalId, contentId) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(contentId);
+            if(modal && content) {
+                modal.classList.remove('opacity-100');
+                content.classList.remove('scale-100');
+                content.classList.add('scale-95');
+                // Sembunyikan sepenuhnya setelah transisinya selesai (250ms)
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    document.body.classList.remove('modal-open');
+                }, 250);
+            }
+        };
 
         function openSettings() { 
-            const sm = document.getElementById('settings-modal');
-            if(sm) {
-                sm.classList.remove('hidden'); 
-                sm.classList.add('flex');
-            }
+            window.showModal('settings-modal', 'settings-content');
         }
         function closeSettings() { 
-            const sm = document.getElementById('settings-modal');
-            if(sm) {
-                sm.classList.remove('flex');
-                sm.classList.add('hidden'); 
-            }
+            window.hideModal('settings-modal', 'settings-content');
         }
 
         function openAnnouncement() { 
-            const am = document.getElementById('announcement-modal');
-            if(am) {
-                am.classList.remove('hidden'); 
-                am.classList.add('flex');
-            }
+            window.showModal('announcement-modal', 'announcement-content');
         }
         function closeAnnouncement() { 
-            const am = document.getElementById('announcement-modal');
-            if(am) {
-                am.classList.remove('flex');
-                am.classList.add('hidden'); 
-            }
+            window.hideModal('announcement-modal', 'announcement-content');
         }
 
         // --- SISTEM ASISTEN LITERASI & REKOMENDASI ---
@@ -1623,21 +1636,11 @@
             const me = document.getElementById('materi-modal-explanation');
             if(me) me.innerHTML = explanation;
             
-            const mm = document.getElementById('materi-modal');
-            if(mm) {
-                mm.classList.remove('hidden');
-                mm.classList.add('flex');
-                document.body.classList.add('modal-open');
-            }
+            window.showModal('materi-modal', 'materi-content');
         };
 
         window.closeMateriModal = () => {
-            const mm = document.getElementById('materi-modal');
-            if(mm) {
-                mm.classList.remove('flex');
-                mm.classList.add('hidden');
-                document.body.classList.remove('modal-open');
-            }
+            window.hideModal('materi-modal', 'materi-content');
         };
 
         window.renderLiterasi = (query = '') => {
@@ -1708,19 +1711,11 @@
                     container.appendChild(card);
                 });
             }
-            const rm = document.getElementById('rekomendasi-modal');
-            if(rm) {
-                rm.classList.remove('hidden');
-                rm.classList.add('flex');
-            }
+            window.showModal('rekomendasi-modal', 'rekomendasi-content');
         };
 
         window.closeRekomendasi = () => {
-            const rm = document.getElementById('rekomendasi-modal');
-            if(rm) {
-                rm.classList.remove('flex');
-                rm.classList.add('hidden');
-            }
+            window.hideModal('rekomendasi-modal', 'rekomendasi-content');
         };
 
         let currentSubject = null; let currentQuestions = []; let currentIndex = 0;
@@ -2004,17 +1999,20 @@
 
         function handleCenterAction() { if(isReviewMode) switchScreen('screen-result'); else showConfirmModal(); }
 
+        // PERBAIKAN ANIMASI JUMP SOAL (HARDWARE-ACCELERATED)
         function triggerFadeAnimation(callback) {
             const area = document.getElementById('quiz-content-area');
             if(!area) return callback();
             area.style.opacity = '0';
-            area.style.transform = 'translateY(15px)';
+            area.style.transform = 'translateY(12px)';
             
             setTimeout(() => {
                 callback();
-                area.style.opacity = '1';
-                area.style.transform = 'translateY(0)';
-            }, 200);
+                requestAnimationFrame(() => {
+                    area.style.opacity = '1';
+                    area.style.transform = 'translateY(0)';
+                });
+            }, 250);
         }
 
         function nextQuestion() { 
@@ -2138,22 +2136,14 @@
                     warningText.className = "text-sm md:text-base text-slate-600 dark:text-slate-300 mb-6 md:mb-8"; 
                 }
             }
-            const cm = document.getElementById('confirm-modal');
-            if(cm) {
-                cm.classList.remove('hidden'); 
-                cm.classList.add('flex');
-            }
+            window.showModal('confirm-modal', 'modal-content');
             const confirmFinishBtn = document.getElementById('btn-confirm-finish');
             if (confirmFinishBtn) {
                 confirmFinishBtn.onclick = finishQuiz;
             }
         }
         function hideConfirmModal() { 
-            const cm = document.getElementById('confirm-modal');
-            if(cm) {
-                cm.classList.remove('flex'); 
-                cm.classList.add('hidden'); 
-            }
+            window.hideModal('confirm-modal', 'modal-content');
         }
 
         async function finishQuiz() {
