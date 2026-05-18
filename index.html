@@ -12,10 +12,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script>
-        // Penanganan error global untuk menangkap unhandled promise dari Firebase Auth di dalam iframe sandboxed
+        // Penanganan error global untuk menangkap unhandled promise dari Firebase Auth
         window.addEventListener('unhandledrejection', function(event) {
             if (event.reason && (event.reason.message && event.reason.message.includes('Pending promise') || event.reason.code && event.reason.code.includes('auth/'))) {
-                event.preventDefault(); // Mencegah crash merah di konsol browser
+                event.preventDefault(); 
                 console.warn("Firebase Auth promise rejection ditangkap dengan aman:", event.reason);
             }
         });
@@ -36,7 +36,7 @@
     </script>
     <style>
         :root {
-            /* Tema Terang Biru Kehijauan (Teal/Cyan Mix) */
+            /* Tema Terang Biru Kehijauan */
             --bg-main: #e0f7fa; 
             --text-main: #0f172a;
             --glass-bg: rgba(255, 255, 255, 0.55); 
@@ -120,8 +120,22 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+        /* Animasi Transisi & Modal yang Diperhalus */
         .fade-in { animation: fadeIn 0.4s ease forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Animasi Pop-up Premium */
+        .modal-animate { animation: modalEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes modalEnter {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        .modal-animate-out { animation: modalExit 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes modalExit {
+            from { opacity: 1; transform: scale(1) translateY(0); }
+            to { opacity: 0; transform: scale(0.95) translateY(15px); }
+        }
 
         body.modal-open { overflow: hidden; touch-action: none; }
         .mobile-dvh-fix { height: calc(100dvh - 6rem); }
@@ -574,7 +588,7 @@
     <!-- MODAL DETAIL MATERI LITERASI -->
     <div id="materi-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="window.closeMateriModal()"></div>
-        <div class="glass-panel p-6 md:p-8 rounded-3xl w-[90%] max-w-2xl max-h-[85vh] relative z-10 transform scale-95 transition-all duration-300 flex flex-col shadow-2xl" id="materi-content">
+        <div class="glass-panel p-6 md:p-8 rounded-3xl w-[90%] max-w-2xl max-h-[85vh] relative z-10 modal-animate flex flex-col shadow-2xl" id="materi-content">
             <div class="flex justify-between items-center mb-5 flex-shrink-0 border-b border-slate-200/50 dark:border-white/10 pb-4">
                 <div class="flex items-center gap-2" id="materi-modal-header"></div>
                 <button onclick="window.closeMateriModal()" class="cursor-pointer text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 active:scale-90 transition-colors bg-slate-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-500/20 rounded-full p-1.5"><i class="ph-bold ph-x text-xl"></i></button>
@@ -594,7 +608,7 @@
     <!-- MODAL REKOMENDASI BELAJAR (SMART REMINDER) -->
     <div id="rekomendasi-modal" class="fixed inset-0 z-[80] flex items-center justify-center hidden">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="window.closeRekomendasi()"></div>
-        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[95%] max-w-2xl max-h-[85vh] relative z-10 transform scale-95 transition-all duration-300 flex flex-col" id="rekomendasi-content">
+        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[95%] max-w-2xl max-h-[85vh] relative z-10 modal-animate flex flex-col" id="rekomendasi-content">
             <div class="flex justify-between items-center mb-6 flex-shrink-0">
                 <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title">
                     <i class="ph-fill ph-lightbulb text-blue-500"></i> Rekomendasi Belajar
@@ -627,10 +641,10 @@
 
     <!-- MODAL LOGIN -->
     <div id="login-screen" class="fixed inset-0 flex items-center justify-center hidden z-[100]">
-        <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="document.getElementById('login-screen').classList.add('hidden');"></div>
-        <div class="glass-panel p-8 rounded-3xl max-w-sm w-[90%] text-center fade-in relative z-10">
+        <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="closeLoginModal()"></div>
+        <div class="glass-panel p-8 rounded-3xl max-w-sm w-[90%] text-center modal-animate relative z-10" id="login-content">
             <div class="absolute top-4 right-4">
-                <button onclick="document.getElementById('login-screen').classList.add('hidden');" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors active:scale-90 cursor-pointer"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="closeLoginModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors active:scale-90 cursor-pointer"><i class="ph-bold ph-x text-xl"></i></button>
             </div>
             <div class="w-20 h-20 bg-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
                 <i class="ph-fill ph-cloud-arrow-up text-5xl text-blue-400"></i>
@@ -664,7 +678,7 @@
     <!-- MODAL CONFIRMATION -->
     <div id="confirm-modal" class="fixed inset-0 z-[80] flex items-center justify-center hidden">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="hideConfirmModal()"></div>
-        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="modal-content">
+        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 modal-animate" id="modal-content">
             <h3 class="text-xl md:text-2xl mb-2 text-slate-800 dark:text-white cinematic-title">Yakin selesai?</h3>
             <p class="text-sm md:text-base text-slate-600 dark:text-slate-300 mb-6 md:mb-8 font-medium" id="unanswered-warning">Masih ada beberapa soal yang belum kamu jawab. Coba dicek lagi deh.</p>
             <div class="flex justify-end gap-3">
@@ -677,7 +691,7 @@
     <!-- MODAL SETTINGS -->
     <div id="settings-modal" class="fixed inset-0 z-[80] flex items-center justify-center hidden">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="closeSettings()"></div>
-        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="settings-content">
+        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 modal-animate" id="settings-content">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title"><i class="ph-fill ph-gear text-teal-500"></i> Pengaturan</h3>
                 <button onclick="closeSettings()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white active:scale-95 cursor-pointer"><i class="ph ph-x text-2xl"></i></button>
@@ -713,7 +727,7 @@
     <!-- MODAL ANNOUNCEMENT / PATCH NOTES -->
     <div id="announcement-modal" class="fixed inset-0 z-[80] flex items-center justify-center hidden">
         <div class="absolute inset-0 modal-overlay cursor-pointer" onclick="closeAnnouncement()"></div>
-        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 transform scale-95 transition-all duration-300" id="announcement-content">
+        <div class="glass-panel p-6 md:p-8 rounded-2xl w-[90%] max-w-md relative z-10 modal-animate" id="announcement-content">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 cinematic-title">
                     <i class="ph-fill ph-megaphone text-blue-500"></i> Pengumuman
@@ -723,10 +737,10 @@
             
             <div class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50">
-                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.3.3.0 - Bug Fixes & UX Optimization 🎉</h4>
+                    <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2 text-sm md:text-base uppercase tracking-wider">V.3.4.0 - Update UI & Audio Engine 🎉</h4>
                     <ul class="list-disc pl-4 text-xs md:text-sm text-slate-600 dark:text-slate-300 space-y-1.5 font-medium">
-                        <li><strong>Tombol 100% Bebas Macet:</strong> Layer transparan yang sempat menutupi tombol saat pop-up sedang sembunyi sudah dihanguskan sepenuhnya.</li>
-                        <li><strong>Kembali Normal:</strong> Selamat bermain kuis dan mengeksplor materi!</li>
+                        <li><strong>Animasi Halus:</strong> Seluruh menu pop-up sekarang menggunakan animasi pantul yang memanjakan mata.</li>
+                        <li><strong>SFX Audio Premium:</strong> Berbagai dentingan suara kini disintesis lebih merdu.</li>
                     </ul>
                 </div>
             </div>
@@ -760,8 +774,8 @@
         window.geminiModel = null;
 
         try {
-            // Menggunakan API Key baru khusus untuk Gemini AI sesuai permintaan
-            const geminiApiKey = "AQ.Ab8RN6IToQ-E5QLvGJVvTYZPEqBiwea8ZhLPwGRDikG8jLuznw";
+            // Menggunakan API Key baru khusus untuk Gemini AI
+            const geminiApiKey = "AQ.Ab8RN6LCBy1IfdQJaerO44rS0J9irwga9bF0TLcD4DV6VmvI_A";
             const genAI = new GoogleGenerativeAI(geminiApiKey);
             window.geminiModel = genAI.getGenerativeModel({ 
                 model: "gemini-2.5-flash",
@@ -777,8 +791,11 @@
                 alert("Kamu sudah masuk sebagai " + window.currentUser.displayName);
                 return;
             }
+            if(window.playCloudSound) window.playCloudSound();
             const modal = document.getElementById('login-screen');
+            const content = document.getElementById('login-content');
             if(modal) {
+                if(content) content.classList.add('modal-animate');
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
             }
@@ -793,14 +810,14 @@
                     btnText.innerHTML = "Memuat... <div class='spinner inline-block ml-2 w-4 h-4'></div>";
                     try { 
                         await signInWithPopup(auth, provider); 
-                        const loginScreen = document.getElementById('login-screen');
-                        if (loginScreen) {
-                            loginScreen.classList.add('hidden');
-                            loginScreen.classList.remove('flex');
-                        }
+                        if(window.closeLoginModal) window.closeLoginModal();
                     } catch (error) { 
                         console.warn("Google Sign-In failed or blocked: ", error);
-                        alert("Gagal masuk dengan Google (mungkin diblokir oleh browser/iframe). Silakan gunakan masuk sebagai 'Tamu'.");
+                        if (error.code === 'auth/unauthorized-domain') {
+                            alert("Gagal Login: Domain Github Pages kamu belum ditambahkan ke Firebase!\n\nBuka Firebase Console -> Authentication -> Settings -> Authorized domains, lalu tambahkan domain website ini.");
+                        } else {
+                            alert("Gagal masuk dengan Google. Pastikan domain sudah diizinkan di Firebase. Error: " + error.message);
+                        }
                         btnText.innerText = originalText;
                     }
                 };
@@ -810,13 +827,8 @@
             if (btnGuest) {
                 btnGuest.onclick = async () => {
                     try {
-                        // Memaksimalkan penanganan login tamu menggunakan sistem otentikasi anonim asli Firebase
                         await signInAnonymously(auth);
-                        const loginScreen = document.getElementById('login-screen');
-                        if (loginScreen) {
-                            loginScreen.classList.add('hidden');
-                            loginScreen.classList.remove('flex');
-                        }
+                        if(window.closeLoginModal) window.closeLoginModal();
                     } catch (error) {
                         console.warn("Anonymous login failed, using local guest fallback:", error);
                         window.currentUser = { uid: 'guest_user', displayName: 'Tamu' };
@@ -827,12 +839,8 @@
                                 if(hs) window.userScores[sub.id] = parseInt(hs);
                             });
                         }
-                        const loginScreen = document.getElementById('login-screen');
-                        if (loginScreen) {
-                            loginScreen.classList.add('hidden');
-                            loginScreen.classList.remove('flex');
-                        }
-                        updateAccountButtonUI();
+                        if(window.closeLoginModal) window.closeLoginModal();
+                        if(window.updateAccountButtonUI) window.updateAccountButtonUI();
                     }
                 };
             }
@@ -850,7 +858,7 @@
                 window.userScores = {};
                 const uInfo = document.getElementById('user-info-container');
                 if (uInfo) uInfo.classList.add('hidden', 'opacity-0');
-                updateAccountButtonUI();
+                if(window.updateAccountButtonUI) window.updateAccountButtonUI();
             } else {
                 signOut(auth); 
             }
@@ -871,7 +879,7 @@
             }
         };
 
-        function updateAccountButtonUI() {
+        window.updateAccountButtonUI = () => {
             const statusText = document.getElementById('text-login-status');
             const statusBadge = document.getElementById('badge-login-status');
             const userInfoContainer = document.getElementById('user-info-container');
@@ -883,7 +891,6 @@
                 statusText.className = "text-xs font-bold text-emerald-500 dark:text-emerald-400";
                 statusBadge.className = "absolute top-0 right-0 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-800";
                 
-                // Kapsul info akun hanya ditampilkan saat berada di Menu Utama saja
                 const activeScreen = document.querySelector('div[id^="screen-"]:not(.hidden)');
                 if(userInfoContainer && activeScreen && activeScreen.id === 'screen-main-menu') {
                     userInfoContainer.classList.remove('hidden');
@@ -923,13 +930,9 @@
                 window.currentUser = null;
                 window.userScores = {};
             }
-            updateAccountButtonUI();
+            if(window.updateAccountButtonUI) window.updateAccountButtonUI();
             
-            const loginScreen = document.getElementById('login-screen');
-            if (loginScreen) {
-                loginScreen.classList.add('hidden');
-                loginScreen.classList.remove('flex');
-            }
+            if(window.closeLoginModal) window.closeLoginModal();
         });
     </script>
 
@@ -965,7 +968,7 @@
     <script src="Fisika.js" onerror="scriptError('Fisika.js')"></script>
     <script src="Biologi.js" onerror="scriptError('Biologi.js')"></script>
 
-    <!-- SCRIPT LOGIKA UTAMA -->
+    <!-- SCRIPT LOGIKA UTAMA (LENGKAP DENGAN AUDIO, YOUTUBE & AI) -->
     <script>
         if(!window.userScores) window.userScores = {};
 
@@ -998,30 +1001,34 @@
             } catch(e) { return null; }
         }
 
-        // SFX "Ting" saat klik opsi jawaban
+        // AUDIO FUNCTIONS
         function playTingSound() {
             if(globalSfxVolume <= 0) return;
             const ctx = getAudioCtx(); if(!ctx) return;
             try {
                 const osc = ctx.createOscillator(); const gain = ctx.createGain();
                 osc.connect(gain); gain.connect(ctx.destination);
-                osc.type = 'sine'; osc.frequency.setValueAtTime(800, ctx.currentTime); 
-                gain.gain.setValueAtTime(0.6 * globalSfxVolume, ctx.currentTime);
+                osc.type = 'sine'; 
+                osc.frequency.setValueAtTime(880, ctx.currentTime); 
+                osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.7 * globalSfxVolume, ctx.currentTime + 0.02);
                 gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
                 osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.3);
             } catch(e) {}
         }
 
-        // SFX "Tung" gaya modern
         function playPopSound() {
             if(globalSfxVolume <= 0) return;
             const ctx = getAudioCtx(); if(!ctx) return;
             try {
                 const osc = ctx.createOscillator(); const gain = ctx.createGain();
                 osc.connect(gain); gain.connect(ctx.destination);
-                osc.type = 'sine'; osc.frequency.setValueAtTime(400, ctx.currentTime); 
-                osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.1); 
-                gain.gain.setValueAtTime(0.5 * globalSfxVolume, ctx.currentTime);
+                osc.type = 'sine'; 
+                osc.frequency.setValueAtTime(600, ctx.currentTime); 
+                osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.15); 
+                gain.gain.setValueAtTime(0, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.6 * globalSfxVolume, ctx.currentTime + 0.02);
                 gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
                 osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.15);
             } catch(e) {}
@@ -1032,18 +1039,42 @@
             try {
                 const osc = ctx.createOscillator(); const gain = ctx.createGain();
                 osc.connect(gain); gain.connect(ctx.destination);
-                osc.type = type; osc.frequency.value = freq;
+                osc.type = type; 
+                osc.frequency.setValueAtTime(freq, ctx.currentTime + startTimeOffset);
                 gain.gain.setValueAtTime(0, ctx.currentTime + startTimeOffset);
-                gain.gain.linearRampToValueAtTime(0.4 * globalSfxVolume, ctx.currentTime + startTimeOffset + 0.05);
+                gain.gain.linearRampToValueAtTime(0.4 * globalSfxVolume, ctx.currentTime + startTimeOffset + (duration * 0.1));
                 gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startTimeOffset + duration);
                 osc.start(ctx.currentTime + startTimeOffset);
                 osc.stop(ctx.currentTime + startTimeOffset + duration);
             } catch(e) {}
         }
 
-        function playStartSound() { if(globalSfxVolume <= 0) return; playTone(600, 0, 0.1, 'triangle'); playTone(800, 0.1, 0.2, 'sine'); }
-        function playExitSound() { if(globalSfxVolume <= 0) return; playTone(600, 0, 0.15, 'sine'); playTone(400, 0.15, 0.2, 'triangle'); }
-        function playFanfare() { if(globalSfxVolume <= 0) return; const notes = [523.25, 659.25, 783.99, 1046.50]; notes.forEach((freq, i) => { playTone(freq, i * 0.15, 0.4, 'square'); }); }
+        function playStartSound() { if(globalSfxVolume <= 0) return; playTone(523.25, 0, 0.15, 'sine'); playTone(659.25, 0.1, 0.3, 'sine'); }
+        function playExitSound() { if(globalSfxVolume <= 0) return; playTone(440, 0, 0.15, 'sine'); playTone(349.23, 0.1, 0.2, 'sine'); }
+        function playFanfare() { if(globalSfxVolume <= 0) return; playTone(523.25, 0, 0.15, 'triangle'); playTone(659.25, 0.15, 0.15, 'triangle'); playTone(783.99, 0.3, 0.15, 'triangle'); playTone(1046.50, 0.45, 0.6, 'triangle'); }
+        function playPlaySound() { if(globalSfxVolume <= 0) return; playTone(523.25, 0, 0.1, 'sine'); playTone(659.25, 0.1, 0.1, 'sine'); playTone(783.99, 0.2, 0.2, 'sine'); }
+        function playCloudSound() { if(globalSfxVolume <= 0) return; playTone(880, 0, 0.05, 'sine'); playTone(1108.73, 0.05, 0.05, 'sine'); playTone(1318.51, 0.1, 0.2, 'sine'); }
+        function playGearSound() { if(globalSfxVolume <= 0) return; playTone(600, 0, 0.05, 'square'); playTone(400, 0.08, 0.05, 'square'); }
+        function playMegaphoneSound() { if(globalSfxVolume <= 0) return; playTone(349.23, 0, 0.1, 'sawtooth'); playTone(349.23, 0.15, 0.2, 'sawtooth'); }
+        function playThemeSound() { if(globalSfxVolume <= 0) return; playTone(880, 0, 0.1, 'triangle'); playTone(1108.73, 0.1, 0.2, 'triangle'); }
+        function playBackSound() { if(globalSfxVolume <= 0) return; playTone(600, 0, 0.1, 'triangle'); playTone(400, 0.1, 0.15, 'triangle'); }
+
+        window.playCloudSound = playCloudSound;
+
+        function playBookSound() {
+            if(globalSfxVolume <= 0) return;
+            const ctx = getAudioCtx(); if(!ctx) return;
+            try {
+                const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'sine'; osc.frequency.setValueAtTime(300, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.4 * globalSfxVolume, ctx.currentTime + 0.05);
+                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
+                osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.15);
+            } catch(e) {}
+        }
 
         document.addEventListener('click', (e) => {
             getAudioCtx(); 
@@ -1057,13 +1088,21 @@
             else if (isOption && !isReviewMode) { playTingSound(); } 
             else if (isButton || isIsland || isSearchPopup || isAIPanel) {
                 if (isRange) return;
-                if (!e.target.closest('button[onclick="window.backToMainMenu()"]') && !e.target.closest('button[onclick="readQuestionText()"]') && !e.target.closest('#btn-google-login')) {
-                    playPopSound();
+                
+                const ex = ['window.backToMainMenu', 'readQuestionText', 'btn-google-login', 'openSettings', 'openAnnouncement', 'toggleTheme', 'goToPilihMapel', 'openLiterasi', 'openLoginModal', 'closeSettings', 'closeAnnouncement', 'hideConfirmModal', 'closeMateriModal', 'closeRekomendasi', 'closeLoginModal'];
+                let shouldPlayPop = true;
+                if (isButton) {
+                    const onclickStr = isButton.getAttribute('onclick') || '';
+                    const idStr = isButton.id || '';
+                    if (ex.some(str => onclickStr.includes(str) || idStr.includes(str))) {
+                        shouldPlayPop = false;
+                    }
                 }
+                if (shouldPlayPop) playPopSound();
             }
         });
 
-        function readQuestionText() {
+        window.readQuestionText = function() {
             playPopSound();
             try {
                 if (!('speechSynthesis' in window) || !window.speechSynthesis) return;
@@ -1091,10 +1130,31 @@
             setTimeout(() => { container.classList.add('hidden'); container.innerHTML = ''; }, 4500);
         }
 
-        // ==========================================
-        // --- FITUR DRAG SCROLL PADA LITERASI ---
-        // ==========================================
-        function initDragScroll() {
+        window.closeModalWithAnim = function(modalId, contentId) {
+            playBackSound();
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(contentId);
+            if (modal && content) {
+                content.classList.remove('modal-animate');
+                content.classList.add('modal-animate-out');
+                setTimeout(() => {
+                    modal.classList.remove('flex');
+                    modal.classList.add('hidden');
+                    content.classList.remove('modal-animate-out');
+                }, 280); 
+            }
+        };
+
+        window.setTextSize = function(size, save = true) {
+            document.body.setAttribute('data-text-size', size);
+            ['sm', 'md', 'lg'].forEach(s => {
+                const btn = document.getElementById(`btn-size-${s}`);
+                if (btn) btn.className = `flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold transition-all ${s === size ? 'bg-white dark:bg-slate-700 shadow text-teal-600 dark:text-white' : 'text-slate-500 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'} cursor-pointer`;
+            });
+            if (save) setStorage('textSize', size);
+        }
+
+        window.initDragScroll = function() {
             const slider = document.getElementById('literasi-categories');
             if(!slider) return;
             let isDown = false;
@@ -1124,8 +1184,46 @@
             });
         }
 
+        window.openSettings = function() { 
+            playGearSound();
+            const sm = document.getElementById('settings-modal');
+            const content = document.getElementById('settings-content');
+            if(sm) {
+                if(content) content.classList.add('modal-animate');
+                sm.classList.remove('hidden'); 
+                sm.classList.add('flex');
+            }
+        }
+        window.closeSettings = function() { window.closeModalWithAnim('settings-modal', 'settings-content'); }
+
+        window.openAnnouncement = function() { 
+            playMegaphoneSound();
+            const am = document.getElementById('announcement-modal');
+            const content = document.getElementById('announcement-content');
+            if(am) {
+                if(content) content.classList.add('modal-animate');
+                am.classList.remove('hidden'); 
+                am.classList.add('flex');
+            }
+        }
+        window.closeAnnouncement = function() { window.closeModalWithAnim('announcement-modal', 'announcement-content'); }
+        window.closeLoginModal = function() { window.closeModalWithAnim('login-screen', 'login-content'); }
+
+        window.handleUserInfoVisibility = function(screenId) {
+            const container = document.getElementById('user-info-container');
+            if(container) {
+                if(screenId === 'screen-main-menu' && window.currentUser) {
+                    container.classList.remove('hidden');
+                    setTimeout(() => container.classList.remove('opacity-0'), 50);
+                } else {
+                    container.classList.add('opacity-0');
+                    setTimeout(() => container.classList.add('hidden'), 300);
+                }
+            }
+        };
+
         // ==========================================
-        // --- YOUTUBE MUSIC PLAYER & SEARCH ---
+        // YOUTUBE MUSIC PLAYER & SEARCH LOGIC
         // ==========================================
         const ytPlaylist = [
             { title: 'Lofi Girl - Chill Beats', artist: 'Lofi Girl', videoId: 'jfKfPfyJRdk' },
@@ -1138,13 +1236,6 @@
         let isBuffering = false; 
         let isPlayerExpanded = false;
         let isMusicSearchOpen = false;
-        
-        const musicIconContainer = document.getElementById('music-icon-container');
-        const musicStateIcon = document.getElementById('music-state-icon'); 
-        const progressBar = document.getElementById('track-progress');
-        const island = document.getElementById('dynamic-island'); 
-        const contentWrapper = document.getElementById('di-content');
-
         let ytPlayer;
         let isYtReady = false;
         let progressInterval;
@@ -1154,28 +1245,22 @@
         const firstScriptTag = document.getElementsByTagName('script')[0];
         if (firstScriptTag) firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        function onYouTubeIframeAPIReady() {
+        window.onYouTubeIframeAPIReady = function() {
             ytPlayer = new YT.Player('youtube-player-container', {
-                height: '10', 
-                width: '10',
+                height: '10', width: '10',
                 videoId: ytPlaylist[currentTrackIndex].videoId,
-                playerVars: { 
-                    'autoplay': 0, 'controls': 0, 'disablekb': 1, 'fs': 0, 'rel': 0 
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
+                playerVars: { 'autoplay': 0, 'controls': 0, 'disablekb': 1, 'fs': 0, 'rel': 0 },
+                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
             });
-        }
+        };
 
         function onPlayerReady(event) {
             isYtReady = true;
             updateTrackInfoUI(currentTrackIndex);
-            
             const savedMusicVol = getStorage('musicVol', 0.5);
             ytPlayer.setVolume(savedMusicVol * 100);
             
+            const progressBar = document.getElementById('track-progress');
             if(progressBar) {
                 progressBar.addEventListener('input', (e) => {
                     if(isYtReady) {
@@ -1189,25 +1274,18 @@
 
         function onPlayerStateChange(event) {
             if (event.data == YT.PlayerState.PLAYING) {
-                isPlaying = true;
-                isBuffering = false;
-                startProgressBar();
-                updatePlayUI(true, false);
+                isPlaying = true; isBuffering = false; startProgressBar(); updatePlayUI(true, false);
             } else if (event.data == YT.PlayerState.PAUSED) {
-                isPlaying = false;
-                isBuffering = false;
-                stopProgressBar();
-                updatePlayUI(false, false);
+                isPlaying = false; isBuffering = false; stopProgressBar(); updatePlayUI(false, false);
             } else if (event.data == YT.PlayerState.BUFFERING || event.data == YT.PlayerState.UNSTARTED) {
-                isBuffering = true;
-                updatePlayUI(isPlaying, true); 
-            } else if (event.data == YT.PlayerState.ENDED) {
-                nextTrack(); 
-            }
+                isBuffering = true; updatePlayUI(isPlaying, true); 
+            } else if (event.data == YT.PlayerState.ENDED) { window.nextTrack(); }
         }
 
-        function togglePlayerState(e) {
+        window.togglePlayerState = function(e) {
             if(e && (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.closest('button'))) return;
+            const island = document.getElementById('dynamic-island'); 
+            const contentWrapper = document.getElementById('di-content');
             
             isPlayerExpanded = !isPlayerExpanded;
             if(island && contentWrapper) {
@@ -1217,76 +1295,36 @@
                 } else {
                     island.classList.remove('di-expanded'); island.classList.add('di-collapsed');
                     contentWrapper.classList.remove('opacity-100'); contentWrapper.classList.add('opacity-0');
-                    
-                    if(isMusicSearchOpen) toggleMusicSearch(); 
-                    
+                    if(isMusicSearchOpen) window.toggleMusicSearch(); 
                     setTimeout(() => { if(!isPlayerExpanded) contentWrapper.classList.add('invisible'); }, 300); 
                 }
             }
-        }
+        };
 
-        // Penyesuaian visibility info user agar tersembunyi selain di Menu Utama
-        function handleUserInfoVisibility(screenId) {
-            const container = document.getElementById('user-info-container');
-            if(container) {
-                if(screenId === 'screen-main-menu' && window.currentUser) {
-                    container.classList.remove('hidden');
-                    setTimeout(() => container.classList.remove('opacity-0'), 50);
-                } else {
-                    container.classList.add('opacity-0');
-                    setTimeout(() => container.classList.add('hidden'), 300);
-                }
-            }
-        }
-
-        function togglePlay() {
+        window.togglePlay = function() {
             if(!isYtReady) return;
             if (isPlaying) ytPlayer.pauseVideo();
             else ytPlayer.playVideo();
-        }
+        };
 
         function loadTrack(index) {
             currentTrackIndex = index;
             updateTrackInfoUI(index);
+            const progressBar = document.getElementById('track-progress');
             if(progressBar) progressBar.value = 0;
-            
             isBuffering = true;
             updatePlayUI(isPlaying, true);
-            
             if(isYtReady) {
                 if(isPlaying) ytPlayer.loadVideoById(ytPlaylist[index].videoId);
                 else ytPlayer.cueVideoById(ytPlaylist[index].videoId);
             }
         }
 
-        // Kembali ke menu utama
-        window.backToMainMenu = function() {
-            stopTTS(); playExitSound(); clearInterval(timerInterval); closeMobileNav(); 
-            switchScreen('screen-main-menu');
-        };
-
-        function nextTrack() { 
-            currentTrackIndex = (currentTrackIndex + 1) % ytPlaylist.length; 
-            loadTrack(currentTrackIndex); 
-            if (!isPlaying) togglePlay(); 
-        }
-
-        function prevTrack() { 
-            currentTrackIndex = (currentTrackIndex - 1 + ytPlaylist.length) % ytPlaylist.length; 
-            loadTrack(currentTrackIndex); 
-            if (!isPlaying) togglePlay(); 
-        }
-
-        function updateMusicVolume(val) { 
-            if(isYtReady && ytPlayer && typeof ytPlayer.setVolume === 'function') ytPlayer.setVolume(val * 100); 
-            setStorage('musicVol', val); 
-        }
-
-        function updateSfxVolume(val) { 
-            globalSfxVolume = parseFloat(val); 
-            setStorage('sfxVol', val); 
-            playPopSound(); 
-        }
+        window.nextTrack = function() { currentTrackIndex = (currentTrackIndex + 1) % ytPlaylist.length; loadTrack(currentTrackIndex); if (!isPlaying) window.togglePlay(); }
+        window.prevTrack = function() { currentTrackIndex = (currentTrackIndex - 1 + ytPlaylist.length) % ytPlaylist.length; loadTrack(currentTrackIndex); if (!isPlaying) window.togglePlay(); }
+        
+        window.updateMusicVolume = function(val) { if(isYtReady && ytPlayer && typeof ytPlayer.setVolume === 'function') ytPlayer.setVolume(val * 100); setStorage('musicVol', val); }
+        window.updateSfxVolume = function(val) { globalSfxVolume = parseFloat(val); setStorage('sfxVol', val); playPopSound(); }
 
         function updateTrackInfoUI(index) {
             const track = ytPlaylist[index];
@@ -1298,15 +1336,13 @@
 
         function updatePlayUI(playing, buffering = false) {
             const btnToggle = document.getElementById('btn-play-toggle');
+            const musicIconContainer = document.getElementById('music-icon-container');
+            const musicStateIcon = document.getElementById('music-state-icon');
             
             if (btnToggle) {
-                if (buffering) {
-                    btnToggle.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-2xl text-teal-400"></i>`;
-                } else if (playing) {
-                    btnToggle.innerHTML = `<i class="ph-fill ph-pause text-2xl" id="play-icon"></i>`;
-                } else {
-                    btnToggle.innerHTML = `<i class="ph-fill ph-play text-2xl" id="play-icon"></i>`;
-                }
+                if (buffering) btnToggle.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-2xl text-teal-400"></i>`;
+                else if (playing) btnToggle.innerHTML = `<i class="ph-fill ph-pause text-2xl" id="play-icon"></i>`;
+                else btnToggle.innerHTML = `<i class="ph-fill ph-play text-2xl" id="play-icon"></i>`;
             }
 
             if(playing && !buffering) {
@@ -1326,6 +1362,7 @@
 
         function startProgressBar() {
             clearInterval(progressInterval);
+            const progressBar = document.getElementById('track-progress');
             progressInterval = setInterval(() => {
                 if(isYtReady && isPlaying && !isBuffering && progressBar) {
                     const duration = ytPlayer.getDuration();
@@ -1337,47 +1374,31 @@
 
         function stopProgressBar() { clearInterval(progressInterval); }
 
-        function toggleMusicSearch(e) {
+        window.toggleMusicSearch = function(e) {
             const popup = document.getElementById('music-search-popup');
             const btn = document.getElementById('btn-search-toggle');
             if(!popup) return;
             
             isMusicSearchOpen = !isMusicSearchOpen;
-            
             if(isMusicSearchOpen) {
-                popup.classList.remove('search-popup-enter');
-                popup.classList.add('search-popup-active');
+                popup.classList.remove('search-popup-enter'); popup.classList.add('search-popup-active');
                 if(btn) btn.classList.add('text-blue-500', 'bg-blue-50', 'dark:bg-blue-500/10');
-                setTimeout(() => {
-                    const inp = document.getElementById('yt-search-input');
-                    if(inp) inp.focus();
-                }, 100);
+                setTimeout(() => { const inp = document.getElementById('yt-search-input'); if(inp) inp.focus(); }, 100);
             } else {
-                popup.classList.remove('search-popup-active');
-                popup.classList.add('search-popup-enter');
+                popup.classList.remove('search-popup-active'); popup.classList.add('search-popup-enter');
                 if(btn) btn.classList.remove('text-blue-500', 'bg-blue-50', 'dark:bg-blue-500/10');
             }
-        }
+        };
 
-        async function searchMusic() {
+        window.searchMusic = async function() {
             const inputEl = document.getElementById('yt-search-input');
             if(!inputEl) return;
             const query = inputEl.value;
             if(!query) return;
             
             const resultsContainer = document.getElementById('yt-search-results');
-            
             let skeletonHTML = '';
-            for(let i=0; i<3; i++){
-                skeletonHTML += `
-                <div class="flex items-center gap-3 p-2.5 my-1 bg-white/40 dark:bg-slate-800/40 rounded-xl">
-                    <div class="w-12 h-12 rounded-lg skeleton flex-shrink-0"></div>
-                    <div class="flex-1 w-full space-y-2.5">
-                        <div class="h-3 w-3/4 rounded-full skeleton"></div>
-                        <div class="h-2 w-1/2 rounded-full skeleton"></div>
-                    </div>
-                </div>`;
-            }
+            for(let i=0; i<3; i++) skeletonHTML += `<div class="flex items-center gap-3 p-2.5 my-1 bg-white/40 dark:bg-slate-800/40 rounded-xl"><div class="w-12 h-12 rounded-lg skeleton flex-shrink-0"></div><div class="flex-1 w-full space-y-2.5"><div class="h-3 w-3/4 rounded-full skeleton"></div><div class="h-2 w-1/2 rounded-full skeleton"></div></div></div>`;
             if(resultsContainer) resultsContainer.innerHTML = skeletonHTML;
             
             const apiKey = window.firebaseConfig.apiKey; 
@@ -1389,11 +1410,7 @@
                 const data = await response.json();
                 
                 if(data.error) {
-                    if(resultsContainer) resultsContainer.innerHTML = `
-                        <div class="p-3 mt-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-center">
-                            <i class="ph-fill ph-warning-circle text-red-500 text-xl mb-1"></i>
-                            <div class="text-[10px] md:text-xs text-red-500 font-medium">Gagal mengambil data. Cek API Key.</div>
-                        </div>`;
+                    if(resultsContainer) resultsContainer.innerHTML = `<div class="p-3 mt-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-center"><i class="ph-fill ph-warning-circle text-red-500 text-xl mb-1"></i><div class="text-[10px] md:text-xs text-red-500 font-medium">Gagal mengambil data. Cek API Key.</div></div>`;
                     return;
                 }
                 
@@ -1406,89 +1423,57 @@
                 setTimeout(() => {
                     if(resultsContainer) resultsContainer.innerHTML = '';
                     data.items.forEach(item => {
-                        const title = item.snippet.title;
-                        const artist = item.snippet.channelTitle;
-                        const videoId = item.id.videoId;
-                        const thumb = item.snippet.thumbnails.default.url;
-                        
+                        const title = item.snippet.title; const artist = item.snippet.channelTitle; const videoId = item.id.videoId; const thumb = item.snippet.thumbnails.default.url;
                         const div = document.createElement('div');
                         div.className = "flex items-center gap-3 p-2.5 hover:bg-white/60 dark:hover:bg-slate-700/60 rounded-xl cursor-pointer transition-all active:scale-95 group border border-transparent hover:border-slate-200/50 dark:hover:border-slate-600/50";
-                        div.onclick = () => playSearchedSong(videoId, title, artist);
-                        
-                        div.innerHTML = `
-                            <div class="relative w-12 h-12 flex-shrink-0">
-                                <img src="${thumb}" class="w-full h-full object-cover rounded-lg shadow-sm" alt="Thumbnail">
-                                <div class="absolute inset-0 bg-blue-500/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg backdrop-blur-[2px]">
-                                    <i class="ph-fill ph-play text-white drop-shadow-md text-lg"></i>
-                                </div>
-                            </div>
-                            <div class="flex-1 min-w-0 flex flex-col justify-center">
-                                <div class="text-xs md:text-sm font-bold text-slate-800 dark:text-white truncate leading-tight mb-1" title="${title}">${title}</div>
-                                <div class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 truncate leading-tight font-medium"><i class="ph-fill ph-music-notes-simple mr-1 text-[10px]"></i>${artist}</div>
-                            </div>
-                        `;
+                        div.onclick = () => window.playSearchedSong(videoId, title, artist);
+                        div.innerHTML = `<div class="relative w-12 h-12 flex-shrink-0"><img src="${thumb}" class="w-full h-full object-cover rounded-lg shadow-sm" alt="Thumbnail"><div class="absolute inset-0 bg-blue-500/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg backdrop-blur-[2px]"><i class="ph-fill ph-play text-white drop-shadow-md text-lg"></i></div></div><div class="flex-1 min-w-0 flex flex-col justify-center"><div class="text-xs md:text-sm font-bold text-slate-800 dark:text-white truncate leading-tight mb-1" title="${title}">${title}</div><div class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 truncate leading-tight font-medium"><i class="ph-fill ph-music-notes-simple mr-1 text-[10px]"></i>${artist}</div></div>`;
                         if(resultsContainer) resultsContainer.appendChild(div);
                     });
                 }, 300); 
-
             } catch (e) {
                 if(resultsContainer) resultsContainer.innerHTML = `<div class="text-xs text-red-500 text-center py-6 font-medium">Gagal mencari. Cek koneksi internetmu.</div>`;
             }
-        }
+        };
 
-        function playSearchedSong(videoId, title, artist) {
-            const txt = document.createElement("textarea");
-            txt.innerHTML = title;
-            const decodedTitle = txt.value;
-
-            ytPlaylist.push({
-                title: decodedTitle,
-                artist: artist,
-                videoId: videoId
-            });
-            
+        window.playSearchedSong = function(videoId, title, artist) {
+            const txt = document.createElement("textarea"); txt.innerHTML = title; const decodedTitle = txt.value;
+            ytPlaylist.push({ title: decodedTitle, artist: artist, videoId: videoId });
             loadTrack(ytPlaylist.length - 1);
-            if(!isPlaying) togglePlay();
-            
-            toggleMusicSearch();
-        }
+            if(!isPlaying) window.togglePlay();
+            window.toggleMusicSearch();
+        };
 
         // ==========================================
         // FUNGSI TUTOR AI CHAT (GEMINI)
         // ==========================================
         let isAiChatOpen = false;
 
-        function toggleAIChat() {
+        window.toggleAIChat = function() {
             const panel = document.getElementById('ai-chat-panel');
             const btnIcon = document.querySelector('#btn-ai-chat i');
             if(!panel) return;
 
             isAiChatOpen = !isAiChatOpen;
-            
             if(isAiChatOpen) {
                 panel.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-10', 'scale-95');
                 panel.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0', 'scale-100');
                 if(btnIcon) btnIcon.classList.replace('ph-sparkle', 'ph-x');
-                setTimeout(() => {
-                    const ci = document.getElementById('chat-input');
-                    if(ci) ci.focus();
-                }, 300);
+                setTimeout(() => { const ci = document.getElementById('chat-input'); if(ci) ci.focus(); }, 300);
             } else {
                 panel.classList.add('opacity-0', 'pointer-events-none', 'translate-y-10', 'scale-95');
                 panel.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0', 'scale-100');
                 if(btnIcon) btnIcon.classList.replace('ph-x', 'ph-sparkle');
             }
-        }
+        };
 
-        async function sendChatMessage() {
+        window.sendChatMessage = async function() {
             const inputEl = document.getElementById('chat-input');
             if(!inputEl) return;
             const message = inputEl.value.trim();
             if(!message) return;
             
-            inputEl.value = '';
-            inputEl.style.height = ''; 
-            
+            inputEl.value = ''; inputEl.style.height = ''; 
             appendMessage('user', message);
             
             const loadingHTML = `<div class="flex gap-1 items-center h-4 mt-1"><div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0ms"></div><div class="w-1.5 h-1.5 bg-purple-500 rounded-full animate-bounce" style="animation-delay: 150ms"></div><div class="w-1.5 h-1.5 bg-pink-500 rounded-full animate-bounce" style="animation-delay: 300ms"></div></div>`;
@@ -1496,18 +1481,15 @@
             
             try {
                 if(!window.geminiModel) throw new Error("Model AI belum dimuat.");
-                
                 const result = await window.geminiModel.generateContent(message);
                 const responseText = result.response.text();
-                
                 const formattedResponse = responseText.replace(/\*\*(.*?)\*\*/g, '<b class="text-blue-600 dark:text-blue-400">$1</b>').replace(/\n/g, '<br>');
-                
                 updateMessage(loadingId, formattedResponse);
             } catch (error) {
                 console.error("Gemini Error:", error);
                 updateMessage(loadingId, '<span class="text-red-500 font-medium">Maaf, koneksi ke otak AI terputus. Pastikan fitur <b>Generative Language API</b> sudah diaktifkan di Google Cloud Console.</span>');
             }
-        }
+        };
 
         function appendMessage(sender, text) {
             const history = document.getElementById('chat-history');
@@ -1517,22 +1499,12 @@
             
             if(sender === 'user') {
                 div.className = "flex justify-end gap-2.5 mb-2";
-                div.innerHTML = `
-                    <div class="bg-gradient-to-r from-blue-500 to-purple-500 p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-xs md:text-sm text-white break-words">
-                        ${text.replace(/\n/g, '<br>')}
-                    </div>
-                `;
+                div.innerHTML = `<div class="bg-gradient-to-r from-blue-500 to-purple-500 p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-xs md:text-sm text-white break-words">${text.replace(/\n/g, '<br>')}</div>`;
             } else {
                 div.className = "flex gap-2.5 mb-2";
-                div.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex-shrink-0 flex items-center justify-center text-white shadow-sm"><i class="ph-fill ph-robot text-sm"></i></div>
-                    <div id="${id}" class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 dark:border-slate-700 max-w-[85%] text-xs md:text-sm text-slate-700 dark:text-slate-200 break-words leading-relaxed font-medium">
-                        ${text}
-                    </div>
-                `;
+                div.innerHTML = `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex-shrink-0 flex items-center justify-center text-white shadow-sm"><i class="ph-fill ph-robot text-sm"></i></div><div id="${id}" class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 dark:border-slate-700 max-w-[85%] text-xs md:text-sm text-slate-700 dark:text-slate-200 break-words leading-relaxed font-medium">${text}</div>`;
             }
-            history.appendChild(div);
-            history.scrollTop = history.scrollHeight;
+            history.appendChild(div); history.scrollTop = history.scrollHeight;
             return id;
         }
 
@@ -1546,42 +1518,12 @@
         }
 
         // ==========================================
-
-        function openSettings() { 
-            const sm = document.getElementById('settings-modal');
-            if(sm) {
-                sm.classList.remove('hidden'); 
-                sm.classList.add('flex');
-            }
-        }
-        function closeSettings() { 
-            const sm = document.getElementById('settings-modal');
-            if(sm) {
-                sm.classList.remove('flex');
-                sm.classList.add('hidden'); 
-            }
-        }
-
-        function openAnnouncement() { 
-            const am = document.getElementById('announcement-modal');
-            if(am) {
-                am.classList.remove('hidden'); 
-                am.classList.add('flex');
-            }
-        }
-        function closeAnnouncement() { 
-            const am = document.getElementById('announcement-modal');
-            if(am) {
-                am.classList.remove('flex');
-                am.classList.add('hidden'); 
-            }
-        }
-
         // --- SISTEM ASISTEN LITERASI & REKOMENDASI ---
         window.currentWrongQuestions = [];
         window.currentLiterasiFilter = 'all'; 
 
         window.openLiterasi = () => {
+            playBookSound();
             switchScreen('screen-literasi');
             window.renderLiterasiCategories();
             window.renderLiterasi();
@@ -1626,7 +1568,9 @@
             if(me) me.innerHTML = explanation;
             
             const mm = document.getElementById('materi-modal');
+            const content = document.getElementById('materi-content');
             if(mm) {
+                if(content) content.classList.add('modal-animate');
                 mm.classList.remove('hidden');
                 mm.classList.add('flex');
                 document.body.classList.add('modal-open');
@@ -1634,12 +1578,8 @@
         };
 
         window.closeMateriModal = () => {
-            const mm = document.getElementById('materi-modal');
-            if(mm) {
-                mm.classList.remove('flex');
-                mm.classList.add('hidden');
-                document.body.classList.remove('modal-open');
-            }
+            document.body.classList.remove('modal-open');
+            window.closeModalWithAnim('materi-modal', 'materi-content');
         };
 
         window.renderLiterasi = (query = '') => {
@@ -1711,18 +1651,16 @@
                 });
             }
             const rm = document.getElementById('rekomendasi-modal');
+            const content = document.getElementById('rekomendasi-content');
             if(rm) {
+                if(content) content.classList.add('modal-animate');
                 rm.classList.remove('hidden');
                 rm.classList.add('flex');
             }
         };
 
         window.closeRekomendasi = () => {
-            const rm = document.getElementById('rekomendasi-modal');
-            if(rm) {
-                rm.classList.remove('flex');
-                rm.classList.add('hidden');
-            }
+            window.closeModalWithAnim('rekomendasi-modal', 'rekomendasi-content');
         };
 
         let currentSubject = null; let currentQuestions = []; let currentIndex = 0;
@@ -1731,7 +1669,7 @@
 
         // --- INIT STATE ---
         window.onload = () => { 
-            initTheme(); initSettings(); initDragScroll();
+            window.initTheme(); window.initSettings(); window.initDragScroll();
             
             const grid = document.getElementById('subject-grid');
             if (window.failedScripts && window.failedScripts.length > 0 && grid) {
@@ -1749,14 +1687,15 @@
             }
         };
 
-        function initTheme() {
+        window.initTheme = function() {
             const saved = getStorage('theme', 'dark'); const html = document.documentElement; const icon = document.getElementById('theme-icon');
             if(!icon) return;
             if (saved === 'light') { html.classList.remove('dark'); icon.classList.replace('ph-moon', 'ph-sun'); icon.classList.replace('text-teal-400', 'text-amber-500'); } 
             else { html.classList.add('dark'); icon.classList.replace('ph-sun', 'ph-moon'); icon.classList.replace('text-amber-500', 'text-teal-400'); }
         }
 
-        function toggleTheme() {
+        window.toggleTheme = function() {
+            playThemeSound();
             const html = document.documentElement; const icon = document.getElementById('theme-icon');
             if(!icon) return;
             icon.classList.remove('rotate-spin'); void icon.offsetWidth; icon.classList.add('rotate-spin');
@@ -1766,8 +1705,8 @@
             }, 300);
         }
 
-        function initSettings() { 
-            setTextSize(getStorage('textSize', 'md'), false); 
+        window.initSettings = function() { 
+            window.setTextSize(getStorage('textSize', 'md'), false); 
             const savedMusicVol = getStorage('musicVol', 0.5);
             const musicVolInput = document.getElementById('music-volume');
             if (musicVolInput) musicVolInput.value = savedMusicVol;
@@ -1777,17 +1716,8 @@
             globalSfxVolume = parseFloat(savedSfxVol);
         }
 
-        function setTextSize(size, save = true) {
-            document.body.setAttribute('data-text-size', size);
-            ['sm', 'md', 'lg'].forEach(s => {
-                const btn = document.getElementById(`btn-size-${s}`);
-                if (btn) btn.className = `flex-1 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold transition-all ${s === size ? 'bg-white dark:bg-slate-700 shadow text-teal-600 dark:text-white' : 'text-slate-500 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'} cursor-pointer`;
-            });
-            if (save) setStorage('textSize', size);
-        }
-
-        // Tampilkan daftar mapel
         window.goToPilihMapel = function() {
+            playPlaySound();
             switchScreen('screen-home');
             window.renderHome();
         }
@@ -1803,10 +1733,7 @@
                     
                     let badgeHTML = '';
                     if(hs !== null && hs !== 0 && hs !== "0") {
-                        badgeHTML = `
-                        <div class="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-[10px] md:text-xs font-bold px-1.5 py-0.5 rounded shadow-sm border border-yellow-200 cinematic-title">
-                            ⭐ ${hs}
-                        </div>`;
+                        badgeHTML = `<div class="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-[10px] md:text-xs font-bold px-1.5 py-0.5 rounded shadow-sm border border-yellow-200 cinematic-title">⭐ ${hs}</div>`;
                     }
 
                     const soalCount = window.quizData[sub.id] ? window.quizData[sub.id].length : 0;
@@ -1831,7 +1758,7 @@
         }
 
         // --- SISTEM PENGACAK SOAL DENGAN PROTEKSI SOAL UTBK ---
-        function startQuiz(subjectId) {
+        window.startQuiz = function(subjectId) {
             try {
                 isReviewMode = false;
                 currentSubject = window.subjects.find(s => s.id === subjectId); 
@@ -1845,9 +1772,7 @@
                     let isSpecialQuestion = false;
                     if(newQ.options && newQ.options.length > 0) {
                         const firstOpt = newQ.options[0].toLowerCase();
-                        if (firstOpt.includes("jika (1),") || 
-                            firstOpt.includes("pernyataan benar, alasan benar") || 
-                            firstOpt === "benar" || firstOpt === "salah") {
+                        if (firstOpt.includes("jika (1),") || firstOpt.includes("pernyataan benar, alasan benar") || firstOpt === "benar" || firstOpt === "salah") {
                             isSpecialQuestion = true;
                         }
                     }
@@ -1887,16 +1812,16 @@
                 if (centerBtn) {
                     centerBtn.innerText = "Selesai";
                     centerBtn.className = "px-5 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-emerald-950 dark:text-white bg-emerald-400 hover:bg-emerald-500 dark:bg-emerald-500/30 dark:hover:bg-emerald-500/50 border border-emerald-500 transition-colors text-sm md:text-base shadow-sm hover:scale-105 active:scale-95 cursor-pointer pointer-events-auto";
-                    centerBtn.onclick = showConfirmModal;
+                    centerBtn.onclick = window.showConfirmModal;
                 }
 
-                switchScreen('screen-quiz'); renderQuestion(); renderGrid(); startTimer();
+                switchScreen('screen-quiz'); window.renderQuestion(); window.renderGrid(); window.startTimer();
             } catch (e) {
                 alert("Ada kesalahan pada file " + (currentSubject ? currentSubject.name : 'mapel') + ".js kamu! (Error: " + e.message + ")");
             }
         }
 
-        function startReview() {
+        window.startReview = function() {
             isReviewMode = true; currentIndex = 0; stopTTS();
             
             const tc = document.getElementById('timer-container');
@@ -1912,10 +1837,10 @@
                 centerBtn.onclick = () => switchScreen('screen-result');
             }
 
-            switchScreen('screen-quiz'); renderQuestion(); renderGrid();
+            switchScreen('screen-quiz'); window.renderQuestion(); window.renderGrid();
         }
 
-        function renderQuestion() {
+        window.renderQuestion = function() {
             try {
                 if(currentQuestions.length === 0) return; 
                 const q = currentQuestions[currentIndex] || {}; 
@@ -1971,7 +1896,7 @@
                             btnClass += `bg-white/60 md:hover:bg-white dark:bg-slate-800/50 dark:hover:bg-slate-700/80 border-slate-200/50 dark:border-white/10 text-slate-700 dark:text-slate-200 shadow-sm`;
                             badgeClass += `bg-white dark:bg-white/10 text-slate-800 dark:text-white border-slate-100 dark:border-transparent dark:shadow-none`;
                         }
-                        btn.onclick = () => selectOption(index);
+                        btn.onclick = () => window.selectOption(index);
                     }
                     btn.className = btnClass;
                     btn.innerHTML = `<span class="${badgeClass}">${badgeText}</span><span class="pt-0.5 md:pt-1 o-text-dynamic leading-snug font-medium">${opt}</span>`;
@@ -1997,16 +1922,16 @@
             }
         }
 
-        function selectOption(optIndex) { 
+        window.selectOption = function(optIndex) { 
             userAnswers[currentIndex] = optIndex; 
-            renderQuestion(); 
-            renderGrid(); 
-            if(currentIndex < currentQuestions.length - 1) setTimeout(nextQuestion, 300); 
+            window.renderQuestion(); 
+            window.renderGrid(); 
+            if(currentIndex < currentQuestions.length - 1) setTimeout(window.nextQuestion, 300); 
         }
 
-        function handleCenterAction() { if(isReviewMode) switchScreen('screen-result'); else showConfirmModal(); }
+        window.handleCenterAction = function() { if(isReviewMode) switchScreen('screen-result'); else window.showConfirmModal(); }
 
-        function triggerFadeAnimation(callback) {
+        window.triggerFadeAnimation = function(callback) {
             const area = document.getElementById('quiz-content-area');
             if(!area) return callback();
             area.style.opacity = '0';
@@ -2019,35 +1944,35 @@
             }, 200);
         }
 
-        function nextQuestion() { 
+        window.nextQuestion = function() { 
             stopTTS();
             if (currentIndex < currentQuestions.length - 1) { 
-                triggerFadeAnimation(() => {
+                window.triggerFadeAnimation(() => {
                     currentIndex++; 
-                    renderQuestion(); 
-                    updateGridActive();
+                    window.renderQuestion(); 
+                    window.updateGridActive();
                 });
             } 
         }
 
-        function prevQuestion() { 
+        window.prevQuestion = function() { 
             stopTTS();
             if (currentIndex > 0) { 
-                triggerFadeAnimation(() => {
+                window.triggerFadeAnimation(() => {
                     currentIndex--; 
-                    renderQuestion(); 
-                    updateGridActive();
+                    window.renderQuestion(); 
+                    window.updateGridActive();
                 });
             } 
         }
 
-        function jumpToQuestion(index) { 
+        window.jumpToQuestion = function(index) { 
             stopTTS(); 
-            triggerFadeAnimation(() => {
+            window.triggerFadeAnimation(() => {
                 currentIndex = index; 
-                renderQuestion(); 
-                updateGridActive(); 
-                closeMobileNav();
+                window.renderQuestion(); 
+                window.updateGridActive(); 
+                window.closeMobileNav();
             });
         }
 
@@ -2056,21 +1981,22 @@
         if(dragHeader && modalContent) {
             dragHeader.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; isDragging = true; modalContent.style.transition = 'none'; }, {passive: true});
             dragHeader.addEventListener('touchmove', (e) => { if (!isDragging) return; const y = e.touches[0].clientY; const deltaY = y - startY; if (deltaY > 0) { currentY = deltaY; modalContent.style.transform = `translateY(${deltaY}px)`; } }, {passive: true});
-            dragHeader.addEventListener('touchend', (e) => { if (!isDragging) return; isDragging = false; modalContent.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'; if (currentY > 80) closeMobileNav(); else modalContent.style.transform = 'translateY(0)'; currentY = 0; });
+            dragHeader.addEventListener('touchend', (e) => { if (!isDragging) return; isDragging = false; modalContent.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'; if (currentY > 80) window.closeMobileNav(); else modalContent.style.transform = 'translateY(0)'; currentY = 0; });
         }
-        function openMobileNav() { 
+        window.openMobileNav = function() { 
             const mod = document.getElementById('mobile-nav-modal');
             if(mod) {
                 mod.classList.remove('hidden'); 
                 mod.classList.add('flex');
             }
             if(modalContent) {
+                void modalContent.offsetWidth; // Force reflow
                 modalContent.style.transform = 'translateY(0)'; 
                 modalContent.classList.remove('translate-y-full'); 
             }
             document.body.classList.add('modal-open'); 
         }
-        function closeMobileNav() { 
+        window.closeMobileNav = function() { 
             const mod = document.getElementById('mobile-nav-modal');
             if(mod) {
                 mod.classList.remove('flex');
@@ -2083,7 +2009,7 @@
             document.body.classList.remove('modal-open'); 
         }
 
-        function renderGrid() {
+        window.renderGrid = function() {
             try {
                 if(currentQuestions.length === 0) return;
                 const legendHTML = isReviewMode 
@@ -2112,7 +2038,7 @@
                             classes += isAnswered ? 'bg-teal-400 text-teal-950 border-teal-500 shadow-sm' : 'bg-white/60 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700';
                         }
                         if (i === currentIndex) classes += ' active z-10 border-none';
-                        btn.className = classes; btn.innerText = i + 1; btn.onclick = () => jumpToQuestion(i);
+                        btn.className = classes; btn.innerText = i + 1; btn.onclick = () => window.jumpToQuestion(i);
                         grid.appendChild(btn);
                     });
                 });
@@ -2120,15 +2046,15 @@
                 console.error(e);
             }
         }
-        function updateGridActive() { renderGrid(); }
+        window.updateGridActive = function() { window.renderGrid(); }
         
-        function startTimer() { clearInterval(timerInterval); updateTimerDisplay(); timerInterval = setInterval(() => { timeLeft--; updateTimerDisplay(); if (timeLeft <= 0) { clearInterval(timerInterval); finishQuiz(); } }, 1000); }
-        function updateTimerDisplay() { 
+        window.startTimer = function() { clearInterval(timerInterval); window.updateTimerDisplay(); timerInterval = setInterval(() => { timeLeft--; window.updateTimerDisplay(); if (timeLeft <= 0) { clearInterval(timerInterval); window.finishQuiz(); } }, 1000); }
+        window.updateTimerDisplay = function() { 
             const td = document.getElementById('timer-display');
             if(td) td.innerText = `${Math.floor(timeLeft / 60).toString().padStart(2, '0')}:${(timeLeft % 60).toString().padStart(2, '0')}`; 
         }
 
-        function showConfirmModal() {
+        window.showConfirmModal = function() {
             const warningText = document.getElementById('unanswered-warning'); 
             const answeredCount = Object.keys(userAnswers).length;
             if(warningText) {
@@ -2141,25 +2067,23 @@
                 }
             }
             const cm = document.getElementById('confirm-modal');
+            const content = document.getElementById('modal-content');
             if(cm) {
+                if(content) content.classList.add('modal-animate');
                 cm.classList.remove('hidden'); 
                 cm.classList.add('flex');
             }
             const confirmFinishBtn = document.getElementById('btn-confirm-finish');
             if (confirmFinishBtn) {
-                confirmFinishBtn.onclick = finishQuiz;
+                confirmFinishBtn.onclick = window.finishQuiz;
             }
         }
-        function hideConfirmModal() { 
-            const cm = document.getElementById('confirm-modal');
-            if(cm) {
-                cm.classList.remove('flex'); 
-                cm.classList.add('hidden'); 
-            }
+        window.hideConfirmModal = function() { 
+            window.closeModalWithAnim('confirm-modal', 'modal-content');
         }
 
-        async function finishQuiz() {
-            timeEnd = Date.now(); stopTTS(); hideConfirmModal(); closeMobileNav(); clearInterval(timerInterval);
+        window.finishQuiz = async function() {
+            timeEnd = Date.now(); stopTTS(); window.hideConfirmModal(); window.closeMobileNav(); clearInterval(timerInterval);
             let correct = 0; window.currentWrongQuestions = [];
             currentQuestions.forEach((q, i) => { 
                 if (userAnswers[i] === q.answer) correct++; 
@@ -2200,12 +2124,13 @@
             switchScreen('screen-result');
         }
 
-        function switchScreen(screenId) {
+        window.switchScreen = function(screenId) {
             ['screen-main-menu', 'screen-home', 'screen-quiz', 'screen-result', 'screen-literasi'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     if (id === screenId) { 
                         el.classList.remove('hidden'); 
+                        void el.offsetWidth; // Memicu reflow untuk mengulang animasi
                         el.classList.add('fade-in'); 
                         if (id === 'screen-main-menu') el.classList.add('flex');
                     } else { 
@@ -2217,7 +2142,7 @@
             });
 
             // Atur spesifik visibilitas informasi akun di kanan bawah
-            handleUserInfoVisibility(screenId);
+            if(window.handleUserInfoVisibility) window.handleUserInfoVisibility(screenId);
             
             const btnAI = document.getElementById('btn-ai-chat');
             if (btnAI) {
@@ -2227,13 +2152,13 @@
                 } else {
                     btnAI.classList.add('hidden');
                     btnAI.classList.remove('flex'); 
-                    if (isAiChatOpen) toggleAIChat(); 
+                    if (isAiChatOpen && window.toggleAIChat) window.toggleAIChat(); 
                 }
             }
         }
         
         window.backToMainMenu = function() {
-            stopTTS(); playExitSound(); clearInterval(timerInterval); closeMobileNav(); 
+            stopTTS(); playExitSound(); clearInterval(timerInterval); window.closeMobileNav(); 
             switchScreen('screen-main-menu');
         };
     </script>
